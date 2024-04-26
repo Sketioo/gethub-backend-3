@@ -7,7 +7,7 @@ services:
     image: mysql:latest
     restart: always
     ports:
-      - 3306:3306
+      - 3307:3307
     volumes:
       - ./db_data:/data/db
     environment:
@@ -24,9 +24,9 @@ services:
     depends_on:
       - db_service
 
-  migration:
-    container_name: migrator
-    build: .
-    depends_on:
-      - db_service
-    command: sh -c 'until nc -z db_service 3306; do sleep 1; done; npx sequelize-cli db:migrate'
+  # migration:
+  #   container_name: migrator
+  #   build: .
+  #   depends_on:
+  #     - db_service
+  #   command: sh -c 'until nc -z db_service 3306; do sleep 1; done; npx sequelize-cli db:migrate'

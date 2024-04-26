@@ -12,7 +12,6 @@ COPY ./migrations ./migrations
 COPY ./models ./models
 COPY ./routes ./routes
 COPY ./seeders ./seeders
-COPY ./uploads ./uploads
 COPY ./.env ./
 COPY ./.sequelizerc ./.sequelizerc
 COPY ./app.js ./app.js
