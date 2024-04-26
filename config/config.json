@@ -3,7 +3,7 @@
     "username": "root",
     "password": "",
     "database": "db_testapi",
-    "host": "db_service",
+    "host": "localhost",
     "dialect": "mysql"
   },
   "test": {
