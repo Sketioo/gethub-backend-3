@@ -1,7 +1,7 @@
 const models = require('../models');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const { generateLinkedinAuthorization, processLinkedinRedirect } = require('../helpers/linkedin-auth');
 async function signUp(req, res){
     try {
         const result = await models.User.findOne({where: {email: req.body.email}});
@@ -50,9 +50,20 @@ async function login(req, res){
     }
 }
 
+async function linkedinAuthorization(req, res) {
+    res.redirect(generateLinkedinAuthorization());
+}
+
+async function linkedinRedirect(req, res) {
+    const code = req.query.code;
+    return res.json(processLinkedinRedirect(code));
+}
+
 
 
 module.exports = {
     signUp: signUp,
-    login: login
+    login: login,
+    linkedinAuthorization: linkedinAuthorization,
+    linkedinRedirect: linkedinRedirect
 } 
