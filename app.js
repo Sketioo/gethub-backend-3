@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const {passportStrategy} = require("./config/passport-config");
+const { ActivatePassport } = require("./config/passport-config");
 const passport = require("passport");
 const session = require("express-session");
 
@@ -8,6 +8,8 @@ const userRoute = require("./routes/user");
 const testRoutes = require("./routes/tests");
 
 const app = express();
+
+app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -23,18 +25,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// console.log(typeof passportStrategy);
-// passportStrategy.use
-
-passport.serializeUser(function (user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function (obj, cb) {
-  cb(null, obj);
-});
-
-
+ActivatePassport();
 
 app.use("/api", userRoute);
 app.use("/test", testRoutes);

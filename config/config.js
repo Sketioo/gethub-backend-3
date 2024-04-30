@@ -8,14 +8,6 @@ let config = {
   dialect: "mysql",
 };
 
-const passportConfig = {
-  linkedinAuth: {
-    clientID: process.env["CLIENT_ID"],
-    clientSecret: process.env["CLIENT_SECRET"],
-    callbackURL: "http://127.0.0.1:3000/auth/linkedin/callback",
-  },
-};
-
 module.exports = {
   development: config,
   test: config,
