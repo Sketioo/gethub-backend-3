@@ -51,13 +51,13 @@ module.exports = {
       qr_code: {
         type: Sequelize.STRING
       },
-      isVerify: {
+      is_verify: {
         type: Sequelize.BOOLEAN
       },
       is_complete_profile: {
         type: Sequelize.BOOLEAN
       },
-      isPremium: {
+      is_premium: {
         type: Sequelize.BOOLEAN
       },
       theme_hub: {

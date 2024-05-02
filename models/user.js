@@ -14,9 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       photo: { type: DataTypes.STRING, allowNull: true },
       about: { type: DataTypes.STRING, allowNull: true },
       qr_code: { type: DataTypes.STRING, allowNull: true },
-      isVerify: { type: DataTypes.BOOLEAN, allowNull: true },
+      is_verify: { type: DataTypes.BOOLEAN, allowNull: true },
       is_complete_profile: { type: DataTypes.BOOLEAN, allowNull: true },
-      isPremium: { type: DataTypes.BOOLEAN, allowNull: true },
+      is_premium: { type: DataTypes.BOOLEAN, allowNull: true },
       theme_hub: DataTypes.INTEGER,
     },
     {

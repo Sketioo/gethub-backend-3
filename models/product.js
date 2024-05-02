@@ -31,3 +31,28 @@ module.exports = (sequelize, DataTypes) => {
   }
   return Product;
 };
+
+
+// "use strict";
+// module.exports = (sequelize, DataTypes) => {
+//   const Product = sequelize.define(
+//     "Product",
+//     {
+//     user_id: {type: DataTypes.INTEGER, allowNull: false},
+//     name: {type: DataTypes.STRING, allowNull: false},
+//     price: {type: DataTypes.STRING, allowNull: false},
+//     description: {type: DataTypes.STRING, allowNull: false},
+//     image_url: {type: DataTypes.STRING, allowNull: false}
+//     },
+//     {
+//       tableName: "products",
+//       modelName: "Product",
+//       timestamps: false,
+//     }
+//   );
+//   Product.associate = function (models) {
+//     // Asosiasi dengan model Role
+//     Product.belongsTo(models.User, { foreignKey: "user_id" });
+//   };
+//   return Product;
+// };

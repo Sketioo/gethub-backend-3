@@ -21,13 +21,13 @@ async function test(req, res) {
     // });
 
     //Many to many
-    const post = await models.Post.findByPk(1, {
-        include:[models.Category]
-    });
+    // const post = await models.Post.findByPk(1, {
+    //     include:[models.Category]
+    // });
 
-    const category = await models.Category.findByPk(2, {
-        include:[models.Post]
-    });
+    // const category = await models.Category.findByPk(2, {
+    //     include:[models.Post]
+    // });
 
 
 

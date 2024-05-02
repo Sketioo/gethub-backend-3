@@ -5,7 +5,7 @@ const passport = require("passport");
 const session = require("express-session");
 
 const userRoute = require("./routes/user");
-const testRoutes = require("./routes/tests");
+const productRoute = require("./routes/product");
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(
   session({
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     secret:process.env.APP_SECRET,
     cookie: { maxAge: 60000 },
   })
@@ -29,6 +29,6 @@ app.use(passport.session());
 ActivatePassport();
 
 app.use("/api", userRoute);
-app.use("/test", testRoutes);
+app.use("/api", productRoute);
 
 module.exports = app;
