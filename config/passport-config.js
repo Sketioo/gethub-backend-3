@@ -21,7 +21,7 @@ const ActivatePassport = () => {
         clientID: passportConfig.linkedinAuth.clientID,
         clientSecret: passportConfig.linkedinAuth.clientSecret,
         callbackURL: passportConfig.linkedinAuth.callbackURL,
-        scope: ["email", "profile"],
+        scope: ["openid","email", "profile"],
       },
       function (token, tokenSecret, profile, done) {
         return done(null, profile);

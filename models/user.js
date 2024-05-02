@@ -1,27 +1,32 @@
-'use strict';
+"use strict";
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
-    name: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    //make role_id foreign key to Role model
-    role_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Role',
-        key: 'id'
-      },
-      allowNull: true
+  const User = sequelize.define(
+    "User",
+    {
+      full_name: { type: DataTypes.STRING, allowNull: false },
+      user_name: { type: DataTypes.STRING, allowNull: false },
+      email: { type: DataTypes.STRING, allowNull: false },
+      password: { type: DataTypes.STRING, allowNull: false },
+      profession: { type: DataTypes.STRING, allowNull: false },
+      phone: { type: DataTypes.STRING, allowNull: false },
+      web: { type: DataTypes.STRING, allowNull: true },
+      address: { type: DataTypes.STRING, allowNull: false },
+      photo: { type: DataTypes.STRING, allowNull: true },
+      about: { type: DataTypes.STRING, allowNull: true },
+      qr_code: { type: DataTypes.STRING, allowNull: true },
+      isVerify: { type: DataTypes.BOOLEAN, allowNull: true },
+      is_complete_profile: { type: DataTypes.BOOLEAN, allowNull: true },
+      isPremium: { type: DataTypes.BOOLEAN, allowNull: true },
+      theme_hub: DataTypes.INTEGER,
+    },
+    {
+      tableName: "users",
+      timestamps: false,
     }
-  }, {
-    tableName: 'users',
-    timestamps: false
-  });
-  User.associate = function(models) {
-    // associations can be defined here
-    User.hasOne(sequelize.define('Role'));
-    // User.hasMany(sequelize.define('Post'));
+  );
+  User.associate = function (models) {
+    // Asosiasi dengan model Role
+    User.belongsTo(models.Role, { foreignKey: "role_id" });
   };
   return User;
 };

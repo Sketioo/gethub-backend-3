@@ -8,9 +8,20 @@ let config = {
   dialect: "mysql",
 };
 
+
 module.exports = {
   development: config,
   test: config,
   production: config,
-  passportConfig,
 };
+
+
+
+
+// let config = {
+//   username: 'root',
+//   password: 'IVk(C-\VO1~?>nmv',
+//   database: 'cloudsql-gethub',
+//   host: 'http://34.101.184.13',
+//   dialect: "mysql",
+// };

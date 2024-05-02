@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "migrate": "sequelize db:migrate",
+    "rollback": "sequelize db:migrate:undo",
+    "rollback-all": "sequelize db:migrate:undo:all"
   },
   "author": "Martio Husein Samsu",
   "license": "ISC",
