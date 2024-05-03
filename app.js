@@ -6,10 +6,9 @@ const session = require("express-session");
 
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
+const linkRoute = require("./routes/link");
 
 const app = express();
-
-app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -30,5 +29,7 @@ ActivatePassport();
 
 app.use("/api", userRoute);
 app.use("/api", productRoute);
+app.use("/api", linkRoute);
+
 
 module.exports = app;
