@@ -5,9 +5,14 @@ const passport = require("passport");
 const router = express.Router();
 
 
-router.post("/signup", userController.signUp);
+router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.post("/logout", userController.logout);
+
+router.get("/complete-profiles", userController.getAllProfiles);
+router.post("/complete-profile/:id", userController.getProfileById);
+router.post("/update-profile/:id", userController.updateProfile);
+router.post("/delete-profile/:id", userController.deleteProfile);
 
 router.get(
   "/auth/linkedin",
