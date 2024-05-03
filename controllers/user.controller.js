@@ -2,10 +2,6 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// console.dir(models)
-// console.dir(models.User._attributeManipulation)
-// console.log('------------')
-
 const register = async (req, res) => {
   try {
     if (req.body.password !== req.body.password_confirm) {
@@ -155,6 +151,17 @@ const getProfileById = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await models.User.findByPk(userId);
+    const {
+      password,
+      user_name,
+      qr_code,
+      is_verify,
+      is_premium,
+      theme_hub,
+      role_id,
+      is_complete_profile,
+      ...customizedUser
+    } = user.dataValues;
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -164,8 +171,9 @@ const getProfileById = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      data: user,
+      data: customizedUser,
       message: "User retrieved successfully",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error getting profile by ID:", error);
@@ -181,10 +189,35 @@ const getProfileById = async (req, res) => {
 const getAllProfiles = async (req, res) => {
   try {
     const users = await models.User.findAll();
+    if (!users || users.length === 0) {
+      // Check if no users are found
+      return res.status(404).json({
+        success: false,
+        message: "No profiles found",
+        error_code: 404,
+      });
+    }
+
+    const customizedUsers = users.map((user) => {
+      const {
+        password,
+        user_name,
+        qr_code,
+        is_verify,
+        is_premium,
+        theme_hub,
+        role_id,
+        is_complete_profile,
+        ...customizedUser
+      } = user.dataValues;
+      return customizedUser;
+    });
+
     return res.status(200).json({
       success: true,
-      data: users,
+      data: customizedUsers,
       message: "All profiles retrieved successfully",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error getting all profiles:", error);
@@ -224,13 +257,13 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// Delete profile
 const deleteProfile = async (req, res) => {
   try {
     const userId = req.params.id;
     const deletedUser = await models.User.destroy({
       where: { id: userId },
     });
+
     if (!deletedUser) {
       return res.status(404).json({
         success: false,
@@ -238,11 +271,20 @@ const deleteProfile = async (req, res) => {
         error_code: 404,
       });
     }
+
     return res.status(200).json({
       success: true,
       message: "User deleted successfully",
     });
   } catch (error) {
+    if (error instanceof Sequelize.ForeignKeyConstraintError) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete user due to existing foreign key constraint",
+        error_code: 400,
+      });
+    }
+
     console.error("Error deleting profile:", error);
     return res.status(500).json({
       success: false,

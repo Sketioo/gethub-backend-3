@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
   );
   User.associate = function (models) {
     // Asosiasi dengan model Role
-    User.belongsTo(models.Role, { foreignKey: "role_id" });
+    User.belongsTo(models.Role);
   };
   return User;
 };
