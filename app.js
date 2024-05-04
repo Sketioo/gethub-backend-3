@@ -7,7 +7,8 @@ const session = require("express-session");
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
 const linkRoute = require("./routes/link");
-const enumeRoute = require('./routes/enumeration')
+const enumeRoute = require('./routes/enumeration');
+const sponsorRoute = require('./routes/sponsor')
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api", userRoute);
 app.use("/api", productRoute);
 app.use("/api", linkRoute);
 app.use("/api", enumeRoute);
+app.use("/api", sponsorRoute);
 
 
 module.exports = app;
