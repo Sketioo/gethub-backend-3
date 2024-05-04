@@ -7,6 +7,7 @@ const session = require("express-session");
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
 const linkRoute = require("./routes/link");
+const enumeRoute = require('./routes/enumeration')
 
 const app = express();
 
@@ -30,6 +31,7 @@ ActivatePassport();
 app.use("/api", userRoute);
 app.use("/api", productRoute);
 app.use("/api", linkRoute);
+app.use("/api", enumeRoute);
 
 
 module.exports = app;
