@@ -27,8 +27,6 @@ const createProduct = async (req, res) => {
 const getProducts = async (req, res) => {
   try {
     const products = await models.Product.findAll();
-    console.log(products);
-    console.log(typeof products);
     if (!products) {
       return res.status(404).json({
         success: false,

@@ -8,7 +8,8 @@ const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
 const linkRoute = require("./routes/link");
 const enumeRoute = require('./routes/enumeration');
-const sponsorRoute = require('./routes/sponsor')
+const sponsorRoute = require('./routes/sponsor');
+const partnerRoute = require('./routes/partner')
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api", productRoute);
 app.use("/api", linkRoute);
 app.use("/api", enumeRoute);
 app.use("/api", sponsorRoute);
+app.use("/api", partnerRoute);
 
 
 module.exports = app;
