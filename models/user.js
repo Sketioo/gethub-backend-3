@@ -26,7 +26,12 @@ module.exports = (sequelize, DataTypes) => {
   );
   User.associate = function (models) {
     // Asosiasi dengan model Role
-    User.belongsTo(models.Role);
+    User.belongsTo(models.Role, { foreignKey: "role_id" });
+    models.Role.hasOne(User, {foreignKey: "role_id"});
+    User.hasMany(models.Product, { foreignKey: "user_id" });
+    models.Product.belongsTo(User, {foreignKey: "user_id"});
+    models.Link.belongsTo(User, {foreignKey: "user_id"});
+    User.hasMany(models.Link, { foreignKey: "user_id" });
   };
   return User;
 };

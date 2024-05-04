@@ -4,16 +4,17 @@ const passport = require("passport");
 
 const router = express.Router();
 
-
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.post("/logout", userController.logout);
 
-router.get("/profiles", userController.getAllProfiles);
-router.get("/profile/:id", userController.getProfileById);
-router.put("/profile/:id/update", userController.updateProfile);
-router.delete("/profile/:id/delete", userController.deleteProfile);
+router.get("/public/profile", userController.getPublicUser);
+// router.get("/public/profile/:username", userController.getPublicUser);
 
+router.get("/complete-profiles", userController.getAllProfiles);
+router.get("/complete-profile/:id", userController.getProfileById);
+router.put("/complete-profile/:id", userController.updateProfile);
+router.delete("/complete-profile/:id", userController.deleteProfile);
 
 router.get(
   "/auth/linkedin",
@@ -31,12 +32,3 @@ router.get(
 );
 
 module.exports = router;
-
-// router.get('/profile', isLoggedIn, function (req, res) {
-//   res.json({ user: req.user });
-// });
-
-// router.get("/logout", function (req, res) {
-//   req.logout();
-//   res.json({ message: "Logged out successfully" });
-// });

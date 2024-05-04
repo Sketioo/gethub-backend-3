@@ -2,6 +2,7 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// Function expressions
 const register = async (req, res) => {
   try {
     if (req.body.password !== req.body.password_confirm) {
@@ -86,9 +87,6 @@ const login = async (req, res) => {
     // Save user to session and set login flag
     req.session.currentUser = user;
     req.session.isLoggedIn = true;
-    // console.log(req.session.currentUser.dataValues);
-    // const {id} = req.session.currentUser.dataValues;
-    // console.log(id)
 
     const token = jwt.sign(
       {
@@ -151,6 +149,15 @@ const getProfileById = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await models.User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error_code: 404,
+      });
+    }
+
+    // Filter out sensitive data
     const {
       password,
       user_name,
@@ -162,13 +169,7 @@ const getProfileById = async (req, res) => {
       is_complete_profile,
       ...customizedUser
     } = user.dataValues;
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-        error_code: 404,
-      });
-    }
+
     return res.status(200).json({
       success: true,
       data: customizedUser,
@@ -190,7 +191,6 @@ const getAllProfiles = async (req, res) => {
   try {
     const users = await models.User.findAll();
     if (!users || users.length === 0) {
-      // Check if no users are found
       return res.status(404).json({
         success: false,
         message: "No profiles found",
@@ -198,6 +198,7 @@ const getAllProfiles = async (req, res) => {
       });
     }
 
+    // Filter out sensitive data for all users
     const customizedUsers = users.map((user) => {
       const {
         password,
@@ -206,7 +207,7 @@ const getAllProfiles = async (req, res) => {
         is_verify,
         is_premium,
         theme_hub,
-        role_id,
+        // role_id,
         is_complete_profile,
         ...customizedUser
       } = user.dataValues;
@@ -294,6 +295,78 @@ const deleteProfile = async (req, res) => {
   }
 };
 
+// Helper function for filtering products
+const filterProducts = products => products.map(product => ({
+  name: product.name,
+  price: product.price,
+  description: product.description,
+  image_url: product.image_url
+}));
+
+// Helper function for filtering links
+const filterLinks = links => links.map(link => ({
+  category: link.category,
+  link: link.link,
+}));
+
+const getPublicUser = async (req, res) => {
+  try {
+    const username = req.query.username;
+    const user = await models.User.findOne({
+      where: { user_name: username },
+      include: [
+        { model: models.Link, as: 'Links' },
+        { model: models.Product, as: 'Products' }
+      ]
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error_code: 404,
+      });
+    }
+
+    const filteredProducts = filterProducts(user.Products);
+    const filteredLinks = filterLinks(user.Links);
+
+    const publicUserData = {
+      id: user.id,
+      user_name: user.user_name,
+      profession: user.profession,
+      name: user.full_name,
+      phone: user.phone,
+      email: user.email,
+      web: user.web,
+      about: user.about,
+      products: filteredProducts,
+      links: filteredLinks,
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: publicUserData,
+      message: "Public user data retrieved successfully",
+    });
+  } catch (error) {
+    if (error instanceof SequelizeEagerLoadingError) {
+      return res.status(400).json({
+        success: false,
+        message: "Error retrieving public user data",
+        error_code: 400,
+      });
+    }
+
+    console.error("Error retrieving public user data:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      error_code: 500,
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -302,4 +375,5 @@ module.exports = {
   getAllProfiles,
   updateProfile,
   deleteProfile,
+  getPublicUser,
 };
