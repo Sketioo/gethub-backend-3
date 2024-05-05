@@ -1,9 +1,8 @@
 const {Sequelize, DataTypes} = require('sequelize');
 
-const sequelize = new Sequelize('db_local', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql' ,
-});
+const dbConfig = require('./config')
+
+const sequelize = new Sequelize(dbConfig.test);
 
 async function runDB() {
   try {

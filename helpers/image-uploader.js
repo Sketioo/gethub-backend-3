@@ -2,7 +2,6 @@ const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
 
 const models = require("../models");
-const { extensions } = require("sequelize/lib/utils/validator-extras");
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -11,6 +10,8 @@ const upload = multer({
 const storage = new Storage({
   keyFilename: "sa-key.json",
 });
+
+const imageExtensions = ['jpg', 'jpeg', 'png'];
 
 const imageUploader = async (req, res) => {
   const file = req.file;
@@ -21,6 +22,16 @@ const imageUploader = async (req, res) => {
       error_code: 400,
     });
   }
+
+  const fileExtension = file.originalname.split(".").pop().toLowerCase();
+  if (!imageExtensions.includes(fileExtension)) {
+    return res.status(400).send({
+      success: false,
+      message: "Invalid file type. Only image files are allowed.",
+      error_code: 400,
+    });
+  }
+
   const fileName = `${Date.now()}${file.originalname}`;
 
   const bucketName = "gethub_bucket";
@@ -42,7 +53,6 @@ const imageUploader = async (req, res) => {
 
   blobStream.on("finish", async () => {
     const publicUrl = `https://storage.cloud.google.com/${bucketName}/${blob.name}`;
-    const fileExtension = file.originalname.split(".").pop().toLowerCase();
 
     const uploadedFile = await models.HistoryUpload.create({
       user_id: 1,

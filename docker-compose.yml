@@ -11,9 +11,9 @@ services:
     volumes:
       - ./db_data:/data/db
     environment:
-      - MYSQL_ROOT_USER=${DB_USERNAME}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_USER=root
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=$db_gethub
 
   app:
     container_name: app_container
@@ -29,4 +29,4 @@ services:
     build: .
     depends_on:
       - db_service
-    command: sh -c 'until nc -z db_service 3306; do sleep 1; done; npx sequelize-cli db:migrate'
+    command: sh -c 'until nc -z db_service 3307; do sleep 1; done; npx sequelize-cli db:migrate'
