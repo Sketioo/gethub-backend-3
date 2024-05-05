@@ -1,9 +1,5 @@
 const models = require("../models");
 
-// console.dir(models.Product._attributeManipulation)
-// console.log('------------')
-// console.log(typeof models.Product)
-
 // Create a product
 const createProduct = async (req, res) => {
   try {

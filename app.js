@@ -4,12 +4,15 @@ const { ActivatePassport } = require("./config/passport-config");
 const passport = require("passport");
 const session = require("express-session");
 
+const { upload, imageUploader } = require("./helpers/image-uploader");
+
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
 const linkRoute = require("./routes/link");
-const enumeRoute = require('./routes/enumeration');
-const sponsorRoute = require('./routes/sponsor');
-const partnerRoute = require('./routes/partner')
+const enumeRoute = require("./routes/enumeration");
+const sponsorRoute = require("./routes/sponsor");
+const partnerRoute = require("./routes/partner");
+const informationRoute = require("./routes/information");
 
 const app = express();
 
@@ -20,7 +23,7 @@ app.use(
   session({
     resave: false,
     saveUninitialized: false,
-    secret:process.env.APP_SECRET,
+    secret: process.env.APP_SECRET,
     cookie: { maxAge: 60000 },
   })
 );
@@ -36,6 +39,9 @@ app.use("/api", linkRoute);
 app.use("/api", enumeRoute);
 app.use("/api", sponsorRoute);
 app.use("/api", partnerRoute);
+app.use("/api", informationRoute);
 
+//* Helper
+app.post("/api/upload-file", upload.single("file"), imageUploader);
 
 module.exports = app;

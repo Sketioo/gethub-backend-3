@@ -14,13 +14,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Information.init({
-    title: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    image: DataTypes.STRING,
-    is_active: DataTypes.BOOLEAN
+    title:{type: DataTypes.STRING, allowNull: false},
+    description:{type: DataTypes.TEXT, allowNull: false},
+    image:{type: DataTypes.STRING, allowNull: false},
+    is_active: {type: DataTypes.BOOLEAN, allowNull: false}
   }, {
     sequelize,
     modelName: 'Information',
+    tableName: 'informations',
+    timestamps: false
   });
   return Information;
 };
