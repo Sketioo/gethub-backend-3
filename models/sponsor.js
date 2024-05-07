@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Sponsor.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
       image_url: { type: DataTypes.STRING, allowNull: false },
       link: { type: DataTypes.STRING, allowNull: false },
       is_active: { type: DataTypes.BOOLEAN, defaultValue: false },
@@ -21,7 +27,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Sponsor",
       tableName: "sponsors",
-      timestamps: false,
     }
   );
   return Sponsor;

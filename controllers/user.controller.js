@@ -1,6 +1,8 @@
 const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { Sequelize } = require("sequelize");
+
 
 // Function expressions
 const register = async (req, res) => {
@@ -97,7 +99,7 @@ const login = async (req, res) => {
       { expiresIn: "1h" } // Token expiration time
     );
 
-    const { password, ...userWithoutPassword } = user.dataValues;
+    const { password, id, ...userWithoutPassword } = user.dataValues;
     userWithoutPassword.token = token;
 
     return res.status(200).json({
@@ -296,18 +298,20 @@ const deleteProfile = async (req, res) => {
 };
 
 // Helper function for filtering products
-const filterProducts = products => products.map(product => ({
-  name: product.name,
-  price: product.price,
-  description: product.description,
-  image_url: product.image_url
-}));
+const filterProducts = (products) =>
+  products.map((product) => ({
+    name: product.name,
+    price: product.price,
+    description: product.description,
+    image_url: product.image_url,
+  }));
 
 // Helper function for filtering links
-const filterLinks = links => links.map(link => ({
-  category: link.category,
-  link: link.link,
-}));
+const filterLinks = (links) =>
+  links.map((link) => ({
+    category: link.category,
+    link: link.link,
+  }));
 
 const getPublicUser = async (req, res) => {
   try {
@@ -315,9 +319,9 @@ const getPublicUser = async (req, res) => {
     const user = await models.User.findOne({
       where: { user_name: username },
       include: [
-        { model: models.Link, as: 'Links' },
-        { model: models.Product, as: 'Products' }
-      ]
+        { model: models.Link, as: "Links" },
+        { model: models.Product, as: "Products" },
+      ],
     });
 
     if (!user) {

@@ -3,11 +3,12 @@ module.exports = (sequelize, DataTypes) => {
   const Role = sequelize.define(
     "Role",
     {
+      id: { type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4 },
       role_name: DataTypes.STRING,
     },
     {
+      modelName: "Role",
       tableName: "roles",
-      timestamps: false,
     }
   );
   Role.associate = function (models) {

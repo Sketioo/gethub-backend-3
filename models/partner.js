@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Partner.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -31,7 +37,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Partner",
       tableName: "partners",
-      timestamps: false,
     }
   );
   Partner.associate = function (models) {

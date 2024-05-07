@@ -5,9 +5,9 @@ module.exports = {
     await queryInterface.createTable("Sponsors", {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
       },
       image_url: {
         type: Sequelize.STRING,
@@ -18,6 +18,14 @@ module.exports = {
       is_active: {
         type: Sequelize.BOOLEAN,
       },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      }
     });
   },
   async down(queryInterface, Sequelize) {

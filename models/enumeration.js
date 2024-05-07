@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Enumeration.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
       key: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -26,7 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Enumeration",
       tableName: "enumerations",
-      timestamps: false,
     }
   );
   return Enumeration;

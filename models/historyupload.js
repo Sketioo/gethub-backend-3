@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   HistoryUpload.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
       user_id: DataTypes.INTEGER,
       link: DataTypes.STRING,
       extension: DataTypes.STRING,
@@ -22,7 +28,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "HistoryUpload",
       tableName: "history_uploads",
-      timestamps: false,
     }
   );
   HistoryUpload.associate = function (models) {

@@ -14,6 +14,12 @@ module.exports = (sequelize) => {
   }
   Link.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
       user_id: DataTypes.STRING,
       category: DataTypes.STRING,
       link: DataTypes.STRING,
@@ -22,7 +28,6 @@ module.exports = (sequelize) => {
       sequelize,
       modelName: "Link",
       tableName: "links",
-      timestamps: false,
     }
   );
   Link.associate = function (models) {

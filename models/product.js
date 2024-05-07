@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Product.init({
+    id: {type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true, allowNull: false},
     user_id: {type: DataTypes.INTEGER, allowNull: false},
     name: {type: DataTypes.STRING, allowNull: false},
     price: {type: DataTypes.STRING, allowNull: false},
@@ -23,7 +24,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Product',
     tableName: 'products',
-    timestamps: false
   });
   Product.associate = function (models) {
     // associations can be defined here

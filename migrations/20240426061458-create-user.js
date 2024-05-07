@@ -4,9 +4,9 @@ module.exports = {
     return queryInterface.createTable('Users', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       full_name: {
         type: Sequelize.STRING,
@@ -63,13 +63,21 @@ module.exports = {
       theme_hub: {
         type: Sequelize.INTEGER
       },
-      role_id: { // Menambahkan field role_id sebagai foreign key
-        type: Sequelize.INTEGER,
+      role_id: { 
+        type: Sequelize.UUID,
         references: {
-          model: 'Roles', // Mengubah model menjadi 'Roles'
+          model: 'Roles',
           key: 'id'
         },
         allowNull: true
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },

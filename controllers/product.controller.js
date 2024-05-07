@@ -23,6 +23,7 @@ const createProduct = async (req, res) => {
 const getProducts = async (req, res) => {
   try {
     const products = await models.Product.findAll();
+    //! Buat filter untuk penyembunyikan id 
     if (!products) {
       return res.status(404).json({
         success: false,
@@ -72,10 +73,12 @@ const getProductById = async (req, res) => {
   }
 };
 
+//! Delete and Update Bug
 const updateProduct = async (req, res) => {
   try {
-    const {name, price, description, image_url} = req.body
+    const {name, price, description, image_url} = req.body;
     const product = await models.Product.findByPk(req.params.id);
+    console.log(product)
     if (!product) {
       return res.status(404).json({
         success: false,

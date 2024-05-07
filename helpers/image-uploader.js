@@ -52,7 +52,7 @@ const imageUploader = async (req, res) => {
   });
 
   blobStream.on("finish", async () => {
-    const publicUrl = `https://storage.cloud.google.com/${bucketName}/${blob.name}`;
+    const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
 
     const uploadedFile = await models.HistoryUpload.create({
       user_id: 1,
