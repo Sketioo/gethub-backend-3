@@ -2,19 +2,12 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Sequelize } = require("sequelize");
-
+const { generateRandomString } = require("../helpers/utility");
+const { serverErrorHandler } = require("../helpers/error-handler");
 
 // Function expressions
 const register = async (req, res) => {
   try {
-    if (req.body.password !== req.body.password_confirm) {
-      return res.status(400).json({
-        message: "Passwords do not match",
-        success: false,
-        error_code: 400,
-      });
-    }
-
     const existingUser = await models.User.findOne({
       where: { email: req.body.email },
     });
@@ -29,9 +22,15 @@ const register = async (req, res) => {
     const salt = await bcryptjs.genSalt(10);
     const hash = await bcryptjs.hash(req.body.password, salt);
 
-    const newUser = {
+    const user_name = req.body.full_name
+      .toString()
+      .replace(/\s+/g, "")
+      .toLowerCase();
+    const randomNumber = Math.floor(1000 + Math.random() * 9000);
+
+    const newUserData = {
       full_name: req.body.full_name,
-      user_name: req.body.user_name,
+      user_name: `${user_name}${randomNumber}`,
       email: req.body.email,
       password: hash,
       profession: req.body.profession,
@@ -40,11 +39,16 @@ const register = async (req, res) => {
       address: req.body.address,
       photo: req.body.photo,
       about: req.body.about,
+      qr_code: generateRandomString(12),
+      is_verify: null,
+      is_premium: false,
+      theme_hub: false,
+      is_complete_profile: false,
     };
 
-    await models.User.create(newUser);
-    const { password, ...customizedUser } = newUser;
-    console.log(customizedUser);
+    const user = await models.User.create(newUserData);
+
+    const { password, id, ...customizedUser } = user.dataValues;
     return res.status(201).json({
       data: customizedUser,
       message: "User created successfully",
@@ -52,7 +56,7 @@ const register = async (req, res) => {
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error signing up:", error);
+    console.log("Error in signup controller: ", error);
     return res.status(500).json({
       message: "Something went wrong!",
       success: false,
@@ -109,7 +113,7 @@ const login = async (req, res) => {
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error logging in:", error);
+    console.log("Error in login controller: ", error);
     return res.status(500).json({
       message: "Something went wrong!",
       success: false,
@@ -150,6 +154,7 @@ const logout = async (req, res) => {
 const getProfileById = async (req, res) => {
   try {
     const userId = req.params.id;
+    console.log(userId)
     const user = await models.User.findByPk(userId);
     if (!user) {
       return res.status(404).json({
@@ -162,7 +167,6 @@ const getProfileById = async (req, res) => {
     // Filter out sensitive data
     const {
       password,
-      user_name,
       qr_code,
       is_verify,
       is_premium,
@@ -251,12 +255,7 @@ const updateProfile = async (req, res) => {
       message: "User updated successfully",
     });
   } catch (error) {
-    console.error("Error updating profile:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong!",
-      error_code: 500,
-    });
+    serverErrorHandler(error, res)
   }
 };
 
