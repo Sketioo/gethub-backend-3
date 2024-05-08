@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { ActivatePassport } = require("./config/passport-config");
 const passport = require("passport");
 const session = require("express-session");
+const helmet = require("helmet")
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
 
@@ -15,6 +16,7 @@ const partnerRoute = require("./routes/partner");
 const informationRoute = require("./routes/information");
 
 const app = express();
+app.use(helmet());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

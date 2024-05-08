@@ -2,10 +2,11 @@ const express = require("express");
 const userController = require("../controllers/user.controller");
 const passport = require("passport");
 
+const { validateRegisterUser, validateLoginUser } = require("../middleware/input-validator");
 const router = express.Router();
 
-router.post("/register", userController.register);
-router.post("/login", userController.login);
+router.post("/register", validateRegisterUser, userController.register);
+router.post("/login", validateLoginUser ,userController.login);
 router.post("/logout", userController.logout);
 
 router.get("/public/profile", userController.getPublicUser);

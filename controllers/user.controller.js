@@ -13,7 +13,7 @@ const register = async (req, res) => {
     });
     if (existingUser) {
       return res.status(409).json({
-        message: "Email already exists!",
+        message: "Email sudah terdaftar!",
         success: false,
         error_code: 409,
       });
@@ -51,14 +51,14 @@ const register = async (req, res) => {
     const { password, id, ...customizedUser } = user.dataValues;
     return res.status(201).json({
       data: customizedUser,
-      message: "User created successfully",
+      message: "Pengguna berhasil dibuat",
       success: true,
       error_code: 0,
     });
   } catch (error) {
     console.log("Error in signup controller: ", error);
     return res.status(500).json({
-      message: "Something went wrong!",
+      message: "Ada kesalahan!",
       success: false,
       error_code: 500,
     });
@@ -72,7 +72,7 @@ const login = async (req, res) => {
     });
     if (!user) {
       return res.status(401).json({
-        message: "Invalid credentials!",
+        message: "Kredensial tidak valid!",
         success: false,
         error_code: 401,
       });
@@ -84,7 +84,7 @@ const login = async (req, res) => {
     );
     if (!isPasswordValid) {
       return res.status(401).json({
-        message: "Invalid credentials!",
+        message: "Kredensial tidak valid!",
         success: false,
         error_code: 401,
       });
@@ -107,7 +107,7 @@ const login = async (req, res) => {
     userWithoutPassword.token = token;
 
     return res.status(200).json({
-      message: "Authentication successful!",
+      message: "Autentikasi berhasil!",
       data: userWithoutPassword,
       success: true,
       error_code: 0,
@@ -115,7 +115,7 @@ const login = async (req, res) => {
   } catch (error) {
     console.log("Error in login controller: ", error);
     return res.status(500).json({
-      message: "Something went wrong!",
+      message: "Ada kesalahan!",
       success: false,
       error_code: 500,
     });
@@ -128,7 +128,7 @@ const logout = async (req, res) => {
       if (error) {
         console.error("Error destroying session:", error);
         return res.status(500).json({
-          message: "Failed to log out",
+          message: "Gagal logout",
           success: false,
           error_code: 500,
         });
@@ -136,14 +136,14 @@ const logout = async (req, res) => {
 
       return res.status(200).json({
         success: true,
-        message: "Logged out successfully",
+        message: "Berhasil logout",
         error_code: 0,
       });
     });
   } catch (error) {
     console.error("Error logging out:", error);
     return res.status(500).json({
-      message: "Failed to log out",
+      message: "Gagal logout",
       success: false,
       error_code: 500,
     });
@@ -159,7 +159,7 @@ const getProfileById = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Pengguna tidak ditemukan",
         error_code: 404,
       });
     }
@@ -179,32 +179,32 @@ const getProfileById = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: customizedUser,
-      message: "User retrieved successfully",
+      message: "Pengguna ditemukan",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error getting profile by ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Ada kesalahan!",
       error_code: 500,
     });
   }
 };
 
-// Get all profiles
+// Mendapatkan semua profil
 const getAllProfiles = async (req, res) => {
   try {
     const users = await models.User.findAll();
     if (!users || users.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No profiles found",
+        message: "Tidak ada profil yang ditemukan",
         error_code: 404,
       });
     }
 
-    // Filter out sensitive data for all users
+    // Memfilter data sensitif untuk semua pengguna
     const customizedUsers = users.map((user) => {
       const {
         password,
@@ -223,20 +223,20 @@ const getAllProfiles = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: customizedUsers,
-      message: "All profiles retrieved successfully",
+      message: "Semua profil berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error getting all profiles:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
 };
 
-// Update profile
+// Perbarui profil
 const updateProfile = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -246,13 +246,13 @@ const updateProfile = async (req, res) => {
     if (updatedUser[0] === 0) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Pengguna tidak ditemukan",
         error_code: 404,
       });
     }
     return res.status(200).json({
       success: true,
-      message: "User updated successfully",
+      message: "Profil pengguna berhasil diperbarui",
     });
   } catch (error) {
     serverErrorHandler(error, res)
@@ -269,20 +269,20 @@ const deleteProfile = async (req, res) => {
     if (!deletedUser) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Pengguna tidak ditemukan",
         error_code: 404,
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "User deleted successfully",
+      message: "Profil pengguna berhasil dihapus",
     });
   } catch (error) {
     if (error instanceof Sequelize.ForeignKeyConstraintError) {
       return res.status(400).json({
         success: false,
-        message: "Cannot delete user due to existing foreign key constraint",
+        message: "Tidak dapat menghapus pengguna karena adanya konstrain kunci asing yang ada",
         error_code: 400,
       });
     }
@@ -290,13 +290,13 @@ const deleteProfile = async (req, res) => {
     console.error("Error deleting profile:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
 };
 
-// Helper function for filtering products
+// Fungsi bantuan untuk memfilter produk
 const filterProducts = (products) =>
   products.map((product) => ({
     name: product.name,
@@ -305,7 +305,7 @@ const filterProducts = (products) =>
     image_url: product.image_url,
   }));
 
-// Helper function for filtering links
+// Fungsi bantuan untuk memfilter tautan
 const filterLinks = (links) =>
   links.map((link) => ({
     category: link.category,
@@ -326,7 +326,7 @@ const getPublicUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Pengguna tidak ditemukan",
         error_code: 404,
       });
     }
@@ -350,13 +350,13 @@ const getPublicUser = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: publicUserData,
-      message: "Public user data retrieved successfully",
+      message: "Data publik pengguna berhasil diambil",
     });
   } catch (error) {
     if (error instanceof SequelizeEagerLoadingError) {
       return res.status(400).json({
         success: false,
-        message: "Error retrieving public user data",
+        message: "Error mengambil data publik pengguna",
         error_code: 400,
       });
     }
@@ -364,11 +364,12 @@ const getPublicUser = async (req, res) => {
     console.error("Error retrieving public user data:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
 };
+
 
 module.exports = {
   register,
