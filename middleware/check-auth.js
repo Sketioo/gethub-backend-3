@@ -1,28 +1,42 @@
-const jwt = require("jsonwebtoken");
+const { verifyAccessToken } = require("../helpers/utility");
 
-function checkAuth(req, res, next) {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
-    req.userData = decodedToken;
-    next();
-  } catch (e) {
+const authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
     return res.status(401).json({
-      message: "Invalid or expired token provided!",
-      error: e,
+      success: false,
+      error_code: 401,
+      message: "Kredential tidak sah!",
     });
   }
-}
+
+  const result = await verifyAccessToken(token);
+
+  if (!result.success) {
+    return res
+      .status(401)
+      .json({
+        success: false,
+        message: "Kredential tidak sah!",
+        error_code: 401,
+      });
+  }
+
+  req.data = result.data;
+  console.log("next---");
+  next();
+};
 
 const isLoggedIn = (req, res, next) => {
   if (req.session && req.session.isLoggedIn) {
     return next();
   } else {
-    return res.status(401).json({ message: "Unauthorized access!" });
+    return res.status(401).json({ message: "Kredensial tidak sah!" });
   }
 };
 
 module.exports = {
-  checkAuth,
-  isLoggedIn
+  authenticateToken,
+  isLoggedIn,
 };

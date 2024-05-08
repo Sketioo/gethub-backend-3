@@ -1,5 +1,6 @@
 const { userRegisterSchema, userLoginSchema } = require("../schemas");
 
+//* User
 exports.validateRegisterUser = (req, res, next) => {
   const { error } = userRegisterSchema.validate(req.body);
   if (error) {
@@ -48,3 +49,6 @@ exports.validateLoginUser = (req, res, next) => {
     next();
   }
 };
+
+//* Product
+

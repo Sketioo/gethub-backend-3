@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const { ActivatePassport } = require("./config/passport-config");
 const passport = require("passport");
 const session = require("express-session");
-const helmet = require("helmet")
+const helmet = require("helmet");
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
 
@@ -25,15 +25,14 @@ app.use(
   session({
     resave: false,
     saveUninitialized: false,
-    secret: process.env.APP_SECRET,
+    secret: process.env.SECRET_KEY,
     cookie: { maxAge: 60000 },
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-ActivatePassport();
+// app.use(passport.initialize());
+// app.use(passport.session());
+// ActivatePassport();
 
 app.use("/api", userRoute);
 app.use("/api", productRoute);

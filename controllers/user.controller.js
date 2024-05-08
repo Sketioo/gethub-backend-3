@@ -1,9 +1,12 @@
 const models = require("../models");
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { Sequelize } = require("sequelize");
-const { generateRandomString } = require("../helpers/utility");
-const { serverErrorHandler } = require("../helpers/error-handler");
+
+const {
+  generateRandomString,
+  generateAccessToken,
+  verifyRefreshToken,
+} = require("../helpers/utility");
 
 // Function expressions
 const register = async (req, res) => {
@@ -70,6 +73,7 @@ const login = async (req, res) => {
     const user = await models.User.findOne({
       where: { email: req.body.email },
     });
+    console.log(user);
     if (!user) {
       return res.status(401).json({
         message: "Kredensial tidak valid!",
@@ -94,14 +98,7 @@ const login = async (req, res) => {
     req.session.currentUser = user;
     req.session.isLoggedIn = true;
 
-    const token = jwt.sign(
-      {
-        email: user.email,
-        userId: user.id,
-      },
-      process.env.JWT_KEY,
-      { expiresIn: "1h" } // Token expiration time
-    );
+    const token = generateAccessToken(user);
 
     const { password, id, ...userWithoutPassword } = user.dataValues;
     userWithoutPassword.token = token;
@@ -154,7 +151,7 @@ const logout = async (req, res) => {
 const getProfileById = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log(userId)
+    console.log(userId);
     const user = await models.User.findByPk(userId);
     if (!user) {
       return res.status(404).json({
@@ -255,7 +252,11 @@ const updateProfile = async (req, res) => {
       message: "Profil pengguna berhasil diperbarui",
     });
   } catch (error) {
-    serverErrorHandler(error, res)
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan!",
+      error_code: 500,
+    });
   }
 };
 
@@ -282,7 +283,8 @@ const deleteProfile = async (req, res) => {
     if (error instanceof Sequelize.ForeignKeyConstraintError) {
       return res.status(400).json({
         success: false,
-        message: "Tidak dapat menghapus pengguna karena adanya konstrain kunci asing yang ada",
+        message:
+          "Tidak dapat menghapus pengguna karena adanya konstrain kunci asing yang ada",
         error_code: 400,
       });
     }
@@ -369,7 +371,6 @@ const getPublicUser = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   register,
