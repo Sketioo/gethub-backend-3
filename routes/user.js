@@ -14,17 +14,12 @@ router.post("/register", validateRegisterUser, userController.register);
 router.post("/login", validateLoginUser, userController.login);
 router.post("/logout", userController.logout);
 
-router.get("/public/profile", userController.getPublicUser);
-// router.get("/public/profile/:username", userController.getPublicUser);
+router.get("/public/profile", authenticateToken, userController.getPublicUser);
 
-router.get(
-  "/complete-profiles",
-  authenticateToken,
-  userController.getAllProfiles
-);
-router.get("/complete-profile/:id", userController.getProfileById);
-router.put("/complete-profile/:id", userController.updateProfile);
-router.delete("/complete-profile/:id", userController.deleteProfile);
+router.get("/complete-profiles", authenticateToken, userController.getAllProfiles);
+router.get("/complete-profile/:id", authenticateToken, userController.getProfileById);
+router.put("/complete-profile/:id", authenticateToken, userController.updateProfile);
+router.delete("/complete-profile/:id", authenticateToken, userController.deleteProfile);
 
 router.get(
   "/auth/linkedin",

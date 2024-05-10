@@ -3,11 +3,12 @@ const enumeController = require("../controllers/enumeration.controller");
 
 const router = express.Router();
 
+const { authenticateToken } = require("../middleware/check-auth")
 
-router.post('/enumeration', enumeController.createEnumeration);
-router.get('/enumerations', enumeController.getAllEnumerations);
-router.get('/enumeration/:id', enumeController.getEnumerationById);
-router.put('/enumeration/:id', enumeController.updateEnumeration);
-router.delete('/enumeration/:id', enumeController.deleteEnumeration);
+router.post('/enumeration', authenticateToken, enumeController.createEnumeration);
+router.get('/enumerations', authenticateToken, enumeController.getAllEnumerations);
+router.get('/enumeration/:id', authenticateToken, enumeController.getEnumerationById);
+router.put('/enumeration/:id', authenticateToken, enumeController.updateEnumeration);
+router.delete('/enumeration/:id', authenticateToken, enumeController.deleteEnumeration);
 
 module.exports = router;

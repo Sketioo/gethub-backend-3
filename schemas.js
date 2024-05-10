@@ -24,6 +24,7 @@ const extension = (joi) => ({
 
 const Joi = BaseJoi.extend(extension);
 
+//* User
 exports.userRegisterSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string().required(),
@@ -102,4 +103,25 @@ exports.historyUploadSchema = Joi.object({
   date: Joi.date().optional(),
   createdAt: Joi.date().required(),
   updatedAt: Joi.date().required(),
+});
+
+//* Sponsor
+
+exports.sponsorSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  name: Joi.string().required(),
+  image_url: Joi.string().uri().required(),
+  link: Joi.string().uri().required(),
+  is_active: Joi.boolean().required(),
+  createdAt: Joi.date().required(),
+  updatedAt: Joi.date().required(),
+})
+
+//* Information
+exports.informationSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  title: Joi.string().required(),
+  description: Joi.string().required(),
+  image: Joi.string().required(),
+  is_active: Joi.boolean().required()
 });

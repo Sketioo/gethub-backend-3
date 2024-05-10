@@ -1,6 +1,6 @@
 const {
   userRegisterSchema, userLoginSchema,
-  productSchema, linkSchema
+  productSchema, linkSchema, sponsorSchema
 } = require("../schemas");
 
 //* User
@@ -152,3 +152,64 @@ exports.validateHistoryUpload = (req, res, next) => {
     next();
   }
 };
+
+//* Sponsor
+
+exports.validateSponsor = (req, res, next) => {
+  const { error } = sponsorSchema.validate(req.body);
+
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case 'name':
+            return 'Nama sponsor tidak boleh kosong.';
+          case 'image_url':
+            return 'URL gambar tidak valid.';
+          case 'link':
+            return 'Link sponsor tidak valid.';
+          default:
+            return el.message.replace(/"/g, '');
+        }
+      })
+      .join(', ');
+
+    return res.status(420).json({
+      success: false,
+      message: messages,
+      error_code: 420,
+    })
+  } else {
+    next();
+  }
+}
+
+//* Information
+
+exports.validateInformation = (req, res, next) => {
+  const { error } = informationSchema.validate(req.body);
+  if(error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case 'title':
+            return 'Judul informasi tidak boleh kosong.';
+          case 'description':
+            return 'Deskripsi informasi tidak boleh kosong.';
+          case 'image':
+            return 'URL gambar tidak valid.';
+          default:
+            return el.message.replace(/"/g, '');
+        }
+      })
+      .join(', ');
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400
+    })
+  } else {
+    next();
+  }
+}
