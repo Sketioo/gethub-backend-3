@@ -20,9 +20,21 @@ module.exports = (sequelize) => {
         primaryKey: true,
         allowNull: false,
       },
-      user_id: DataTypes.STRING,
-      category: DataTypes.STRING,
-      link: DataTypes.STRING,
+      user_id: {
+        type: DataTypes.STRING,
+        references: { model: 'User', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        allowNull: false
+      },
+      category: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      link: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {
       sequelize,

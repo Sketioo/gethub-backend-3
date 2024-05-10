@@ -11,9 +11,11 @@ module.exports = {
       },
       key: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       value: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

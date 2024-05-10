@@ -1,4 +1,7 @@
-const { userRegisterSchema, userLoginSchema } = require("../schemas");
+const {
+  userRegisterSchema, userLoginSchema,
+  productSchema, linkSchema
+} = require("../schemas");
 
 //* User
 exports.validateRegisterUser = (req, res, next) => {
@@ -62,32 +65,90 @@ exports.validateLoginUser = (req, res, next) => {
 //* Product
 
 exports.validateProduct = (req, res, next) => {
-  const { error } = userRegisterSchema.validate(req.body);
+  const { error } = productSchema.validate(req.body);
   if (error) {
-    const msg = error.details
-      .map((el) => el.message.replace(/"/g, ""))
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case 'name':
+            return 'Nama produk tidak boleh kosong.';
+          case 'price':
+            return 'Harga tidak boleh kosong.';
+          case 'description':
+            return 'Deskripsi tidak boleh kosong.';
+          case 'image_url':
+            return 'URL gambar tidak valid.';
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
       .join(", ");
-    return res.status(400).json({
-      success: false,
-      message: msg,
-      error_code: 400,
-    })
-  }
-}
 
-//* Link
-exports.validateLink = (req, res, next) => {
-  const { error } = userRegisterSchema.validate(req.body);
-  if (error) {
-    const msg = error.details
-      .map((el) => el.message.replace(/"/g, ""))
-      .join(", ");
     return res.status(400).json({
       success: false,
-      message: msg,
+      message: messages,
       error_code: 400,
-    })
+    });
   } else {
     next();
   }
-}
+};
+
+
+//* Link
+exports.validateLink = (req, res, next) => {
+  const { error } = linkSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case 'category':
+            return 'Kategori tidak boleh kosong.';
+          case 'link':
+            return 'Link tidak valid.';
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};
+
+
+//* History Upload
+
+exports.validateHistoryUpload = (req, res, next) => {
+  const { error } = historyUploadSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case 'link':
+            return 'Link tidak valid.';
+          case 'extension':
+            return 'Ekstensi harus berupa string.';
+          case 'date':
+            return 'Tanggal harus berupa tanggal.';
+          default:
+            return el.message.replace(/"/g, '');
+        }
+      })
+      .join(', ');
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};

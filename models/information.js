@@ -14,11 +14,27 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Information.init({
-    id: {type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4},
-    title:{type: DataTypes.STRING, allowNull: false},
-    description:{type: DataTypes.TEXT, allowNull: false},
-    image:{type: DataTypes.STRING, allowNull: false},
-    is_active: {type: DataTypes.BOOLEAN, allowNull: false}
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Information',

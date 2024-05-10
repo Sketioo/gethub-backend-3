@@ -69,7 +69,9 @@ module.exports = {
           model: 'Roles',
           key: 'id'
         },
-        allowNull: true
+        allowNull: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,

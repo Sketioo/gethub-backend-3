@@ -24,14 +24,30 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       ref_user_id: { type: DataTypes.INTEGER, allowNull: true },
-      name: { type: DataTypes.STRING },
-      profession: { type: DataTypes.STRING },
-      email: { type: DataTypes.STRING },
-      phone: { type: DataTypes.STRING },
-      photo: { type: DataTypes.STRING },
-      address: { type: DataTypes.STRING },
-      website: { type: DataTypes.STRING },
-      image: { type: DataTypes.STRING },
+      full_name: { 
+        type: DataTypes.STRING 
+      },
+      profession: { 
+        type: DataTypes.STRING 
+      },
+      email: { 
+        type: DataTypes.STRING 
+      },
+      phone: { 
+        type: DataTypes.STRING 
+      },
+      photo: { 
+        type: DataTypes.STRING 
+      },
+      address: { 
+        type: DataTypes.STRING 
+      },
+      website: { 
+        type: DataTypes.STRING 
+      },
+      image: { 
+        type: DataTypes.STRING 
+      },
     },
     {
       sequelize,

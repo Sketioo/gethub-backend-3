@@ -91,3 +91,15 @@ exports.linkSchema = Joi.object({
   createdAt: Joi.date().required(),
   updatedAt: Joi.date().required(),
 });
+
+//* History Upload
+
+exports.historyUploadSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  user_id: Joi.string().guid({ version: "uuidv4" }).required(),
+  link: Joi.string().optional(),
+  extension: Joi.string().optional(),
+  date: Joi.date().optional(),
+  createdAt: Joi.date().required(),
+  updatedAt: Joi.date().required(),
+});

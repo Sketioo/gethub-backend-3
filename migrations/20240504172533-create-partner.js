@@ -14,22 +14,28 @@ module.exports = {
         references: {
           model: 'Users',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        allowNull: false  
       },
       ref_user_id: {
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
+      full_name: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       profession: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       phone: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       photo: {
         type: Sequelize.STRING

@@ -11,12 +11,15 @@ module.exports = {
       },
       image_url: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       link: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       is_active: {
         type: Sequelize.BOOLEAN,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,

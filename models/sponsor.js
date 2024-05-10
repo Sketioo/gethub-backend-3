@@ -19,9 +19,19 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      image_url: { type: DataTypes.STRING, allowNull: false },
-      link: { type: DataTypes.STRING, allowNull: false },
-      is_active: { type: DataTypes.BOOLEAN, defaultValue: false },
+      image_url: {
+        type: DataTypes.STRING, 
+        allowNull: false 
+      },
+      link: { 
+        type: DataTypes.STRING, 
+        allowNull: false 
+
+      },
+      is_active: { 
+        type: DataTypes.BOOLEAN, 
+        defaultValue: false 
+      },
     },
     {
       sequelize,

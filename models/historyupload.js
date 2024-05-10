@@ -19,10 +19,29 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      user_id: DataTypes.INTEGER,
-      link: DataTypes.STRING,
-      extension: DataTypes.STRING,
-      date: DataTypes.DATE,
+      user_id:{ 
+        type: DataTypes.INTEGER,
+        references: {
+          model: "Users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        allowNull: false
+      },
+      link: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      extension: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      date: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        allowNull: false
+      },
     },
     {
       sequelize,
