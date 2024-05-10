@@ -2,7 +2,7 @@ const {Sequelize, DataTypes} = require('sequelize');
 
 const dbConfig = require('./config')
 
-const sequelize = new Sequelize(dbConfig.test);
+const sequelize = new Sequelize(dbConfig.production);
 
 async function runDB() {
   try {

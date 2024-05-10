@@ -27,18 +27,18 @@ module.exports = {
       },
       profession: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       web: {
         type: Sequelize.STRING
       },
       address: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       photo: {
         type: Sequelize.STRING,

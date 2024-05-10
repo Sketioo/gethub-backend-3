@@ -1,9 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { ActivatePassport } = require("./config/passport-config");
-const passport = require("passport");
-const session = require("express-session");
+// const session = require("express-session");
 const helmet = require("helmet");
+const cors = require('cors');
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
 
@@ -20,19 +19,19 @@ app.use(helmet());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+// Menggunakan CORS middleware
+app.use(cors({
+  origin: '*'
+}));
 
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.SECRET_KEY,
-    cookie: { maxAge: 60000 },
-  })
-);
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-// ActivatePassport();
+// app.use(
+//   session({
+//     resave: false,
+//     saveUninitialized: false,
+//     secret: process.env.SECRET_KEY,
+//     cookie: { maxAge: 60000 },
+//   })
+// );
 
 app.use("/api", userRoute);
 app.use("/api", productRoute);

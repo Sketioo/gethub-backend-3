@@ -5,7 +5,7 @@ const extension = (joi) => ({
   type: "string",
   base: joi.string(),
   messages: {
-    "string.escapeHTML": "{{#label}} must not include HTML!",
+    "string.escapeHTML": "{{#label}} tidak boleh memasukan HTML!",
   },
   rules: {
     escapeHTML: {
@@ -24,7 +24,7 @@ const extension = (joi) => ({
 
 const Joi = BaseJoi.extend(extension);
 
-const userRegisterSchema = Joi.object({
+exports.userRegisterSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string().required(),
   user_name: Joi.string(),
@@ -46,7 +46,7 @@ const userRegisterSchema = Joi.object({
   theme_hub: Joi.number().integer().optional(),
 });
 
-const userLoginSchema = Joi.object({
+exports.userLoginSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string(),
   user_name: Joi.string(),
@@ -70,11 +70,20 @@ const userLoginSchema = Joi.object({
 
 //*Product
 
-const productSchema = Joi.object({});
+exports.productSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  user_id: Joi.string().guid({ version: "uuidv4" }).required(),
+  name: Joi.string().required(),
+  price: Joi.string().required(),
+  description: Joi.string().required(),
+  image_url: Joi.string().uri().required(),
+  createdAt: Joi.date().required(),
+  updatedAt: Joi.date().required(),
+});
 
 //* Link
 
-const linkSchema = Joi.object({
+exports.linkSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   user_id: Joi.string().guid({ version: "uuidv4" }).allow(null).optional(),
   category: Joi.string().required(),
@@ -82,5 +91,3 @@ const linkSchema = Joi.object({
   createdAt: Joi.date().required(),
   updatedAt: Joi.date().required(),
 });
-
-module.exports = { userRegisterSchema, userLoginSchema, linkSchema };

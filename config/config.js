@@ -8,6 +8,14 @@ let config = {
   dialect: "mysql",
 };
 
+let prodConfig = {
+  database: process.env["PROD_DB_DATABASE"],
+  username: process.env["PROD_DB_USERNAME"],
+  password: process.env["PROD_DB_PASSWORD"],
+  host: process.env["PROD_DB_HOST"],
+  dialect: "mysql",
+};
+
 
 module.exports = {
   development: config,

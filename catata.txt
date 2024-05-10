@@ -1,0 +1,33 @@
+Catatan Advisor
+
+Pak Surya telah menyuarakan pertanyaan yang penting terkait dengan fokus fitur dalam aplikasi, khususnya mengapa kita menonjolkan fitur card business daripada fitur job bidding. Beliau berpendapat bahwa card business mungkin tidak relevan atau tidak digunakan oleh semua pengguna, sehingga lebih baik jika kita menekankan fitur yang lebih universal dan berpotensi lebih diminati, seperti fitur job bidding.
+
+Selanjutnya, Pak Surya juga memberikan masukan terkait dengan perlunya sebuah proses verifikasi portofolio bagi pencari kerja dalam aplikasi. Misalnya, melalui verifikasi sertifikat menggunakan parameter seperti nomor identitas. Namun, beliau juga menggarisbawahi bahwa ada orang yang memiliki keterampilan yang cukup namun belajar secara otodidak tanpa memiliki sertifikat resmi. Oleh karena itu, perlu dipertimbangkan bagaimana cara mengakomodasi hal ini dalam sistem verifikasi yang diusulkan.
+
+Pengamanan terkait dengan mendeteksi pekerjaan palsu juga menjadi perhatian yang disampaikan oleh Pak Surya. Beliau menyoroti pentingnya memiliki parameter atau metode yang efektif untuk mengidentifikasi keaslian pekerjaan yang ditawarkan di platform kita.
+
+Selanjutnya, Pak Surya juga menyatakan keinginannya untuk melihat keterkaitan antara fitur-fitur yang telah dijelaskan dengan core business yang difokuskan pada aplikasi GetHub. Ini merupakan langkah yang penting dalam memastikan bahwa pengembangan fitur-fitur baru sesuai dengan visi dan misi aplikasi secara keseluruhan.
+
+Terkait dengan sumber penghasilan dari aplikasi, Pak Surya menyarankan untuk mengurai biaya fee dari proses pengambilan pekerjaan. Hal ini mengingat bahwa potongan 10% dapat terasa cukup besar terutama bagi proyek-proyek dengan anggaran yang lebih kecil. Oleh karena itu, perlu dilakukan evaluasi lebih lanjut terhadap model bisnis ini agar tetap berkelanjutan namun tetap adil bagi semua pihak yang terlibat.
+
+Untuk strategi promosi, Pak Surya menyarankan untuk aktif berpartisipasi dalam job fair. Hal ini disebabkan oleh kesulitan dalam mencari pengguna yang ingin memberikan pekerjaan, dibandingkan dengan mencari orang yang ingin bekerja. Dengan demikian, kehadiran dalam acara job fair dapat menjadi peluang yang baik untuk memperluas jaringan dan menarik minat potensial pengguna.
+
+Pak Surya juga menekankan pentingnya melakukan riset terkait dengan masalah yang ingin diselesaikan melalui aplikasi. Hal ini dapat dilakukan melalui berbagai sumber penelitian atau survei yang tersedia di internet. Dengan demikian, kita dapat memastikan bahwa fitur-fitur yang dikembangkan benar-benar memenuhi kebutuhan dan masalah yang dihadapi oleh pengguna kita.
+
+Kesimpulan:
+
+Dapat disimpulkan beberapa hal penting yang perlu dipertimbangkan dalam pengembangan aplikasi GetHub:
+
+1. Fokus Fitur: Perlu dilakukan evaluasi ulang terkait dengan fokus fitur yang ditonjolkan dalam aplikasi. Meskipun card business menjadi salah satu fitur unggulan, namun perlu dipertimbangkan relevansinya bagi semua pengguna. Fitur job bidding mungkin lebih universal dan berpotensi lebih diminati oleh berbagai kalangan pengguna.
+
+2. Verifikasi Portofolio: Penting untuk menyertakan proses verifikasi portofolio bagi pencari kerja, namun juga perlu memperhatikan bahwa ada orang yang memiliki keterampilan tanpa sertifikat resmi. Oleh karena itu, sistem verifikasi haruslah fleksibel dan dapat mengakomodasi berbagai jenis portofolio.
+
+3. Pengamanan: Deteksi pekerjaan palsu menjadi isu penting yang harus diatasi. Perlu dikembangkan parameter atau metode yang efektif untuk mengidentifikasi keaslian pekerjaan yang ditawarkan di platform.
+
+4. Keterkaitan dengan Core Business: Penting untuk menjalin keterkaitan yang jelas antara fitur-fitur baru yang dikembangkan dengan core business aplikasi. Ini akan membantu memastikan bahwa pengembangan fitur sesuai dengan visi dan misi aplikasi secara keseluruhan.
+
+5. Model Bisnis: Evaluasi ulang terhadap model bisnis perlu dilakukan, khususnya terkait dengan biaya fee yang dikenakan kepada pengguna. Hal ini penting agar model bisnis tetap berkelanjutan namun tetap adil bagi semua pihak yang terlibat.
+
+6. Strategi Promosi: Aktif berpartisipasi dalam job fair merupakan strategi promosi yang dapat meningkatkan visibilitas aplikasi, terutama dalam menarik minat pengguna yang ingin memberikan pekerjaan.
+
+7. Riset Masalah: Riset terkait dengan masalah yang ingin diselesaikan oleh aplikasi sangat penting untuk memastikan bahwa fitur-fitur yang dikembangkan benar-benar memenuhi kebutuhan pengguna. Sumber penelitian dan survei di internet dapat menjadi sumber informasi yang berharga dalam proses ini.

@@ -5,7 +5,6 @@ const { Sequelize } = require("sequelize");
 const {
   generateRandomString,
   generateAccessToken,
-  verifyRefreshToken,
 } = require("../helpers/utility");
 
 // Function expressions
@@ -73,7 +72,6 @@ const login = async (req, res) => {
     const user = await models.User.findOne({
       where: { email: req.body.email },
     });
-    console.log(user);
     if (!user) {
       return res.status(401).json({
         message: "Kredensial tidak valid!",
@@ -93,10 +91,6 @@ const login = async (req, res) => {
         error_code: 401,
       });
     }
-
-    // Save user to session and set login flag
-    req.session.currentUser = user;
-    req.session.isLoggedIn = true;
 
     const token = generateAccessToken(user);
 

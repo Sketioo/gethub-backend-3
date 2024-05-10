@@ -37,8 +37,18 @@ exports.validateLoginUser = (req, res, next) => {
   const { error } = userLoginSchema.validate(req.body);
   if (error) {
     const msg = error.details
-      .map((el) => el.message.replace(/"/g, ""))
-      .join(", ");
+      .map((el) => {
+        switch (el.context.key) {
+          case "email":
+            return "Email tidak valid.";
+          case "password":
+            return "Password harus terdiri dari minimal 6 karakter.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ")
+
     return res.status(400).json({
       success: false,
       message: msg,
@@ -51,7 +61,19 @@ exports.validateLoginUser = (req, res, next) => {
 
 //* Product
 
-
+exports.validateProduct = (req, res, next) => {
+  const { error } = userRegisterSchema.validate(req.body);
+  if (error) {
+    const msg = error.details
+      .map((el) => el.message.replace(/"/g, ""))
+      .join(", ");
+    return res.status(400).json({
+      success: false,
+      message: msg,
+      error_code: 400,
+    })
+  }
+}
 
 //* Link
 exports.validateLink = (req, res, next) => {
