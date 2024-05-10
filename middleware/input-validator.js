@@ -39,7 +39,6 @@ exports.validateLoginUser = (req, res, next) => {
     const msg = error.details
       .map((el) => el.message.replace(/"/g, ""))
       .join(", ");
-    console.log(msg);
     return res.status(400).json({
       success: false,
       message: msg,
@@ -52,3 +51,21 @@ exports.validateLoginUser = (req, res, next) => {
 
 //* Product
 
+
+
+//* Link
+exports.validateLink = (req, res, next) => {
+  const { error } = userRegisterSchema.validate(req.body);
+  if (error) {
+    const msg = error.details
+      .map((el) => el.message.replace(/"/g, ""))
+      .join(", ");
+    return res.status(400).json({
+      success: false,
+      message: msg,
+      error_code: 400,
+    })
+  } else {
+    next();
+  }
+}

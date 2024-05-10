@@ -68,4 +68,19 @@ const userLoginSchema = Joi.object({
   theme_hub: Joi.number().integer().optional(),
 });
 
-module.exports = { userRegisterSchema, userLoginSchema };
+//*Product
+
+const productSchema = Joi.object({});
+
+//* Link
+
+const linkSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  user_id: Joi.string().guid({ version: "uuidv4" }).allow(null).optional(),
+  category: Joi.string().required(),
+  link: Joi.string().uri().required(),
+  createdAt: Joi.date().required(),
+  updatedAt: Joi.date().required(),
+});
+
+module.exports = { userRegisterSchema, userLoginSchema, linkSchema };

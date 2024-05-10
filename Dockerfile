@@ -1,4 +1,5 @@
-FROM node:alpine
+# apakah ini versi?
+FROM node:18
 WORKDIR /usr/src/app
 COPY ./package.json ./
 COPY ./package-lock.json ./
@@ -16,4 +17,4 @@ COPY ./.env ./
 COPY ./.sequelizerc ./.sequelizerc
 COPY ./app.js ./app.js
 COPY ./server.js ./server.js
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
