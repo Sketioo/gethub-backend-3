@@ -24,7 +24,7 @@ const register = async (req, res) => {
     const salt = await bcryptjs.genSalt(10);
     const hash = await bcryptjs.hash(req.body.password, salt);
 
-    const user_name = req.body.full_name
+    const username = req.body.full_name
       .toString()
       .replace(/\s+/g, "")
       .toLowerCase();
@@ -32,7 +32,7 @@ const register = async (req, res) => {
 
     const newUserData = {
       full_name: req.body.full_name,
-      user_name: `${user_name}${randomNumber}`,
+      username: `${username}${randomNumber}`,
       email: req.body.email,
       password: hash,
       profession: req.body.profession,
@@ -93,9 +93,11 @@ const login = async (req, res) => {
     }
 
     const token = generateAccessToken(user);
+    console.log(user.dataValues)
 
     const { password, id, ...userWithoutPassword } = user.dataValues;
     userWithoutPassword.token = token;
+    console.log(user.dataValues)
 
     return res.status(200).json({
       message: "Autentikasi berhasil!",
@@ -199,7 +201,7 @@ const getAllProfiles = async (req, res) => {
     const customizedUsers = users.map((user) => {
       const {
         password,
-        user_name,
+        username,
         qr_code,
         is_verify,
         is_premium,
@@ -312,7 +314,7 @@ const getPublicUser = async (req, res) => {
   try {
     const username = req.query.username;
     const user = await models.User.findOne({
-      where: { user_name: username },
+      where: { username: username },
       include: [
         { model: models.Link, as: "Links" },
         { model: models.Product, as: "Products" },
@@ -332,7 +334,7 @@ const getPublicUser = async (req, res) => {
 
     const publicUserData = {
       id: user.id,
-      user_name: user.user_name,
+      username: user.username,
       profession: user.profession,
       name: user.full_name,
       phone: user.phone,

@@ -76,7 +76,7 @@ const getProductById = async (req, res) => {
 //! Delete and Update Bug
 const updateProduct = async (req, res) => {
   try {
-    const {name, price, description, image_url} = req.body;
+    const {name, description, image_url} = req.body;
     const product = await models.Product.findByPk(req.params.id);
     console.log(product)
     if (!product) {
@@ -86,7 +86,7 @@ const updateProduct = async (req, res) => {
         error_code: 404,
       });
     }
-    const updatedProduct = await product.update({name, price, description, image_url});
+    const updatedProduct = await product.update({name, description, image_url});
     return res.status(200).json({
       success: true,
       data: updatedProduct,

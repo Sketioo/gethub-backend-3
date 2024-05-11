@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4 ,
         allowNull: false
       },
-      role_name: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false
       },

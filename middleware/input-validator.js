@@ -12,7 +12,7 @@ exports.validateRegisterUser = (req, res, next) => {
         switch (el.context.key) {
           case "full_name":
             return "Nama lengkap tidak boleh kosong.";
-          case "user_name":
+          case "username":
             return "Nama pengguna tidak boleh kosong.";
           case "email":
             return "Email tidak valid.";

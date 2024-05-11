@@ -8,11 +8,21 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
+      role_id: { 
+        type: Sequelize.UUID,
+        references: {
+          model: 'Roles',
+          key: 'id'
+        },
+        allowNull: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
       full_name: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      user_name: {
+      username: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -34,7 +44,8 @@ module.exports = {
         allowNull: true
       },
       web: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       address: {
         type: Sequelize.STRING,
@@ -42,6 +53,10 @@ module.exports = {
       },
       photo: {
         type: Sequelize.STRING,
+        allowNull: true
+      },
+      expired_membership: {
+        type: Sequelize.DATE,
         allowNull: true
       },
       about: {
@@ -52,26 +67,19 @@ module.exports = {
         type: Sequelize.STRING
       },
       is_verify: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       is_complete_profile: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       is_premium: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       theme_hub: {
         type: Sequelize.INTEGER
-      },
-      role_id: { 
-        type: Sequelize.UUID,
-        references: {
-          model: 'Roles',
-          key: 'id'
-        },
-        allowNull: true,
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,

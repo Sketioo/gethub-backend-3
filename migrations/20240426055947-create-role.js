@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         defaultValue: Sequelize.UUIDV4
       },
-      role_name: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false
       },

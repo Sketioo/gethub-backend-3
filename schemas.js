@@ -28,7 +28,7 @@ const Joi = BaseJoi.extend(extension);
 exports.userRegisterSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string().required(),
-  user_name: Joi.string(),
+  username: Joi.string(),
   email: Joi.string().email().required(),
   password: Joi.string().required().min(6).max(20),
   profession: Joi.string().allow("").optional(),
@@ -50,7 +50,7 @@ exports.userRegisterSchema = Joi.object({
 exports.userLoginSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string(),
-  user_name: Joi.string(),
+  username: Joi.string(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   profession: Joi.string().allow("").optional(),
