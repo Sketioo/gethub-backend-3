@@ -4,10 +4,7 @@ const { Link } = require('../models');
 const createLink = async (req, res) => {
   try {
     const {category, link} = req.body
-    // const {id} = req.session.currentUser.dataValues;
-    const user_id = 1;
-    const newLink = await Link.create({ user_id, category, link });
-    // const newLink = await Link.create({ user_id: id, category, link });
+    const newLink = await Link.create({category, link });
     return res.status(201).json({
       success: true,
       data: newLink,

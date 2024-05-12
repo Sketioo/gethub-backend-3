@@ -78,8 +78,7 @@ exports.productSchema = Joi.object({
   price: Joi.string().required(),
   description: Joi.string().required(),
   image_url: Joi.string().uri().required(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required(),
+
 });
 
 //* Link
@@ -89,8 +88,7 @@ exports.linkSchema = Joi.object({
   user_id: Joi.string().guid({ version: "uuidv4" }).allow(null).optional(),
   category: Joi.string().required(),
   link: Joi.string().uri().required(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required(),
+
 });
 
 //* History Upload
@@ -101,8 +99,7 @@ exports.historyUploadSchema = Joi.object({
   link: Joi.string().optional(),
   extension: Joi.string().optional(),
   date: Joi.date().optional(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required(),
+
 });
 
 //* Sponsor
@@ -113,8 +110,7 @@ exports.sponsorSchema = Joi.object({
   image_url: Joi.string().uri().required(),
   link: Joi.string().uri().required(),
   is_active: Joi.boolean().required(),
-  createdAt: Joi.date().required(),
-  updatedAt: Joi.date().required(),
+
 })
 
 //* Information
@@ -122,6 +118,22 @@ exports.informationSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   title: Joi.string().required(),
   description: Joi.string().required(),
-  image: Joi.string().required(),
+  image_url: Joi.string().required(),
   is_active: Joi.boolean().required()
+});
+
+//* Partner
+
+exports.partnerSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  user_id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  ref_user_id: Joi.number().integer().optional(),
+  full_name: Joi.string().optional(),
+  profession: Joi.string().optional(),
+  email: Joi.string().email().optional(),
+  phone: Joi.string().optional(),
+  photo: Joi.string().optional(),
+  address: Joi.string().optional(),
+  website: Joi.string().uri().optional(),
+  image: Joi.string().optional(),
 });

@@ -1,6 +1,7 @@
 const {
   userRegisterSchema, userLoginSchema,
-  productSchema, linkSchema, sponsorSchema
+  productSchema, linkSchema, sponsorSchema,
+  informationSchema, partnerSchema
 } = require("../schemas");
 
 //* User
@@ -39,7 +40,7 @@ exports.validateRegisterUser = (req, res, next) => {
 exports.validateLoginUser = (req, res, next) => {
   const { error } = userLoginSchema.validate(req.body);
   if (error) {
-    const msg = error.details
+    const messages = error.details
       .map((el) => {
         switch (el.context.key) {
           case "email":
@@ -50,15 +51,7 @@ exports.validateLoginUser = (req, res, next) => {
             return el.message.replace(/"/g, "");
         }
       })
-      .join(", ")
-
-    return res.status(400).json({
-      success: false,
-      message: msg,
-      error_code: 400,
-    });
-  } else {
-    next();
+      .join(", ");
   }
 };
 
@@ -188,7 +181,7 @@ exports.validateSponsor = (req, res, next) => {
 
 exports.validateInformation = (req, res, next) => {
   const { error } = informationSchema.validate(req.body);
-  if(error) {
+  if (error) {
     const messages = error.details
       .map((el) => {
         switch (el.context.key) {
@@ -196,7 +189,7 @@ exports.validateInformation = (req, res, next) => {
             return 'Judul informasi tidak boleh kosong.';
           case 'description':
             return 'Deskripsi informasi tidak boleh kosong.';
-          case 'image':
+          case 'image_url':
             return 'URL gambar tidak valid.';
           default:
             return el.message.replace(/"/g, '');
@@ -209,6 +202,47 @@ exports.validateInformation = (req, res, next) => {
       message: messages,
       error_code: 400
     })
+  } else {
+    next();
+  }
+}
+
+//* Partner
+
+exports.validatePartner = (req, res, next) => {
+  const { error } = partnerSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "email":
+            return "Email tidak valid.";
+          case "password":
+            return "Password harus terdiri dari minimal 6 karakter.";
+          case "full_name":
+            return "Nama lengkap harus diisi.";
+          case "profession":
+            return "Profesi harus diisi.";
+          case "phone":
+            return "Nomor telepon harus diisi.";
+          case "photo":
+            return "Foto harus diisi.";
+          case "address":
+            return "Alamat harus diisi.";
+          case "website":
+            return "Website tidak valid.";
+          case "image":
+            return "Image tidak valid.";
+          default:
+            return el.message.replace(/"/g, '');
+        }
+      })
+      .join(', ');
+      return res.status(400).json({
+        success: false,
+        message: messages,
+        error_code: 400
+      })
   } else {
     next();
   }

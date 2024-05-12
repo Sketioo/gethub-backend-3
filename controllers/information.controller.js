@@ -51,8 +51,9 @@ const getInformationById = async (req, res, next) => {
 };
 
 const createInformation = async (req, res, next) => {
-  const { title, description, image_url, is_active } = req.body;
   try {
+    const { title, description, image_url, is_active } = req.body;
+    console.log(req.body)
     const newInformation = await models.Information.create({ title, description, image_url, is_active });
     res.status(201).json({
       success: true,
@@ -66,9 +67,9 @@ const createInformation = async (req, res, next) => {
 };
 
 const updateInformation = async (req, res, next) => {
-  const id = req.params.id;
-  const { title, description, image_url, is_active } = req.body;
   try {
+    const id = req.params.id;
+    const { title, description, image_url, is_active } = req.body;
     let information = await models.Information.findByPk(id);
     if (!information) {
       return res.status(404).json({
@@ -77,8 +78,12 @@ const updateInformation = async (req, res, next) => {
         error_code: 404,
       });
     }
-    await models.Informationinformation.update({ title, description, image_url, is_active });
-    information = await models.Information.findByPk(id); // Fetch updated information
+    console.log("=-------------------=------------=")
+    await models.Information.update(
+      { title, description, image_url, is_active },
+      { where: { id: id } }
+    );
+    information = await models.Information.findByPk(id);
     res.status(200).json({
       success: true,
       data: information,
@@ -101,7 +106,7 @@ const deleteInformation = async (req, res, next) => {
         error_code: 404,
       });
     }
-    await models.Informationinformation.destroy();
+    await models.Information.destroy();
     res.status(200).json({
       success: true,
       message: "Information deleted successfully",

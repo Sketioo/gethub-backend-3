@@ -25,7 +25,7 @@ module.exports = (sequelize) => {
         references: { model: 'User', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
-        allowNull: false
+        allowNull: true
       },
       category: {
         type: DataTypes.STRING,
