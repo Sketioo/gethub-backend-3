@@ -49,8 +49,8 @@ exports.userRegisterSchema = Joi.object({
 
 exports.userLoginSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
-  full_name: Joi.string(),
-  username: Joi.string(),
+  full_name: Joi.string().optional(),
+  username: Joi.string().optional(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   profession: Joi.string().allow("").optional(),
@@ -73,9 +73,8 @@ exports.userLoginSchema = Joi.object({
 
 exports.productSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
-  user_id: Joi.string().guid({ version: "uuidv4" }).required(),
+  user_id: Joi.string().guid({ version: "uuidv4" }).optional(),
   name: Joi.string().required(),
-  price: Joi.string().required(),
   description: Joi.string().required(),
   image_url: Joi.string().uri().required(),
 

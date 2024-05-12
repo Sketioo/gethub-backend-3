@@ -46,7 +46,7 @@ module.exports = {
       website: {
         type: Sequelize.STRING
       },
-      image: {
+      image_url: {
         type: Sequelize.STRING
       },
       createdAt: {

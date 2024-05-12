@@ -22,8 +22,6 @@ const register = async (req, res) => {
       });
     }
 
-    console.log(existingUser)
-
     const salt = await bcryptjs.genSalt(10);
     const hash = await bcryptjs.hash(req.body.password, salt);
 

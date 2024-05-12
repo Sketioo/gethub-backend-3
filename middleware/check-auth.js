@@ -23,8 +23,7 @@ const authenticateToken = async (req, res, next) => {
       });
   }
 
-  req.data = result.data;
-  console.log("next---");
+  req.data = result.token;
   next();
 };
 

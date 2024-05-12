@@ -8,6 +8,12 @@ const generateAccessToken = (user) => {
   );
 };
 
+const getUserId = (req) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+  return decodedToken.userId;
+}
+
 const verifyAccessToken = async (token) => {
   try {
     const secret = process.env.SECRET_KEY;
@@ -42,4 +48,5 @@ module.exports = {
   generateRandomString,
   verifyAccessToken,
   generateAccessToken,
+  getUserId
 };

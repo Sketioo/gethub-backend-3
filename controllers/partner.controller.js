@@ -1,4 +1,5 @@
 // Import necessary modules
+const { getUserId } = require("../helpers/utility");
 const models = require("../models");
 
 const getAllPartners = async (req, res) => {
@@ -57,8 +58,9 @@ const getPartnerById = async (req, res) => {
 
 const createPartner = async (req, res) => {
   try {
+    const user_id = getUserId(req)
     const partnerData = req.body;
-    const partner = await models.Partner.create(partnerData);
+    const partner = await models.Partner.create({...partnerData, user_id});
     console.log(req.body)
     return res
       .status(201)

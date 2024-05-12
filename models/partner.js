@@ -20,8 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
+        type: DataTypes.STRING,
+        references: { model: 'User', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        allowNull: true
       },
       ref_user_id: { type: DataTypes.INTEGER, allowNull: true },
       full_name: { 
@@ -45,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       website: { 
         type: DataTypes.STRING 
       },
-      image: { 
+      image_url: { 
         type: DataTypes.STRING 
       },
     },

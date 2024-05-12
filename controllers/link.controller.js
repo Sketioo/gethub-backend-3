@@ -1,10 +1,12 @@
 const { Link } = require('../models');
+const {getUserId} = require("../helpers/utility")
 
 // Create a link
 const createLink = async (req, res) => {
   try {
+    const user_id = getUserId(req);
     const {category, link} = req.body
-    const newLink = await Link.create({category, link });
+    const newLink = await Link.create({category, link, user_id });
     return res.status(201).json({
       success: true,
       data: newLink,

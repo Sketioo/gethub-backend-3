@@ -1,9 +1,12 @@
 const models = require("../models");
+const jwt = require("jsonwebtoken");
+const {getUserId} = require("../helpers/utility")
 
 // Create a product
 const createProduct = async (req, res) => {
   try {
-    const product = await models.Product.create(req.body);
+    const user_id = getUserId(req)
+    const product = await models.Product.create({ ...req.body, user_id });
     return res.status(201).json({
       success: true,
       data: product,
@@ -76,7 +79,6 @@ const getProductById = async (req, res) => {
 //! Delete and Update Bug
 const updateProduct = async (req, res) => {
   try {
-    const {name, description, image_url} = req.body;
     const product = await models.Product.findByPk(req.params.id);
     console.log(product)
     if (!product) {
@@ -86,7 +88,7 @@ const updateProduct = async (req, res) => {
         error_code: 404,
       });
     }
-    const updatedProduct = await product.update({name, description, image_url});
+    const updatedProduct = await product.update(req.body);
     return res.status(200).json({
       success: true,
       data: updatedProduct,
