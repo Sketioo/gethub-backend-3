@@ -2,11 +2,13 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const { Sequelize } = require("sequelize");
 
+const { getUserId } = require("../helpers/utility")
+
 const {
   generateRandomString,
   generateAccessToken,
 } = require("../helpers/utility");
-const {createMail, transporter} = require("../helpers/email-verification")
+const { createMail, transporter } = require("../helpers/email-verification")
 
 // Function expressions
 const register = async (req, res) => {
@@ -161,9 +163,8 @@ const logout = async (req, res) => {
 // Get profile by ID
 const getProfileById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    console.log(userId);
-    const user = await models.User.findByPk(userId);
+    const user_id = getUserId(req)
+    const user = await models.User.findByPk(user_id);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -247,9 +248,9 @@ const getAllProfiles = async (req, res) => {
 // Perbarui profil
 const updateProfile = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const user_id = getUserId(req)
     const updatedUser = await models.User.update(req.body, {
-      where: { id: userId },
+      where: { id: user_id },
     });
     if (updatedUser[0] === 0) {
       return res.status(404).json({
@@ -273,9 +274,9 @@ const updateProfile = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const user_id = getUserId(req)
     const deletedUser = await models.User.destroy({
-      where: { id: userId },
+      where: { id: user_id },
     });
 
     if (!deletedUser) {

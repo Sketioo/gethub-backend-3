@@ -17,10 +17,10 @@ router.post("/logout", userController.logout);
 
 router.get("/public/profile", authenticateToken, userController.getPublicUser);
 
-router.get("/complete-profiles", authenticateToken, userController.getAllProfiles);
-router.get("/complete-profile/:id", authenticateToken, userController.getProfileById);
-router.put("/complete-profile/:id", authenticateToken, userController.updateProfile);
-router.delete("/complete-profile/:id", authenticateToken, userController.deleteProfile);
+router.get("/profiles", authenticateToken, userController.getAllProfiles);
+router.get("/profile/", authenticateToken, userController.getProfileById);
+router.put("/profile/", authenticateToken, userController.updateProfile);
+router.delete("/profile/", authenticateToken, userController.deleteProfile);
 
 router.get("/verify/:token", verifyTokenEmail);
 

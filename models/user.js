@@ -54,7 +54,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       is_verify: {
         type: DataTypes.BOOLEAN, 
-        allowNull: true
+        allowNull: true,
+        defaultValue: false,
       },
       is_complete_profile: {
         type: DataTypes.BOOLEAN, 

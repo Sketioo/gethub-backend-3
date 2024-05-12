@@ -17,8 +17,8 @@ const createMail = (req, token) => {
     from: process.env.AUTH_EMAIL,
     to: req.body.email,
     subject: 'Email Verification',
-    // text: `Click the following link to verify your email: ${process.env.WEB_HOST}/${token}`
-    text: `Click the following link to verify your email: http://localhost:3000/api/verify/${token}`
+    text: `Click the following link to verify your email: ${process.env.WEB_HOST}/${token}`
+    // text: `Click the following link to verify your email: http://localhost:3000/api/verify/${token}`
   }
 }
 
