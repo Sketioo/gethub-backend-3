@@ -68,7 +68,8 @@ module.exports = {
       },
       is_verify: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false
+        defaultValue: false,
+        allowNull: true
       },
       is_complete_profile: {
         type: Sequelize.BOOLEAN,

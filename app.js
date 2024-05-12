@@ -1,8 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-// const session = require("express-session");
 const helmet = require("helmet");
 const cors = require('cors');
+const nodemailer = require("nodemailer")
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
 
@@ -19,6 +19,7 @@ app.use(helmet());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 // Menggunakan CORS middleware
 app.use(cors({
   origin: '*'

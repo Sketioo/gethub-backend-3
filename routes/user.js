@@ -7,6 +7,7 @@ const {
   validateLoginUser,
 } = require("../middleware/input-validator");
 const { authenticateToken } = require("../middleware/check-auth");
+const {verifyTokenEmail} = require("../helpers/email-verification")
 
 const router = express.Router();
 
@@ -20,6 +21,8 @@ router.get("/complete-profiles", authenticateToken, userController.getAllProfile
 router.get("/complete-profile/:id", authenticateToken, userController.getProfileById);
 router.put("/complete-profile/:id", authenticateToken, userController.updateProfile);
 router.delete("/complete-profile/:id", authenticateToken, userController.deleteProfile);
+
+router.get("/verify/:token", verifyTokenEmail);
 
 router.get(
   "/auth/linkedin",

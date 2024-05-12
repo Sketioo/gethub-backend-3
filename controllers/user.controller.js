@@ -6,6 +6,7 @@ const {
   generateRandomString,
   generateAccessToken,
 } = require("../helpers/utility");
+const {createMail, transporter} = require("../helpers/email-verification")
 
 // Function expressions
 const register = async (req, res) => {
@@ -20,6 +21,8 @@ const register = async (req, res) => {
         error_code: 409,
       });
     }
+
+    console.log(existingUser)
 
     const salt = await bcryptjs.genSalt(10);
     const hash = await bcryptjs.hash(req.body.password, salt);
@@ -50,10 +53,24 @@ const register = async (req, res) => {
 
     const user = await models.User.create(newUserData);
 
+    // Send Email Verification
+    const token = generateRandomString(20);
+    const mail = createMail(req, token)
+
+    const createToken = await models.EmailVerification.create({
+      user_id: user.id,
+      token,
+      email: user.email
+    })
+
+    console.log(user.id)
+
+    await transporter.sendMail(mail)
+
     const { password, id, ...customizedUser } = user.dataValues;
     return res.status(201).json({
       data: customizedUser,
-      message: "Pengguna berhasil dibuat",
+      message: "Pengguna berhasil dibuat, email verifikasi sudah terkirim",
       success: true,
       error_code: 0,
     });

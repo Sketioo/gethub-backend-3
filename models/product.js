@@ -21,8 +21,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     user_id: {
-      type: DataTypes.INTEGER, 
-      allowNull: false
+      type: DataTypes.STRING,
+      references: { model: 'User', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+      allowNull: true
     },
     name: {
       type: DataTypes.STRING, 
