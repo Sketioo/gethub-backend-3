@@ -2,9 +2,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const cors = require('cors');
-const nodemailer = require("nodemailer")
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
+const { authenticateToken } = require("./middleware/check-auth")
 
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
@@ -43,6 +43,6 @@ app.use("/api", partnerRoute);
 app.use("/api", informationRoute);
 
 //* Helper
-app.post("/api/upload-file", upload.single("file"), imageUploader);
+app.post("/api/upload-file", authenticateToken, upload.single("file"), imageUploader);
 
 module.exports = app;
