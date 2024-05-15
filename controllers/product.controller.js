@@ -1,201 +1,190 @@
 const models = require("../models");
 const jwt = require("jsonwebtoken");
-const { getUserId } = require("../helpers/utility")
+const { getUserId } = require("../helpers/utility");
 
-// Create a product
+// Membuat produk baru
 const createProduct = async (req, res) => {
   try {
-    const user_id = getUserId(req)
-    const checkUser = await models.User.findByPk(user_id)
+    const user_id = getUserId(req);
+    const checkUser = await models.User.findByPk(user_id);
     if (!checkUser) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Pengguna tidak ditemukan",
         error_code: 404,
-      })
+      });
     }
     const product = await models.Product.create({ ...req.body, user_id });
     return res.status(201).json({
       success: true,
       data: product,
-      message: "Product created successfully",
+      message: "Produk berhasil dibuat",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error creating product:", error);
+    console.error("Error membuat produk:", error);
     return res.status(400).json({
       success: false,
-      message: "Failed to create product",
+      message: "Gagal membuat produk",
       error_code: 400,
     });
   }
 };
 
+// Mendapatkan semua produk pengguna
 const getUserProducts = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const user_id = getUserId(req);
     const products = await models.Product.findAll({
       where: {
-        user_id
-      }
+        user_id,
+      },
     });
-    //! Buat filter untuk penyembunyikan id 
-    if (!products) {
+    if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Products not found",
+        message: "Produk tidak ditemukan",
         error_code: 404,
       });
     }
     return res.status(200).json({
       success: true,
       data: products,
-      message: "Products retrieved successfully",
+      message: "Produk berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error retrieving products:", error);
+    console.error("Error mengambil produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve products",
+      message: "Gagal mengambil produk",
       error_code: 500,
     });
   }
 };
 
+// Mendapatkan semua produk
 const getAllProducts = async (req, res) => {
   try {
-    const user_id = getUserId(req)
     const products = await models.Product.findAll();
-    //! Buat filter untuk penyembunyikan id 
-    if (!products) {
+    if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Products not found",
+        message: "Produk tidak ditemukan",
         error_code: 404,
       });
     }
     return res.status(200).json({
       success: true,
       data: products,
-      message: "Products retrieved successfully",
+      message: "Produk berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error retrieving products:", error);
+    console.error("Error mengambil semua produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve products",
+      message: "Gagal mengambil semua produk",
       error_code: 500,
     });
   }
 };
 
+// Mendapatkan produk berdasarkan ID
 const getProductById = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const user_id = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: "Produk tidak ditemukan",
         error_code: 404,
       });
     }
-    if(user_id === product.user_id) {
-      return res.status(200).json({
-        success: true,
-        data: product,
-        message: "Product retrieved successfully",
-        error_code: 0,
-      });
-    } else {
-      return res.status(403).json({
-        success: false,
-        message: "You are not authorized to retrieve this product",
-        error_code: 403,
-      })
-    }
+    return res.status(200).json({
+      success: true,
+      data: product,
+      message: "Produk berhasil diambil",
+      error_code: 0,
+    });
   } catch (error) {
-    console.error("Error retrieving product by ID:", error);
+    console.error("Error mengambil produk berdasarkan ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve product",
+      message: "Gagal mengambil produk",
       error_code: 500,
     });
   }
 };
 
-//! Delete and Update Bug
+// Memperbarui produk berdasarkan ID
 const updateProduct = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const user_id = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: "Produk tidak ditemukan",
         error_code: 404,
       });
     }
-
-    if(user_id === product.user_id) {
+    if (user_id === product.user_id) {
       const updatedProduct = await product.update(req.body);
       return res.status(200).json({
         success: true,
-        data: updatedProduct,
-        message: "Product updated successfully",
+        message: "Produk berhasil diperbarui",
         error_code: 0,
       });
     } else {
       return res.status(403).json({
         success: false,
-        message: "You are not authorized to update this product",
+        message: "Anda tidak diizinkan memperbarui produk ini",
         error_code: 403,
-      })
+      });
     }
   } catch (error) {
-    console.error("Error updating product:", error);
+    console.error("Error memperbarui produk:", error);
     return res.status(400).json({
       success: false,
-      message: "Failed to update product",
+      message: "Gagal memperbarui produk",
       error_code: 400,
     });
   }
 };
 
+// Menghapus produk berdasarkan ID
 const deleteProduct = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const user_id = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: "Produk tidak ditemukan",
         error_code: 404,
       });
     }
-
     if (user_id === product.user_id) {
       await product.destroy();
       return res.status(200).json({
         success: true,
-        data: product,
-        message: "Product deleted successfully",
+        message: "Produk berhasil dihapus",
         error_code: 0,
       });
     } else {
       return res.status(403).json({
         success: false,
-        message: "You are not authorized to delete this product",
+        message: "Anda tidak diizinkan menghapus produk ini",
         error_code: 403,
       });
     }
   } catch (error) {
-    console.error("Error deleting product:", error);
+    console.error("Error menghapus produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to delete product",
+      message: "Gagal menghapus produk",
       error_code: 500,
     });
   }

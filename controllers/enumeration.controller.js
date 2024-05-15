@@ -1,6 +1,6 @@
 const models = require("../models");
 
-// Create new enumeration
+// Buat enumerasi baru
 const createEnumeration = async (req, res) => {
   try {
     const { key, value } = req.body;
@@ -8,40 +8,40 @@ const createEnumeration = async (req, res) => {
     return res.status(201).json({
       success: true,
       data: enumeration,
-      message: "Enumeration created successfully",
+      message: "Enumerasi berhasil dibuat",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error creating enumeration:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
 };
 
-// Get all enumerations
+// Dapatkan semua enumerasi
 const getAllEnumerations = async (req, res) => {
   try {
     const enumerations = await models.Enumeration.findAll();
     return res.status(200).json({
       success: true,
       data: enumerations,
-      message: "All enumerations retrieved successfully",
+      message: "Semua enumerasi berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error getting all enumerations:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
 };
 
-// Get enumeration by ID
+// Dapatkan enumerasi berdasarkan ID
 const getEnumerationById = async (req, res) => {
   try {
     const enumerationId = req.params.id;
@@ -49,27 +49,27 @@ const getEnumerationById = async (req, res) => {
     if (!enumeration) {
       return res.status(404).json({
         success: false,
-        message: "Enumeration not found",
+        message: "Enumerasi tidak ditemukan",
         error_code: 404,
       });
     }
     return res.status(200).json({
       success: true,
       data: enumeration,
-      message: "Enumeration retrieved successfully",
+      message: "Enumerasi berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error getting enumeration by ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
 };
 
-// Update enumeration
+// Perbarui enumerasi
 const updateEnumeration = async (req, res) => {
   try {
     const enumerationId = req.params.id;
@@ -79,23 +79,22 @@ const updateEnumeration = async (req, res) => {
     if (!enumeration) {
       return res.status(404).json({
         success: false,
-        message: "Enumeration not found",
+        message: "Enumerasi tidak ditemukan",
         error_code: 404,
       });
     }
-    const updatedEnumeration = await enumeration.update({ key, value });
+    await enumeration.update({ key, value });
 
     return res.status(200).json({
       success: true,
-      message: "Enumeration updated successfully",
-      data: updatedEnumeration,
+      message: "Enumerasi berhasil diperbarui",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error updating enumeration:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }
@@ -106,26 +105,24 @@ const deleteEnumeration = async (req, res) => {
   try {
     const enumerationId = req.params.id;
     const deletedEnumeration = await models.Enumeration.findByPk(enumerationId);
-    console.log(deletedEnumeration);
     if (!deletedEnumeration) {
       return res.status(404).json({
         success: false,
-        message: "Enumeration not found",
+        message: "Enumerasi tidak ditemukan",
         error_code: 404,
       });
     }
     await deletedEnumeration.destroy();
     return res.status(200).json({
       success: true,
-      message: "Enumeration deleted successfully",
-      data: deletedEnumeration,
+      message: "Enumerasi berhasil dihapus",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error deleting enumeration:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong!",
+      message: "Terjadi kesalahan!",
       error_code: 500,
     });
   }

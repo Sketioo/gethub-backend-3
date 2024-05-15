@@ -7,8 +7,8 @@ const { validateSponsor } = require("../middleware/input-validator")
 
 router.get("/sponsors", authenticateToken, sponsorController.getAllSponsors);
 router.get("/sponsor/:id", authenticateToken, sponsorController.getSponsorById);
-router.post("/sponsor", validateSponsor, authenticateToken, sponsorController.createSponsor);
-router.put("/sponsor/:id", validateSponsor, authenticateToken, sponsorController.updateSponsor);
+router.post("/sponsor", authenticateToken, validateSponsor, sponsorController.createSponsor);
+router.put("/sponsor/:id", authenticateToken, validateSponsor, sponsorController.updateSponsor);
 router.delete("/sponsor/:id", authenticateToken, sponsorController.deleteSponsor);
 
 module.exports = router;

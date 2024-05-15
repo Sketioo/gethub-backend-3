@@ -1,29 +1,29 @@
 const { Link } = require('../models');
-const { getUserId } = require("../helpers/utility")
+const { getUserId } = require("../helpers/utility");
 
-// Create a link
+// Membuat sebuah link
 const createLink = async (req, res) => {
   try {
     const user_id = getUserId(req);
-    const { category, link } = req.body
+    const { category, link } = req.body;
     const newLink = await Link.create({ category, link, user_id });
     return res.status(201).json({
       success: true,
       data: newLink,
-      message: 'Link created successfully',
+      message: 'Link berhasil dibuat',
       error_code: 0
     });
   } catch (error) {
     console.error('Error creating link:', error);
     return res.status(400).json({
       success: false,
-      message: 'Failed to create link',
+      message: 'Gagal membuat link',
       error_code: 400
     });
   }
 };
 
-// Get all links
+// Mendapatkan semua link pengguna
 const getUserLinks = async (req, res) => {
   try {
     const links = await Link.findAll({
@@ -34,76 +34,69 @@ const getUserLinks = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: links,
-      message: 'Links retrieved successfully',
+      message: 'Link berhasil diambil',
       error_code: 0
     });
   } catch (error) {
     console.error('Error retrieving links:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve links',
+      message: 'Gagal mengambil link',
       error_code: 500
     });
   }
 };
 
+// Mendapatkan semua link
 const getAllLinks = async (req, res) => {
   try {
     const links = await Link.findAll();
     return res.status(200).json({
       success: true,
       data: links,
-      message: 'Links retrieved successfully',
+      message: 'Link berhasil diambil',
       error_code: 0
     });
   } catch (error) {
     console.error('Error retrieving links:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve links',
+      message: 'Gagal mengambil link',
       error_code: 500
     });
   }
 };
 
-// Get a link by ID
+// Mendapatkan sebuah link berdasarkan ID
 const getLinkById = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const user_id = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
       return res.status(404).json({
         success: false,
-        message: 'Link not found',
+        message: 'Link tidak ditemukan',
         error_code: 404
       });
     }
 
-    if (user_id === link.user_id) {
-      return res.status(200).json({
-        success: true,
-        data: link,
-        message: 'Link retrieved successfully',
-        error_code: 0
-      });
-    } else {
-      return res.status(403).json({
-        success: false,
-        message: 'You are not authorized to access this link',
-        error_code: 403
-      })
-    }
+    return res.status(200).json({
+      success: true,
+      data: link,
+      message: 'Link berhasil diambil',
+      error_code: 0
+    });
   } catch (error) {
     console.error('Error retrieving link by ID:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve link',
+      message: 'Gagal mengambil link',
       error_code: 500
     });
   }
 };
 
-// Update a link
+// Memperbarui sebuah link
 const updateLink = async (req, res) => {
   try {
     const user_id = getUserId(req);
@@ -111,7 +104,7 @@ const updateLink = async (req, res) => {
     if (!link) {
       return res.status(404).json({
         success: false,
-        message: 'Link not found',
+        message: 'Link tidak ditemukan',
         error_code: 404
       });
     }
@@ -119,28 +112,27 @@ const updateLink = async (req, res) => {
       await link.update(req.body);
       return res.status(200).json({
         success: true,
-        data: link,
-        message: 'Link updated successfully',
+        message: 'Link berhasil diperbarui',
         error_code: 0
       });
     } else {
       return res.status(403).json({
         success: false,
-        message: 'You are not authorized to update this link',
+        message: 'Anda tidak diizinkan memperbarui link ini',
         error_code: 403
-      })
+      });
     }
   } catch (error) {
     console.error('Error updating link:', error);
     return res.status(400).json({
       success: false,
-      message: 'Failed to update link',
+      message: 'Gagal memperbarui link',
       error_code: 400
     });
   }
 };
 
-// Delete a link
+// Menghapus sebuah link
 const deleteLink = async (req, res) => {
   try {
     const user_id = getUserId(req);
@@ -148,30 +140,29 @@ const deleteLink = async (req, res) => {
     if (!link) {
       return res.status(404).json({
         success: false,
-        message: 'Link not found',
+        message: 'Link tidak ditemukan',
         error_code: 404
       });
     }
-    if(user_id === link.user_id) {
+    if (user_id === link.user_id) {
       await link.destroy();
       return res.status(200).json({
         success: true,
-        data: link,
-        message: 'Link deleted successfully',
+        message: 'Link berhasil dihapus',
         error_code: 0
       });
     } else {
       return res.status(403).json({
         success: false,
-        message: 'You are not authorized to delete this link',
+        message: 'Anda tidak diizinkan menghapus link ini',
         error_code: 403
-      })
+      });
     }
   } catch (error) {
     console.error('Error deleting link:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to delete link',
+      message: 'Gagal menghapus link',
       error_code: 500
     });
   }

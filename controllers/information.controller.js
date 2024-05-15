@@ -4,25 +4,24 @@ const models = require("../models");
 const getAllInformation = async (req, res, next) => {
   try {
     const information = await models.Information.findAll();
-    console.log(information)
-    if (!information) {
+    if (!information || information.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Information not found',
+        message: 'Informasi tidak ditemukan',
         error_code: 404,
       });
     }
     return res.status(200).json({
       success: true,
       data: information,
-      message: "Information retrieved successfully",
+      message: "Informasi berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error retrieving informations:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve informations",
+      message: "Gagal mengambil informasi",
       error_code: 500,
     });
   }
@@ -35,14 +34,14 @@ const getInformationById = async (req, res, next) => {
     if (!information) {
       return res.status(404).json({
         success: false,
-        message: 'Information not found',
+        message: 'Informasi tidak ditemukan',
         error_code: 404,
       });
     }
     res.status(200).json({
       success: true,
       data: information,
-      message: "Information retrieved successfully",
+      message: "Informasi berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
@@ -53,12 +52,11 @@ const getInformationById = async (req, res, next) => {
 const createInformation = async (req, res, next) => {
   try {
     const { title, description, image_url, is_active } = req.body;
-    console.log(req.body)
     const newInformation = await models.Information.create({ title, description, image_url, is_active });
     res.status(201).json({
       success: true,
       data: newInformation,
-      message: "Information created successfully",
+      message: "Informasi berhasil dibuat",
       error_code: 0,
     });
   } catch (error) {
@@ -74,11 +72,10 @@ const updateInformation = async (req, res, next) => {
     if (!information) {
       return res.status(404).json({
         success: false,
-        message: 'Information not found',
+        message: 'Informasi tidak ditemukan',
         error_code: 404,
       });
     }
-    console.log("=-------------------=------------=")
     await models.Information.update(
       { title, description, image_url, is_active },
       { where: { id: id } }
@@ -86,8 +83,7 @@ const updateInformation = async (req, res, next) => {
     information = await models.Information.findByPk(id);
     res.status(200).json({
       success: true,
-      data: information,
-      message: "Information updated successfully",
+      message: "Informasi berhasil diperbarui",
       error_code: 0,
     });
   } catch (error) {
@@ -102,14 +98,14 @@ const deleteInformation = async (req, res, next) => {
     if (!information) {
       return res.status(404).json({
         success: false,
-        message: 'Information not found',
+        message: 'Informasi tidak ditemukan',
         error_code: 404,
       });
     }
-    await models.Information.destroy();
+    await models.Information.destroy({ where: { id: id } });
     res.status(200).json({
       success: true,
-      message: "Information deleted successfully",
+      message: "Informasi berhasil dihapus",
       error_code: 0,
     });
   } catch (error) {

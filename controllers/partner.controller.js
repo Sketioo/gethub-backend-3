@@ -1,34 +1,35 @@
-// Import necessary modules
+// Import modul yang diperlukan
 const { getUserId } = require("../helpers/utility");
 const models = require("../models");
 
 const getUserPartners = async (req, res) => {
   try {
-    const user_id = getUserId(req)
-    const partners = await models.Partner.findAll({where: {
-      user_id
-    }});
-    console.log(partners)
-    if(!partners) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Partner not found",
-          error_code: 404,
-        });
-    }
-    return res
-      .status(200)
-      .json({ success: true, data: partners, error_code: 0 });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({
+    const user_id = getUserId(req);
+    const partners = await models.Partner.findAll({
+      where: {
+        user_id,
+      },
+    });
+    console.log(partners);
+    if (!partners || partners.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "Internal Server Error",
-        error_code: 500,
+        message: "Partner tidak ditemukan",
+        error_code: 404,
       });
+    }
+    return res.status(200).json({
+      success: true,
+      data: partners,
+      error_code: 0,
+      message: "Partner berhasil diambil",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan Internal Server",
+      error_code: 500,
+    });
   }
 };
 
@@ -37,45 +38,45 @@ const getPartnerById = async (req, res) => {
     const partnerId = req.params.id;
     const partner = await models.Partner.findByPk(partnerId);
     if (!partner) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Partner not found",
-          error_code: 404,
-        });
-    }
-    return res
-      .status(200)
-      .json({ success: true, data: partner, error_code: 0 });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({
+      return res.status(404).json({
         success: false,
-        message: "Internal Server Error",
-        error_code: 500,
+        message: "Partner tidak ditemukan",
+        error_code: 404,
       });
+    }
+    return res.status(200).json({
+      success: true,
+      data: partner,
+      error_code: 0,
+      message: "Partner berhasil diambil",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan Internal Server",
+      error_code: 500,
+    });
   }
 };
 
 const createPartner = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const user_id = getUserId(req);
     const partnerData = req.body;
-    const partner = await models.Partner.create({...partnerData, user_id});
-    console.log(req.body)
-    return res
-      .status(201)
-      .json({ success: true, data: partner, error_code: 0, message: "Partner created successfully" });
+    const partner = await models.Partner.create({ ...partnerData, user_id });
+    console.log(req.body);
+    return res.status(201).json({
+      success: true,
+      data: partner,
+      error_code: 0,
+      message: "Partner berhasil dibuat",
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal Server Error",
-        error_code: 500,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan Internal Server",
+      error_code: 500,
+    });
   }
 };
 
@@ -88,73 +89,63 @@ const updatePartner = async (req, res) => {
     if (!partner) {
       return res.status(404).json({
         success: false,
-        message: "Partner not found",
+        message: "Partner tidak ditemukan",
         error_code: 404,
       });
     }
 
-    const updatedPartner = await partner.update(partnerData);
+    await partner.update(partnerData);
 
     return res.status(200).json({
       success: true,
-      data: updatedPartner,
-      message: "Partner updated successfully",
+      message: "Partner berhasil diperbarui",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error updating partner:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: "Kesalahan Internal Server",
       error_code: 500,
     });
   }
 };
 
-
 const deletePartner = async (req, res) => {
   const partnerId = req.params.id;
   try {
-    const partner = await models.Partner.findByPk(partnerId)
+    const partner = await models.Partner.findByPk(partnerId);
     if (!partner) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Partner not found",
-          error_code: 404,
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Partner tidak ditemukan",
+        error_code: 404,
+      });
     }
 
     const deletedRowsCount = await models.Partner.destroy({
       where: { id: partnerId },
     });
     if (deletedRowsCount === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Partner not found",
-          error_code: 404,
-        });
-    }
-    await product.destroy();
-    return res
-      .status(200)
-      .json({
-        success: true,
-        data: partner,
-        message: "Partner deleted successfully",
-        error_code: 0,
-      });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({
+      return res.status(404).json({
         success: false,
-        message: "Internal Server Error",
-        error_code: 500,
+        message: "Partner tidak ditemukan",
+        error_code: 404,
       });
+    }
+    await partner.destroy();
+    return res.status(200).json({
+      success: true,
+      data: partner,
+      message: "Partner berhasil dihapus",
+      error_code: 0,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan Internal Server",
+      error_code: 500,
+    });
   }
 };
 

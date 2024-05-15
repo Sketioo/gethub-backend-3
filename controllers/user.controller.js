@@ -75,7 +75,7 @@ const register = async (req, res) => {
       error_code: 0,
     });
   } catch (error) {
-    console.log("Error in signup controller: ", error);
+    console.log("Error di signup proses: ", error);
     return res.status(500).json({
       message: "Ada kesalahan!",
       success: false,
@@ -123,7 +123,7 @@ const login = async (req, res) => {
       error_code: 0,
     });
   } catch (error) {
-    console.log("Error in login controller: ", error);
+    console.log("Error pada proses login: ", error);
     return res.status(500).json({
       message: "Ada kesalahan!",
       success: false,
@@ -164,7 +164,7 @@ const getProfileById = async (req, res) => {
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error getting profile by ID:", error);
+    console.error("Error mengambil data:", error);
     return res.status(500).json({
       success: false,
       message: "Ada kesalahan!",
@@ -208,7 +208,7 @@ const getAllProfiles = async (req, res) => {
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error getting all profiles:", error);
+    console.error("Error mengambil data semua profil:", error);
     return res.status(500).json({
       success: false,
       message: "Terjadi kesalahan!",
@@ -274,7 +274,7 @@ const deleteProfile = async (req, res) => {
       });
     }
 
-    console.error("Error deleting profile:", error);
+    console.error("Error menghapus profil:", error);
     return res.status(500).json({
       success: false,
       message: "Terjadi kesalahan!",
@@ -348,7 +348,7 @@ const getPublicUser = async (req, res) => {
       });
     }
 
-    console.error("Error retrieving public user data:", error);
+    console.error("Error mengambil data pengguna:", error);
     return res.status(500).json({
       success: false,
       message: "Terjadi kesalahan!",
