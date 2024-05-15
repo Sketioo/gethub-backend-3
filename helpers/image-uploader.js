@@ -61,7 +61,6 @@ const imageUploader = async (req, res) => {
       user_id: user_id,
       link: publicUrl,
       extension: fileExtension,
-      date: Date.now(),
     });
     console.dir(uploadedFile)
     if (!uploadedFile) {

@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       user_id:{ 
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         references: {
           model: "Users",
           key: "id",
@@ -36,12 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       extension: {
         type: DataTypes.STRING,
         allowNull: false
-      },
-      date: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-        allowNull: false
-      },
+      }
     },
     {
       sequelize,
