@@ -132,34 +132,6 @@ const login = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
-  try {
-    req.session.destroy((error) => {
-      if (error) {
-        console.error("Error destroying session:", error);
-        return res.status(500).json({
-          message: "Gagal logout",
-          success: false,
-          error_code: 500,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Berhasil logout",
-        error_code: 0,
-      });
-    });
-  } catch (error) {
-    console.error("Error logging out:", error);
-    return res.status(500).json({
-      message: "Gagal logout",
-      success: false,
-      error_code: 500,
-    });
-  }
-};
-
 // Get profile by ID
 const getProfileById = async (req, res) => {
   try {
@@ -248,8 +220,9 @@ const getAllProfiles = async (req, res) => {
 // Perbarui profil
 const updateProfile = async (req, res) => {
   try {
-    const user_id = getUserId(req)
-    const updatedUser = await models.User.update(req.body, {
+    const user_id = getUserId(req);
+    const {email, ...userData} = req.body;
+    const updatedUser = await models.User.update(userData, {
       where: { id: user_id },
     });
     if (updatedUser[0] === 0) {
@@ -387,7 +360,6 @@ const getPublicUser = async (req, res) => {
 module.exports = {
   register,
   login,
-  logout,
   getProfileById,
   getAllProfiles,
   updateProfile,

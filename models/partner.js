@@ -26,9 +26,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
         allowNull: true
       },
-      ref_user_id: { type: DataTypes.INTEGER, allowNull: true },
+      ref_user_id: { 
+        type: DataTypes.STRING, 
+        allowNull: true 
+      },
       full_name: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING,
       },
       profession: { 
         type: DataTypes.STRING 
@@ -61,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
   Partner.associate = function (models) {
     // associations can be defined here
     Partner.belongsTo(models.User, { foreignKey: "user_id" });
-    models.User.hasMany(Partner, { foreignKey: "user_id" });
+
   };
   return Partner;
 };

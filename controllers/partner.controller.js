@@ -2,9 +2,12 @@
 const { getUserId } = require("../helpers/utility");
 const models = require("../models");
 
-const getAllPartners = async (req, res) => {
+const getUserPartners = async (req, res) => {
   try {
-    const partners = await models.Partner.findAll();
+    const user_id = getUserId(req)
+    const partners = await models.Partner.findAll({where: {
+      user_id
+    }});
     console.log(partners)
     if(!partners) {
       return res
@@ -156,7 +159,7 @@ const deletePartner = async (req, res) => {
 };
 
 module.exports = {
-  getAllPartners,
+  getUserPartners,
   getPartnerById,
   createPartner,
   updatePartner,

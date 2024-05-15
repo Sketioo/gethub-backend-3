@@ -93,6 +93,7 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   try {
+    const user_id = getUserId(req)
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({
@@ -101,12 +102,20 @@ const getProductById = async (req, res) => {
         error_code: 404,
       });
     }
-    return res.status(200).json({
-      success: true,
-      data: product,
-      message: "Product retrieved successfully",
-      error_code: 0,
-    });
+    if(user_id === product.user_id) {
+      return res.status(200).json({
+        success: true,
+        data: product,
+        message: "Product retrieved successfully",
+        error_code: 0,
+      });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to retrieve this product",
+        error_code: 403,
+      })
+    }
   } catch (error) {
     console.error("Error retrieving product by ID:", error);
     return res.status(500).json({
@@ -139,10 +148,10 @@ const updateProduct = async (req, res) => {
         error_code: 0,
       });
     } else {
-      return res.status(400).json({
+      return res.status(403).json({
         success: false,
         message: "You are not authorized to update this product",
-        error_code: 400,
+        error_code: 403,
       })
     }
   } catch (error) {
@@ -176,10 +185,10 @@ const deleteProduct = async (req, res) => {
         error_code: 0,
       });
     } else {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
         message: "You are not authorized to delete this product",
-        error_code: 0,
+        error_code: 403,
       });
     }
   } catch (error) {

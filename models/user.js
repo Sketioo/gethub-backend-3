@@ -70,6 +70,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       modelName: "User",
       tableName: "users",
+      validUpdateColumns() {
+        const allowedColumns = ["full_name", "profession", "phone", "web", "address", "photo", "about", "theme_hub"];
+        for (const key in this._changed) {
+          if (!allowedColumns.includes(key)) {
+            throw new Error(`Kolom ${key} tidak dapat diperbarui`);
+          }
+        }
+      }
     }
   );
   User.associate = function (models) {
@@ -84,6 +92,12 @@ module.exports = (sequelize, DataTypes) => {
 
     // Asosiasi dengan model Link
     User.hasMany(models.Link, { foreignKey: "user_id" });
+
+    // Asosiasi dengan model Partner
+    User.hasMany(models.Partner, { foreignKey: "user_id" });
+
+    // Asosiasi dengan model HistoryUpload
+    User.hasMany(models.HistoryUpload, { foreignKey: "user_id" });
 };
   return User;
 };

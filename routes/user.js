@@ -13,14 +13,13 @@ const router = express.Router();
 
 router.post("/register", validateRegisterUser, userController.register);
 router.post("/login", validateLoginUser, userController.login);
-router.post("/logout", userController.logout);
 
-router.get("/public/profile", authenticateToken, userController.getPublicUser);
+router.get("/public/profile", userController.getPublicUser);
 
 router.get("/profiles", authenticateToken, userController.getAllProfiles);
-router.get("/profile/", authenticateToken, userController.getProfileById);
-router.put("/profile/", authenticateToken, userController.updateProfile);
-router.delete("/profile/", authenticateToken, userController.deleteProfile);
+router.get("/profile", authenticateToken, userController.getProfileById);
+router.put("/profile", authenticateToken, userController.updateProfile);
+router.delete("/profile", authenticateToken, userController.deleteProfile);
 
 router.get("/verify/:token", verifyTokenEmail);
 

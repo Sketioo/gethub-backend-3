@@ -69,6 +69,20 @@ exports.userLoginSchema = Joi.object({
   theme_hub: Joi.number().integer().optional(),
 });
 
+exports.userUpdateSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  full_name: Joi.string().optional(),
+  profession: Joi.string().allow("").optional(),
+  phone: Joi.string()
+    .allow("")
+    .pattern(/^\d{10,15}$/)
+    .optional(),
+  web: Joi.string().allow("").optional(),
+  address: Joi.string().allow("").optional(),
+  photo: Joi.string().allow("").optional(),
+  about: Joi.string().allow("").optional(),
+})
+
 //*Product
 
 exports.productSchema = Joi.object({
