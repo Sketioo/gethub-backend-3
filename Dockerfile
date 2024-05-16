@@ -1,20 +1,15 @@
-# apakah ini versi?
-FROM node:18
-WORKDIR /usr/src/app
-COPY ./package.json ./
-COPY ./package-lock.json ./
+FROM node:18-alpine
+
+WORKDIR /app
+
+ENV PORT 3000
+
 RUN npm install
-RUN npm i -g sequelize-cli
-COPY ./config ./config
-COPY ./controllers ./controllers
-COPY ./helpers ./helpers
-COPY ./middleware ./middleware
-COPY ./migrations ./migrations
-COPY ./models ./models
-COPY ./routes ./routes
-COPY ./seeders ./seeders
-COPY ./.env ./
-COPY ./.sequelizerc ./.sequelizerc
-COPY ./app.js ./app.js
-COPY ./server.js ./server.js
-CMD ["npm", "run", "start"]
+
+RUN npm install sequelize-cli
+
+COPY . .
+
+EXPOSE 3000
+
+CMD npm run rollback-all && npm run migrate && npm run start
