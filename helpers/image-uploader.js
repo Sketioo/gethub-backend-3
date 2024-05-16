@@ -5,14 +5,16 @@ const { getUserId } = require("../helpers/utility")
 const models = require("../models");
 
 const imageExtensions = ['jpg', 'jpeg', 'png'];
+const keyFilename = process.env.KEY_FILENAME;
 
 const upload = multer({
   storage: multer.memoryStorage(),
 });
 
 const storage = new Storage({
-  keyFilename: "sa-key.json",
+  keyFilename
 });
+// console.dir(storage)
 
 const imageUploader = async (req, res) => {
   const file = req.file;
@@ -36,7 +38,7 @@ const imageUploader = async (req, res) => {
   const fileNameWithoutSpaces = file.originalname.replace(/\s+/g, "-");
   const fileName = `${Date.now()}${fileNameWithoutSpaces}`;
 
-  const bucketName = "gethub_bucket";
+  const bucketName = process.env.BUCKET;
   const bucket = storage.bucket(bucketName);
 
   const blob = bucket.file(fileName);
