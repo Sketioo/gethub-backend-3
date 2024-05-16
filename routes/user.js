@@ -5,9 +5,10 @@ const passport = require("passport");
 const {
   validateRegisterUser,
   validateLoginUser,
+  validateUpdateUser,
 } = require("../middleware/input-validator");
 const { authenticateToken } = require("../middleware/check-auth");
-const {verifyTokenEmail} = require("../helpers/email-verification")
+const { verifyTokenEmail } = require("../helpers/email-verification")
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get("/public/profile", userController.getPublicUser);
 
 router.get("/profiles", authenticateToken, userController.getAllProfiles);
 router.get("/profile", authenticateToken, userController.getProfileById);
-router.put("/profile", authenticateToken, userController.updateProfile);
+router.put("/profile", authenticateToken, validateUpdateUser, userController.updateProfile);
 router.delete("/profile", authenticateToken, userController.deleteProfile);
 
 router.get("/verify/:token", verifyTokenEmail);

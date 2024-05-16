@@ -72,14 +72,15 @@ exports.userLoginSchema = Joi.object({
 exports.userUpdateSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string().optional(),
-  profession: Joi.string().allow("").optional(),
+  profession: Joi.string().allow("").required(),
   phone: Joi.string()
     .allow("")
     .pattern(/^\d{10,15}$/)
-    .optional(),
-  web: Joi.string().allow("").optional(),
-  address: Joi.string().allow("").optional(),
-  photo: Joi.string().allow("").optional(),
+    .required(),
+  email: Joi.string().email().optional(),
+  web: Joi.string().uri().optional(),
+  address: Joi.string().allow("").required(),
+  photo: Joi.string().allow("").required(),
   about: Joi.string().allow("").optional(),
 })
 

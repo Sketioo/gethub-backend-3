@@ -1,7 +1,8 @@
 const {
   userRegisterSchema, userLoginSchema,
   productSchema, linkSchema, sponsorSchema,
-  informationSchema, partnerSchema
+  informationSchema, partnerSchema,
+  userUpdateSchema
 } = require("../schemas");
 
 //* User
@@ -53,16 +54,47 @@ exports.validateLoginUser = (req, res, next) => {
       })
       .join(", ");
 
-      return res.status(400).json({
-        success: false,
-        message: messages,
-        error_code: 400,
-      })
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    })
   } else {
     next();
   }
 };
 
+exports.validateUpdateUser = (req, res, next) => {
+  const { error } = userUpdateSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "full_name":
+            return "Nama lengkap tidak boleh kosong.";
+          case "profession":
+            return "Profesi tidak boleh kosong.";
+          case "phone":
+            return "Nomor telepon harus terdiri dari 10 hingga 15 angka.";
+          case "email":
+            return "Email tidak valid.";
+          case "address":
+            return "Alamat lengkap tidak boleh kosong.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    })
+  } else {
+    next()
+  }
+}
 //* Product
 
 exports.validateProduct = (req, res, next) => {
@@ -246,11 +278,11 @@ exports.validatePartner = (req, res, next) => {
         }
       })
       .join(', ');
-      return res.status(400).json({
-        success: false,
-        message: messages,
-        error_code: 400
-      })
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400
+    })
   } else {
     next();
   }

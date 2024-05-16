@@ -63,11 +63,10 @@ const register = async (req, res) => {
       email: user.email
     })
 
-    console.log(user.id)
-
     await transporter.sendMail(mail)
 
     const { password, id, ...customizedUser } = user.dataValues;
+    console.log(user.dataValues)
     return res.status(201).json({
       data: customizedUser,
       message: "Pengguna berhasil dibuat, email verifikasi sudah terkirim",
@@ -221,10 +220,11 @@ const getAllProfiles = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const user_id = getUserId(req);
-    const {email, ...userData} = req.body;
+    const { email, ...userData } = req.body;
     const updatedUser = await models.User.update(userData, {
       where: { id: user_id },
     });
+    console.log(updatedUser)
     if (updatedUser[0] === 0) {
       return res.status(404).json({
         success: false,
