@@ -22,7 +22,7 @@ const createMail = (req, token) => {
         <img src="https://storage.googleapis.com/gethub_bucket/1715858818621logo.png" alt="GitHub Logo" style="max-width: 280px; margin-bottom: 5px;">
         <h2 style="color: #333;">Selamat Datang di GetHub!</h2>
         <p style="color: #666;">Untuk memulai, kami memerlukan verifikasi email Anda.</p>
-        <a href="${process.env.WEB_HOST}/api/verify/${token}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-bottom: 20px;">Verifikasi Email</a>
+        <a href="${process.env.WEB_HOST}/api/verify/${token}" style="display: inline-block; padding: 10px 20px; background-color: #0c758a; color: white; text-decoration: none; border-radius: 5px; margin-bottom: 20px;">Verifikasi Email</a>
         <p style="color: #666;">Jika tidak bisa mengklik tombol di atas, Anda juga bisa salin dan tempel URL berikut ke dalam browser Anda:</p>
         <a style="color: #666; margin-bottom: 20px;">${process.env.WEB_HOST}/api/verify/${token}</a>
         <p style="color: #666;">Terima kasih telah bergabung dengan GetHub!</p>
