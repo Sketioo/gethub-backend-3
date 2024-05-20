@@ -8,7 +8,8 @@ const {
   validateUpdateUser,
 } = require("../middleware/input-validator");
 const { authenticateToken } = require("../middleware/check-auth");
-const { verifyTokenEmail } = require("../helpers/email-verification")
+const { isPremium } = require("../middleware/is-premium");
+const { verifyTokenEmail, regenerateVerificationToken } = require("../helpers/email-verification")
 
 const router = express.Router();
 
@@ -23,6 +24,8 @@ router.put("/profile", authenticateToken, validateUpdateUser, userController.upd
 router.delete("/profile", authenticateToken, userController.deleteProfile);
 
 router.get("/verify/:token", verifyTokenEmail);
+router.get("/regenerate-verification", authenticateToken, regenerateVerificationToken);
+
 
 router.get(
   "/auth/linkedin",

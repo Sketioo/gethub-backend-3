@@ -34,7 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     email:{
       type: DataTypes.STRING,
       allowNull: false
-    }
+    },
+    expiresAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'EmailVerification',

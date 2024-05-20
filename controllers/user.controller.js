@@ -8,7 +8,7 @@ const {
   generateRandomString,
   generateAccessToken,
 } = require("../helpers/utility");
-const { createMail, transporter } = require("../helpers/email-verification")
+const { createMail, transporter, createVerificationToken } = require("../helpers/email-verification")
 
 // Function expressions
 const register = async (req, res) => {
@@ -54,14 +54,18 @@ const register = async (req, res) => {
     const user = await models.User.create(newUserData);
 
     // Send Email Verification
-    const token = generateRandomString(20);
-    const mail = createMail(req, token)
+    const token = await createVerificationToken(user.id)
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
-    const createToken = await models.EmailVerification.create({
-      user_id: user.id,
+    await models.EmailVerification.create({
       token,
+      user_id: user.id,
+      expiresAt,
       email: user.email
-    })
+    });
+
+    console.log(user.email)
+    const mail = createMail(req.body.email, token)
 
     await transporter.sendMail(mail)
 
@@ -216,17 +220,23 @@ const updateProfile = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const { email, ...userData } = req.body;
-    const updatedUser = await models.User.update(userData, {
+
+    // Set is_complete_profile to true
+    userData.is_complete_profile = true;
+
+    // Update user data in the database
+    const [updatedRows] = await models.User.update(userData, {
       where: { id: user_id },
     });
-    console.log(updatedUser)
-    if (updatedUser[0] === 0) {
+
+    if (updatedRows === 0) {
       return res.status(404).json({
         success: false,
         message: "Pengguna tidak ditemukan",
         error_code: 404,
       });
     }
+
     return res.status(200).json({
       success: true,
       message: "Profil pengguna berhasil diperbarui",
@@ -239,6 +249,7 @@ const updateProfile = async (req, res) => {
     });
   }
 };
+
 
 const deleteProfile = async (req, res) => {
   try {

@@ -59,6 +59,9 @@
       .text-danger {
         font-weight: bold;
       }
+      .text-primary {
+        font-weight: bold;
+      }
       .btn {
         display: inline-block;
         font-size: 16px;
@@ -74,20 +77,32 @@
   </head>
   <body>
     <div class="container">
-      <% if (success) { %>
-      <h1 class="text-success"><%= message %></h1>
+      <% if (emailVerifSent) { %>
+      <h1 class="text-primary"><%= message %></h1>
       <p>
-        Terima kasih telah memverifikasi email Anda. Anda sekarang dapat
-        melanjutkan menggunakan layanan kami.
+        Email verifikasi terkirim. Silakan periksa email Anda dan ikuti tautan
+        untuk memverifikasi akun Anda.
       </p>
-      <% } else { %>
+      <% } else if (typeof success !== 'undefined' && !success) { %>
       <h1 class="text-danger"><%= message %></h1>
       <p>
         Terjadi masalah saat memverifikasi email Anda. Silakan coba lagi atau
         hubungi dukungan.
       </p>
+      <% } else if (success){ %>
+      <h1 class="text-success"><%= message %></h1>
+      <p>
+        Terima kasih telah memverifikasi email Anda. Anda sekarang dapat
+        melanjutkan menggunakan layanan kami.
+      </p>
+      <% } else {%>
+      <h1 class="text-danger">Server Error</h1>
+      <p>
+        Terjadi masalah mengenai proses ini. Silakan coba lagi atau hubungi
+        dukungan.
+      </p>
       <% } %>
-      <div class="btn">Silahkan Kembali ke Aplikasi</div>
+      <div class="btn btn-primary">Silahkan Kembali ke Aplikasi</div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

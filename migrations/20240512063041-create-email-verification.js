@@ -25,6 +25,10 @@ module.exports = {
       email: {
         type: Sequelize.STRING
       },
+      expiresAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

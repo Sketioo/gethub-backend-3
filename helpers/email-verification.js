@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const models = require("../models")
+const { generateRandomString, getUserId } = require("./utility")
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -12,10 +13,21 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const createMail = (req, token) => {
+
+const createVerificationToken = async (userId) => {
+  const token = generateRandomString(20);
+
+  const user = await models.User.findOne({
+    where: { id: userId }
+  })
+
+  return token;
+};
+
+const createMail = (email, token) => {
   return {
     from: process.env.AUTH_EMAIL,
-    to: req.body.email,
+    to: email,
     subject: 'Email Verification - GetHub',
     html: `
       <div style="text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
@@ -34,6 +46,7 @@ const createMail = (req, token) => {
 
 
 
+
 const verifyTokenEmail = async (req, res, next) => {
   try {
     const token = req.params.token;
@@ -42,10 +55,24 @@ const verifyTokenEmail = async (req, res, next) => {
     if (!verification) {
       return res.render('email-verification', {
         success: false,
+        emailVerifSent: false,
         data: {
           image_url: "https://storage.googleapis.com/gethub_bucket/1715860038942failed.png"
         },
-        message: "Invalid token",
+        message: "Token invalid",
+        error_code: 400
+      });
+    }
+
+    if (new Date() > verification.expiresAt) {
+      await models.EmailVerification.destroy({ where: { token: token } });
+      return res.render('email-verification', {
+        success: false,
+        emailVerifSent: false,
+        data: {
+          image_url: "https://storage.googleapis.com/gethub_bucket/1715860038942failed.png"
+        },
+        message: "Token kadaluarsa",
         error_code: 400
       });
     }
@@ -55,6 +82,7 @@ const verifyTokenEmail = async (req, res, next) => {
 
     return res.render('email-verification', {
       success: true,
+      emailVerifSent: false,
       data: {
         image_url: "https://storage.googleapis.com/gethub_bucket/1715860026185success.png"
       },
@@ -71,9 +99,57 @@ const verifyTokenEmail = async (req, res, next) => {
   }
 }
 
+const regenerateVerificationToken = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const user = await models.User.findOne({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).render('email-verification', {
+        emailVerifSent: false,
+        success: false,
+        message: "User not found",
+        error_code: 404
+      });
+    }
+
+    console.log(`User ID: ${userId}`);
+
+    await models.EmailVerification.destroy({ where: { user_id: userId } });
+
+    const token = await createVerificationToken(userId);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+    await models.EmailVerification.create({
+      token,
+      user_id: user.id,
+      expiresAt,
+      email: user.email
+    });
+
+    const mailOptions = createMail(user.email, token);
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).render('email-verification', {
+      success: true,
+      emailVerifSent: true,
+      message: "Email Verifikasi Terkirim",
+      error_code: 0
+    });
+  } catch (error) {
+    console.error('Error regenerating verification token:', error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error_code: 500
+    });
+  }
+};
 
 module.exports = {
   transporter,
   createMail,
-  verifyTokenEmail
+  verifyTokenEmail,
+  createVerificationToken,
+  regenerateVerificationToken
 }
