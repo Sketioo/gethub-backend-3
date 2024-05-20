@@ -1,7 +1,7 @@
 "use strict";
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable("Links", {
+    return queryInterface.createTable("links", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -11,7 +11,7 @@ module.exports = {
       user_id: {
         type: Sequelize.UUID,
         references: {
-          model: "Users",
+          model: "users",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -37,6 +37,6 @@ module.exports = {
     });
   },
   down:(queryInterface, Sequelize) => {
-    return queryInterface.dropTable("Links");
+    return queryInterface.dropTable("links");
   },
 };

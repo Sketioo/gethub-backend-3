@@ -51,8 +51,8 @@ const getInformationById = async (req, res, next) => {
 
 const createInformation = async (req, res, next) => {
   try {
-    const { title, description, image_url, is_active } = req.body;
-    const newInformation = await models.Information.create({ title, description, image_url, is_active });
+    const { title, description, image_url, is_active, category } = req.body;
+    const newInformation = await models.Information.create({ title, description, image_url, is_active, category });
     res.status(201).json({
       success: true,
       data: newInformation,
@@ -67,7 +67,7 @@ const createInformation = async (req, res, next) => {
 const updateInformation = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const { title, description, image_url, is_active } = req.body;
+    const { title, description, image_url, is_active, category } = req.body;
     let information = await models.Information.findByPk(id);
     if (!information) {
       return res.status(404).json({
