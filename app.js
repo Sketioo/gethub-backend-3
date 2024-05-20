@@ -42,5 +42,9 @@ app.use("/api", informationRoute);
 //* Helper
 app.post("/api/upload-file", authenticateToken, upload.single("file"), imageUploader);
 
+app.use('*', (req, res) => {
+  res.status(404).render('404')
+})
+
 module.exports = app;
 

@@ -133,6 +133,7 @@ exports.informationSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().required(),
   image_url: Joi.string().required(),
+  category: Joi.string().required(),
   is_active: Joi.boolean().required()
 });
 
