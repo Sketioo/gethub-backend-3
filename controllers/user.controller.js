@@ -66,7 +66,6 @@ const register = async (req, res) => {
     await transporter.sendMail(mail)
 
     const { password, id, ...customizedUser } = user.dataValues;
-    console.log(user.dataValues)
     return res.status(201).json({
       data: customizedUser,
       message: "Pengguna berhasil dibuat, email verifikasi sudah terkirim",
@@ -109,11 +108,9 @@ const login = async (req, res) => {
     }
 
     const token = generateAccessToken(user);
-    console.log(user.dataValues)
 
     const { password, id, ...userWithoutPassword } = user.dataValues;
     userWithoutPassword.token = token;
-    console.log(user.dataValues)
 
     return res.status(200).json({
       message: "Autentikasi berhasil!",
@@ -147,10 +144,8 @@ const getProfileById = async (req, res) => {
     // Filter out sensitive data
     const {
       password,
-      qr_code,
       is_verify,
       is_premium,
-      theme_hub,
       role_id,
       is_complete_profile,
       ...customizedUser

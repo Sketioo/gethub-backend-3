@@ -4,7 +4,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const cors = require('cors');
-const ejs = require("ejs")
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
 const { authenticateToken } = require("./middleware/check-auth")
@@ -32,7 +31,6 @@ app.use(cors({
 }));
 
 
-
 app.use("/api", userRoute);
 app.use("/api", productRoute);
 app.use("/api", linkRoute);
@@ -45,3 +43,4 @@ app.use("/api", informationRoute);
 app.post("/api/upload-file", authenticateToken, upload.single("file"), imageUploader);
 
 module.exports = app;
+

@@ -168,8 +168,6 @@ exports.validateHistoryUpload = (req, res, next) => {
             return 'Link tidak valid.';
           case 'extension':
             return 'Ekstensi harus berupa string.';
-          case 'date':
-            return 'Tanggal harus berupa tanggal.';
           default:
             return el.message.replace(/"/g, '');
         }

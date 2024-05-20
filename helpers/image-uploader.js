@@ -14,7 +14,6 @@ const upload = multer({
 const storage = new Storage({
   keyFilename
 });
-// console.dir(storage)
 
 const imageUploader = async (req, res) => {
   const file = req.file;
