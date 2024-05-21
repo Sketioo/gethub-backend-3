@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-ENV PORT 3000
+ENV PORT 8080
 
 RUN npm install
 
@@ -12,6 +12,6 @@ COPY sa-key.json /app/sa-key.json
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD npm run start
