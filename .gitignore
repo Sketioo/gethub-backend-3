@@ -2,5 +2,4 @@
 .idea/
 package-lock.json
 .env
-sa-key.json
 tables.sql

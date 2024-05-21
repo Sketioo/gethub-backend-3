@@ -1,0 +1,15 @@
+{
+  "type": "service_account",
+  "project_id": "practice-123321",
+  "private_key_id": "febb73894ad2d2b62b74360c6f3165a6d68fb84d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCyMou5lNiG+bsI\np73+whOzjnqvCc49i18ZzOOsIV+bHXipzCmbFHtpQly0IugfEQO3kiEv5dSY4IJN\nSU4lJAwU6gr8gmqwyzhqb6OFeQNYxcXRdg3RRwyiRz5UzxbKQzP8NxrhC+CmhyiI\nMw23cf/bDyDVldf/xhbkdlDFqQqI3Qz6ihE0GDB44lCnWwxHvxYHNnFXJ7XwcbOu\no9enyk8ByAC4jajmXaNdT1R4tSOW4aw2MegUxZi89oI37XJVfdiV8mlmfJ8nbunt\noGp1PwPCaj4ItxiuD+6kMHdpDxA892H3s3sQdxjedkYOj6GphpahOSMdD966pUHs\nQOKxZ3N/AgMBAAECggEAOgtr5w38f+7txRJ6uXa3Wyggf0623uY8mpdaW/HdBhZR\n/SEzNkA0OOO0dbrfGGt+5fdUFxmKqCeNWiZ0LXXx94gK/xhuL1tq64Sk46+47twx\nJRsKwi4eB+gj/hUcy9KbJt8+QqsPSL9C7SaQI76fBFiHrfrqynZYc5+0jMYU1+J5\nYNxeIQNIQ0mOM4DMyyLjHlz8DAhVOAUVNdC8W8/nvDJ3b5b8QXNyxWKf6d8U4dRQ\nxA2b1EjWzKOEToUaA5gOw/+MGhn8hnCjwF1JdZ1LZqstBh436WwRCWAgPUvSOaUc\nDfK4NSZrIe9x5fp8YrIAYdAYWJvsgam0u4D4KaTtjQKBgQDsYToh6hZ8Ie/p2Lmp\npRdc1EuJm1VJa8uJbtfq2Ippl6KoWo4/KEkCN9K0+llu6TaTD+AVdcokvDFalY3g\ncuTq66M/OAgU6XM480OsI06BQ5Cvj0kuGN9KzEDbtrU+jyaxczCeTMoWICMgDu5J\n2TTZeTFJNbqQnkW3WXh7agfqlQKBgQDA/QRffneF3RkVALWKVGxGnjP/bHpksfON\nidqjHjCkR1YpxX1r1fv4n9SwX1dEA6emPlppEwuOtBt0x1Jm9prwUJlbuYs3JnJi\n3igTlzPTrRDzkdYULOtkenAny2naJtjIIRaBpoJ6QgIn/Xqj7le75kEu5pesdQcc\n/+blrfO0wwKBgQCj3zun61svL2/dlGwSWet6ZYsAmPllbx+p5Xg2zWwXjBIt2Kmo\ny0riCMVAxhZeN7un9GeLOR+sm/MzM18qbTyaSEXiO/wOU1GX973AhrGUF70kmJdJ\nJ+EVP8jvCRlZh3BxsMPR2rZ25Ey1muRDuhtTcRtj/6WZQMBgPdyy4m0eiQKBgCQV\nqyGn5fVTuALjVQ5+Zph1sEdMIz58v4txgT4KwRGWfRfmY2Msaaa9S+mGiiyfelNt\nST5oXzrZlmCpfFDgP2w7xdEOymcPe0fdPiUbmoczzv2cASlYlNL+ycXHFQ3DQbl5\n5llrpu3xNbIAhVPtlt39WabJWwbWAvR7LNM5SV49AoGBAIhjUfyAPdVQMlgzobrx\nDxwsou4FNDgDBOqdtfGJyjWEqHYbXIrEFI1xkrUBLqszjurKK+1llQYImdaKQ8tu\noJ8aIkbTkuujm5EW3gViHECIN+9mtZMqeAHdzpLPNLRJEISNezekJxXmdkpR44Yr\nhb0nc4xdRwRWxOqWez13Sugo\n-----END PRIVATE KEY-----\n",
+  "client_email": "martiogethubbucketserviceaccou@practice-123321.iam.gserviceaccount.com",
+  "client_id": "107382698173232532727",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/martiogethubbucketserviceaccou%40practice-123321.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
+
+

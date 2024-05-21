@@ -5,14 +5,14 @@ const { getUserId } = require("../helpers/utility")
 const models = require("../models");
 
 const imageExtensions = ['jpg', 'jpeg', 'png'];
-const keyFilename = process.env.KEY_FILENAME;
+// const keyFilename = process.env.KEY_FILENAME;
 
 const upload = multer({
   storage: multer.memoryStorage(),
 });
 
 const storage = new Storage({
-  keyFilename
+  keyFilename: process.env.KEY_FILENAME
 });
 
 const imageUploader = async (req, res) => {

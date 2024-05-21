@@ -1,9 +1,5 @@
 name: Deploy to Cloud Run
 
-runs:
-  using: 'node20'
-  main: 'app.js'
-
 env:
   SERVICE_NAME: backend-gethub
   PROJECT_ID: practice-123321
@@ -23,7 +19,8 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        
 
       - name: Google Cloud Auth
         uses: 'google-github-actions/auth@v2'
