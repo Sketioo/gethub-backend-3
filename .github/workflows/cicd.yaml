@@ -1,5 +1,9 @@
 name: Deploy to Cloud Run
 
+runs:
+  using: 'node20'
+  main: 'app.js'
+
 env:
   SERVICE_NAME: backend-gethub
   PROJECT_ID: practice-123321
