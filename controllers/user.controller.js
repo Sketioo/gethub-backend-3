@@ -148,10 +148,6 @@ const getProfileById = async (req, res) => {
     // Filter out sensitive data
     const {
       password,
-      is_verify,
-      is_premium,
-      role_id,
-      is_complete_profile,
       ...customizedUser
     } = user.dataValues;
 

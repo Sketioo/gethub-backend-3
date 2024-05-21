@@ -2,3 +2,4 @@
 .idea/
 .env
 tables.sql
+package.json
