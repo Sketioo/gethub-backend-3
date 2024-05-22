@@ -32,7 +32,7 @@ const getUserPartners = async (req, res) => {
     const user_id = getUserId(req);
     const partners = await models.Partner.findAll({
       where: {
-        user_id,
+        user_id: user_id,
       },
     });
     console.log(partners);
