@@ -98,6 +98,10 @@ module.exports = (sequelize, DataTypes) => {
 
     // Asosiasi dengan model HistoryUpload
     User.hasMany(models.HistoryUpload, { foreignKey: "user_id" });
+
+    // Asosiasi dengan model Certification
+    User.hasMany(models.Certification, { foreignKey: "user_id" });
+
 };
   return User;
 };

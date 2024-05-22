@@ -217,7 +217,6 @@ const updateProfile = async (req, res) => {
     const user_id = getUserId(req);
     const { email, ...userData } = req.body;
 
-    // Set is_complete_profile to true
     userData.is_complete_profile = true;
 
     // Update user data in the database

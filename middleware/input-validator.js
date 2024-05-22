@@ -2,7 +2,7 @@ const {
   userRegisterSchema, userLoginSchema,
   productSchema, linkSchema, sponsorSchema,
   informationSchema, partnerSchema,
-  userUpdateSchema
+  userUpdateSchema, certificationSchema
 } = require("../schemas");
 
 //* User
@@ -80,6 +80,8 @@ exports.validateUpdateUser = (req, res, next) => {
             return "Email tidak valid.";
           case "address":
             return "Alamat lengkap tidak boleh kosong.";
+          case "theme_hub":
+            return "Theme_hub tidak boleh kosong."
           default:
             return el.message.replace(/"/g, "");
         }
@@ -283,5 +285,30 @@ exports.validatePartner = (req, res, next) => {
     })
   } else {
     next();
+  }
+}
+
+//* Certification
+
+exports.validateCertification = (req, res, next) => {
+  const { error } = certificationSchema.validate(req.body);
+
+  if (error) {
+    const messages = error.details.map((el) => {
+      switch (el.context.key) {
+        case "title":
+          return "Title harus diisi.";
+        case "category":
+          return "Category harus diisi.";
+        case "image":
+          return "Image harus diisi.";
+        default:
+          return el.message.replace(/"/g, '');
+      }
+    }).join(', ')
+
+    return res.status(400).json({
+
+    })
   }
 }
