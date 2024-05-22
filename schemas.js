@@ -82,6 +82,7 @@ exports.userUpdateSchema = Joi.object({
   address: Joi.string().allow("").required(),
   photo: Joi.string().allow("").required(),
   about: Joi.string().allow("").optional(),
+  theme_hub: Joi.number().integer().optional(),
 })
 
 //*Product
@@ -152,3 +153,12 @@ exports.partnerSchema = Joi.object({
   website: Joi.string().uri().optional(),
   image: Joi.string().optional(),
 });
+
+//* Certification
+
+exports.certificationSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  title: Joi.string().required(),
+  category: Joi.string().required(),
+  image: Joi.string().required(),
+})
