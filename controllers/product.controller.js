@@ -131,7 +131,7 @@ const updateProduct = async (req, res) => {
       });
     }
     if (user_id === product.user_id) {
-      const updatedProduct = await product.update(req.body);
+      await product.update(req.body);
       return res.status(200).json({
         success: true,
         message: "Produk berhasil diperbarui",

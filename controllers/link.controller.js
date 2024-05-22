@@ -70,7 +70,6 @@ const getAllLinks = async (req, res) => {
 // Mendapatkan sebuah link berdasarkan ID
 const getLinkById = async (req, res) => {
   try {
-    const user_id = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
       return res.status(404).json({

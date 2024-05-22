@@ -2,6 +2,31 @@
 const { getUserId } = require("../helpers/utility");
 const models = require("../models");
 
+const getAllPartners = async (req, res) => {
+  try {
+    const partners = await models.Partner.findAll();
+    console.log(partners);
+    if (!partners || partners.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner tidak ditemukan",
+        error_code: 404,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: partners,
+      error_code: 0,
+      message: "Partner berhasil diambil",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan Internal Server",
+      error_code: 500,
+    });
+  }
+};
 const getUserPartners = async (req, res) => {
   try {
     const user_id = getUserId(req);
@@ -151,6 +176,7 @@ const deletePartner = async (req, res) => {
 
 module.exports = {
   getUserPartners,
+  getAllPartners,
   getPartnerById,
   createPartner,
   updatePartner,

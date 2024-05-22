@@ -6,7 +6,8 @@ const { validateProduct } = require("../middleware/input-validator");
 
 const router = express.Router();
 
-router.get("/products", authenticateToken, productController.getUserProducts);
+router.get("/products", authenticateToken, productController.getAllProducts);
+router.get("/user/products", authenticateToken, productController.getUserProducts);
 router.post("/product", authenticateToken, validateProduct, productController.createProduct);
 router.get("/product/:id", authenticateToken, productController.getProductById);
 router.put("/product/:id", authenticateToken, validateProduct, productController.updateProduct);

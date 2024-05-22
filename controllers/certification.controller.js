@@ -7,6 +7,14 @@ const createCertification = async (req, res) => {
     const user_id = getUserId(req);
     const { category, title, image } = req.body;
     const newCertification = await Certification.create({ category, title, image, user_id });
+
+    if (!newCertification) {
+      return res.status(400).json({
+        success: false,
+        message: 'Gagal membuat certification',
+        error_code: 400
+      })
+    }
     return res.status(201).json({
       success: true,
       data: newCertification,
@@ -31,6 +39,13 @@ const getUserCertifications = async (req, res) => {
         user_id: getUserId(req)
       }
     });
+    if (!certifications || certifications.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Certifications tidak ditemukan',
+        error_code: 404
+      })
+    }
     return res.status(200).json({
       success: true,
       data: certifications,
@@ -51,6 +66,14 @@ const getUserCertifications = async (req, res) => {
 const getAllCertifications = async (req, res) => {
   try {
     const certifications = await Certification.findAll();
+
+    if (!certifications || certifications.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Certifications tidak ditemukan',
+        error_code: 404
+      })
+    }
     return res.status(200).json({
       success: true,
       data: certifications,
