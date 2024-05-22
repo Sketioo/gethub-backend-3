@@ -92,6 +92,7 @@ exports.productSchema = Joi.object({
   user_id: Joi.string().guid({ version: "uuidv4" }).optional(),
   name: Joi.string().required(),
   description: Joi.string().required(),
+  category: Joi.string().required(),
   image_url: Joi.string().uri().required(),
 
 });

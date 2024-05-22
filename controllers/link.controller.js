@@ -7,6 +7,13 @@ const createLink = async (req, res) => {
     const user_id = getUserId(req);
     const { category, link } = req.body;
     const newLink = await Link.create({ category, link, user_id });
+    if(!newLink) {
+      return res.status(400).json({
+        success: false,
+        message: 'Gagal membuat link',
+        error_code: 400
+      })
+    }
     return res.status(201).json({
       success: true,
       data: newLink,
@@ -15,10 +22,10 @@ const createLink = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating link:', error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
-      message: 'Gagal membuat link',
-      error_code: 400
+      message: 'Server error',
+      error_code: 500
     });
   }
 };
@@ -123,10 +130,10 @@ const updateLink = async (req, res) => {
     }
   } catch (error) {
     console.error('Error updating link:', error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
-      message: 'Gagal memperbarui link',
-      error_code: 400
+      message: 'Server error',
+      error_code: 500
     });
   }
 };

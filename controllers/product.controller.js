@@ -1,5 +1,4 @@
 const models = require("../models");
-const jwt = require("jsonwebtoken");
 const { getUserId } = require("../helpers/utility");
 
 // Membuat produk baru
@@ -7,6 +6,7 @@ const createProduct = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const checkUser = await models.User.findByPk(user_id);
+    console.log(user_id)
     if (!checkUser) {
       return res.status(404).json({
         success: false,

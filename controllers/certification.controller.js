@@ -7,7 +7,7 @@ const createCertification = async (req, res) => {
     const user_id = getUserId(req);
     const { category, title, image } = req.body;
     const newCertification = await Certification.create({ category, title, image, user_id });
-
+    console.log(newCertification)
     if (!newCertification) {
       return res.status(400).json({
         success: false,
@@ -23,10 +23,10 @@ const createCertification = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating certification:', error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
-      message: 'Gagal membuat certification',
-      error_code: 400
+      message: 'Server error',
+      error_code: 500
     });
   }
 };
