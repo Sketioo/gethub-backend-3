@@ -320,27 +320,40 @@ const getPublicUser = async (req, res) => {
       });
     }
 
-    const filteredProducts = filterProducts(user.Products);
-    const filteredLinks = filterLinks(user.Links);
+    // const filteredProducts = filterProducts(user.Products);
+    // const filteredLinks = filterLinks(user.Links);
 
-    const publicUserData = {
-      id: user.id,
-      username: user.username,
-      profession: user.profession,
-      name: user.full_name,
-      phone: user.phone,
-      email: user.email,
-      web: user.web,
-      about: user.about,
-      theme_hub: user.theme_hub,
-      is_premium: user.is_premium,
-      products: filteredProducts,
-      links: filteredLinks,
-    };
+    // const publicUserData = {
+    //   id: user.id,
+    //   username: user.username,
+    //   profession: user.profession,
+    //   name: user.full_name,
+    //   phone: user.phone,
+    //   email: user.email,
+    //   web: user.web,
+    //   about: user.about,
+    //   theme_hub: user.theme_hub,
+    //   is_premium: user.is_premium,
+    //   products: filteredProducts,
+    //   links: filteredLinks,
+    // };
+
+    const publicUserData = await models.User.findByPk(user.id, {
+      include: [models.Product, models.Link]
+    })
+
+    //HAlooooooooooo
+    const { Products, Links, fullname, password, role_id, updatedAt, createdAt, ...otherData } = publicUserData.dataValues;
+
+    const userData = {
+      ...otherData,
+      products: Products,
+      links: Links
+    }
 
     return res.status(200).json({
       success: true,
-      data: publicUserData,
+      data: userData,
       message: "Data publik pengguna berhasil diambil",
     });
   } catch (error) {
