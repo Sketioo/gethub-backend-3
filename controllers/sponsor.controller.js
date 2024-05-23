@@ -35,6 +35,7 @@ const getSponsorById = async (req, res) => {
       success: true,
       data: sponsor,
       message: "Sponsor berhasil diambil",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error mengambil sponsor berdasarkan ID:", error);
