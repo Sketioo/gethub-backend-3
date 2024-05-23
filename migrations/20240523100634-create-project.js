@@ -23,9 +23,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      category: {
-        type: Sequelize.STRING,
+      category_id: {
+        type: Sequelize.UUID,
+        references: {
+          model: "categories",
+          key: "id",
+        },
         allowNull: false,
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       description: {
         type: Sequelize.TEXT,

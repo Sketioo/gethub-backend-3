@@ -17,6 +17,7 @@ const partnerRoute = require("./routes/partner");
 const informationRoute = require("./routes/information");
 const certificateRoute = require("./routes/certification");
 const projectRoute = require("./routes/project");
+const categoryRoute = require("./routes/category");
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api", sponsorRoute);
 app.use("/api", partnerRoute);
 app.use("/api", informationRoute);
 app.use("/api", certificateRoute);
+app.use('/api', categoryRoute);
 app.use("/api/project", projectRoute);
 
 

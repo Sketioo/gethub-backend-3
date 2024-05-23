@@ -11,7 +11,6 @@ module.exports = (sequelize) => {
     static associate(models) {
       // Define association here
       this.belongsTo(models.User, { foreignKey: "user_id" });
-      this.belongsTo(models.Category, { foreignKey: "category_id" });
     }
   }
   Link.init(
@@ -29,11 +28,8 @@ module.exports = (sequelize) => {
         onUpdate: 'CASCADE',
         allowNull: true
       },
-      category_id: {
-        type: DataTypes.UUID,
-        references: { model: 'Category', key: 'id' },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+      category: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       link: {
