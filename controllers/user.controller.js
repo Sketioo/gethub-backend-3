@@ -285,22 +285,6 @@ const deleteProfile = async (req, res) => {
   }
 };
 
-// Fungsi bantuan untuk memfilter produk
-const filterProducts = (products) =>
-  products.map((product) => ({
-    name: product.name,
-    price: product.price,
-    description: product.description,
-    image_url: product.image_url,
-  }));
-
-// Fungsi bantuan untuk memfilter tautan
-const filterLinks = (links) =>
-  links.map((link) => ({
-    category: link.category,
-    link: link.link,
-  }));
-
 const getPublicUser = async (req, res) => {
   try {
     const username = req.query.username;
@@ -320,30 +304,12 @@ const getPublicUser = async (req, res) => {
       });
     }
 
-    // const filteredProducts = filterProducts(user.Products);
-    // const filteredLinks = filterLinks(user.Links);
-
-    // const publicUserData = {
-    //   id: user.id,
-    //   username: user.username,
-    //   profession: user.profession,
-    //   name: user.full_name,
-    //   phone: user.phone,
-    //   email: user.email,
-    //   web: user.web,
-    //   about: user.about,
-    //   theme_hub: user.theme_hub,
-    //   is_premium: user.is_premium,
-    //   products: filteredProducts,
-    //   links: filteredLinks,
-    // };
-
     const publicUserData = await models.User.findByPk(user.id, {
       include: [models.Product, models.Link]
     })
 
     //HAlooooooooooo
-    const { Products, Links, fullname, password, role_id, updatedAt, createdAt, ...otherData } = publicUserData.dataValues;
+    const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = publicUserData.dataValues;
 
     const userData = {
       ...otherData,
