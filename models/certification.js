@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.User, { foreignKey: 'user_id' });
+      this.belongsTo(models.Category, { foreignKey: 'category_id' });
     }
   }
   Certification.init({
@@ -23,12 +25,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    category: {
-      type: DataTypes.STRING,
+    category_id: {
+      type: DataTypes.UUID,
+      references: {
+        model: "Category",
+        key: "id",
+      },
       allowNull: false,
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
     user_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       references: {
         model: "User",
         key: "id",
@@ -56,13 +64,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   );
-
-  Certification.associate = (models) => {
-    // Asosiasi dengan model User
-    Certification.belongsTo(models.User, {
-      foreignKey: 'user_id',
-    });
-  }
 
   return Certification;
 };

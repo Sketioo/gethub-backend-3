@@ -17,13 +17,19 @@ module.exports = {
         onUpdate: 'CASCADE'
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      category: {
-        type: Sequelize.STRING
+      category_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: { model: 'categories', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,

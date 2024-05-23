@@ -65,6 +65,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN, 
         allowNull: true
       },
+      role_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: "Role", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
       theme_hub: DataTypes.INTEGER,
     },
     {

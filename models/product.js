@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.User, { foreignKey: "user_id" });
+      this.belongsTo(models.Category, {foreignKey: "category_id"})
     }
   }
   Product.init({
@@ -21,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     user_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       references: { model: 'User', key: 'id' },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
@@ -35,8 +37,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    category: {
-      type: DataTypes.STRING,
+    category_id: {
+      type: DataTypes.UUID,
+      references: { model: 'Category', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
       allowNull: false
     },
     image_url: {
@@ -48,34 +53,5 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Product',
     tableName: 'products',
   });
-  Product.associate = function (models) {
-    // associations can be defined here
-    Product.belongsTo(models.User, { foreignKey: "user_id" });
-  }
   return Product;
 };
-
-
-// "use strict";
-// module.exports = (sequelize, DataTypes) => {
-//   const Product = sequelize.define(
-//     "Product",
-//     {
-//     user_id: {type: DataTypes.INTEGER, allowNull: false},
-//     name: {type: DataTypes.STRING, allowNull: false},
-//     price: {type: DataTypes.STRING, allowNull: false},
-//     description: {type: DataTypes.STRING, allowNull: false},
-//     image_url: {type: DataTypes.STRING, allowNull: false}
-//     },
-//     {
-//       tableName: "products",
-//       modelName: "Product",
-//       timestamps: false,
-//     }
-//   );
-//   Product.associate = function (models) {
-//     // Asosiasi dengan model Role
-//     Product.belongsTo(models.User, { foreignKey: "user_id" });
-//   };
-//   return Product;
-// };

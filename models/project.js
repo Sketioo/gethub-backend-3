@@ -12,9 +12,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Define association here
-      Project.belongsTo(models.User, { foreignKey: 'owner_id' });
-
-      Project.hasMany(models.Project_User_Bid, { foreignKey: 'project_id' });
+      this.belongsTo(models.User, { foreignKey: 'owner_id' });
+      this.belongsTo(models.Category, { foreignKey: 'category_id' });
+      this.hasMany(models.Project_User_Bid, { foreignKey: 'project_id' });
     }
   }
 
@@ -36,9 +36,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    category: {
-      type: DataTypes.STRING,
+    category_id: {
+      type: DataTypes.UUID,
       allowNull: false,
+      references: { model: 'Category', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     description: {
       type: DataTypes.TEXT,
