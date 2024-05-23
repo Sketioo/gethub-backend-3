@@ -55,7 +55,7 @@ const getOwnerProjects = async (req, res) => {
 
 const getUserProjectBids = async (req, res) => {
   try {
-    const userIdLogin = getUserId(req); // Assuming you get the logged-in user's ID from authentication middleware
+    const userIdLogin = getUserId(req);
     const userProjectBids = await models.Project.findAll({
       include: [{
         model: models.Project_User_Bid,
