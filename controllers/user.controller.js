@@ -33,6 +33,7 @@ const register = async (req, res) => {
       .replace(/\s+/g, "")
       .toLowerCase();
     const randomNumber = Math.floor(1000 + Math.random() * 9000);
+    const role_id = 'fdc0c989-1916-11ef-951a-00155d04866b';
 
     const newUserData = {
       full_name: req.body.full_name,
@@ -46,6 +47,7 @@ const register = async (req, res) => {
       photo: req.body.photo,
       about: req.body.about,
       qr_code: generateRandomString(12),
+      role_id,
       is_verify: false,
       is_premium: false,
       theme_hub: getThemehub(),
