@@ -2,7 +2,8 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const { Sequelize } = require("sequelize");
 
-const { getUserId } = require("../helpers/utility")
+const { getUserId, getThemehub } = require("../helpers/utility");
+
 
 const {
   generateRandomString,
@@ -45,9 +46,9 @@ const register = async (req, res) => {
       photo: req.body.photo,
       about: req.body.about,
       qr_code: generateRandomString(12),
-      is_verify: null,
+      is_verify: false,
       is_premium: false,
-      theme_hub: false,
+      theme_hub: getThemehub(),
       is_complete_profile: false,
     };
 
@@ -331,6 +332,8 @@ const getPublicUser = async (req, res) => {
       email: user.email,
       web: user.web,
       about: user.about,
+      theme_hub: user.theme_hub,
+      is_premium: user.is_premium,
       products: filteredProducts,
       links: filteredLinks,
     };

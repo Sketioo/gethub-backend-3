@@ -1,5 +1,10 @@
 const jwt = require("jsonwebtoken");
 
+const getThemehub = () => {
+  const theme_hub = [1, 2, 3, 4, 5];
+  return theme_hub[Math.floor(Math.random() * theme_hub.length)];
+}
+
 const generateAccessToken = (user) => {
   return jwt.sign(
     { userId: user.id, username: user.user_name },
@@ -50,5 +55,6 @@ module.exports = {
   generateRandomString,
   verifyAccessToken,
   generateAccessToken,
-  getUserId
+  getUserId,
+  getThemehub
 };
