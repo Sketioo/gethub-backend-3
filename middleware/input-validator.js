@@ -231,6 +231,10 @@ exports.validateInformation = (req, res, next) => {
             return 'Deskripsi informasi tidak boleh kosong.';
           case 'image_url':
             return 'URL gambar tidak valid.';
+          case 'category':
+            return "Category tidak boleh kosong";
+          case 'is_active':
+            return "Is_active tidak boleh kosong";
           default:
             return el.message.replace(/"/g, '');
         }

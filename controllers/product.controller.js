@@ -6,7 +6,6 @@ const createProduct = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const checkUser = await models.User.findByPk(user_id);
-    console.log(user_id)
     if (!checkUser) {
       return res.status(404).json({
         success: false,
@@ -36,8 +35,10 @@ const getUserProducts = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const products = await models.Product.findAll({
-      where: {
-        user_id,
+      where: { user_id },
+      include: {
+        model: models.Category,
+        attributes: ['name'],
       },
     });
     if (!products || products.length === 0) {
@@ -66,7 +67,12 @@ const getUserProducts = async (req, res) => {
 // Mendapatkan semua produk
 const getAllProducts = async (req, res) => {
   try {
-    const products = await models.Product.findAll();
+    const products = await models.Product.findAll({
+      include: {
+        model: models.Category,
+        attributes: ['name'],
+      },
+    });
     if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -93,8 +99,12 @@ const getAllProducts = async (req, res) => {
 // Mendapatkan produk berdasarkan ID
 const getProductById = async (req, res) => {
   try {
-    const user_id = getUserId(req);
-    const product = await models.Product.findByPk(req.params.id);
+    const product = await models.Product.findByPk(req.params.id, {
+      include: {
+        model: models.Category,
+        attributes: ['name'],
+      },
+    });
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -117,6 +127,8 @@ const getProductById = async (req, res) => {
     });
   }
 };
+
+//! ------------
 
 // Memperbarui produk berdasarkan ID
 const updateProduct = async (req, res) => {
