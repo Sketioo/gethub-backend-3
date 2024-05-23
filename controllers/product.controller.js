@@ -67,12 +67,14 @@ const getUserProducts = async (req, res) => {
 // Mendapatkan semua produk
 const getAllProducts = async (req, res) => {
   try {
-    const products = await models.Product.findAll({
-      include: {
-        model: models.Category,
-        attributes: ['name'],
-      },
-    });
+    // const products = await models.Product.findAll({
+    //   include: {
+    //     model: models.Category,
+    //     attributes: ['name'],
+    //   },
+    // });
+
+    const products = await models.Product.findAll();
     if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,

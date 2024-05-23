@@ -286,6 +286,7 @@ const deleteProfile = async (req, res) => {
 };
 
 const getPublicUser = async (req, res) => {
+  console.log('triggered')
   try {
     const username = req.query.username;
     const user = await models.User.findOne({
@@ -322,13 +323,6 @@ const getPublicUser = async (req, res) => {
       message: "Data publik pengguna berhasil diambil",
     });
   } catch (error) {
-    if (error instanceof SequelizeEagerLoadingError) {
-      return res.status(400).json({
-        success: false,
-        message: "Error mengambil data publik pengguna",
-        error_code: 400,
-      });
-    }
 
     console.error("Error mengambil data pengguna:", error);
     return res.status(500).json({

@@ -92,7 +92,7 @@ exports.productSchema = Joi.object({
   user_id: Joi.string().guid({ version: "uuidv4" }).optional(),
   name: Joi.string().required(),
   description: Joi.string().required(),
-  category: Joi.string().required(),
+  category_id: Joi.string().required(),
   image_url: Joi.string().uri().required(),
 
 });
@@ -160,6 +160,6 @@ exports.partnerSchema = Joi.object({
 exports.certificationSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   title: Joi.string().required(),
-  category: Joi.string().required(),
+  category_id: Joi.string().required(),
   image: Joi.string().required(),
 })

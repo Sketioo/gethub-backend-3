@@ -302,7 +302,7 @@ exports.validateCertification = (req, res, next) => {
       switch (el.context.key) {
         case "title":
           return "Title harus diisi.";
-        case "category":
+        case "category_id":
           return "Category harus diisi.";
         case "image":
           return "Image harus diisi.";

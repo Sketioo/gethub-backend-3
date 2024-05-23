@@ -8,6 +8,7 @@ const getAllSponsors = async (req, res) => {
       success: true,
       data: sponsors,
       message: "Semua sponsor berhasil diambil",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error mengambil semua sponsor:", error);

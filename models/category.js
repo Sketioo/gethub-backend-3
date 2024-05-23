@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Category has many product, project, and certification
-      this.hasMany(models.Product, { foreignKey: 'category' });
-      this.hasMany(models.Project, { foreignKey: 'category' });
-      this.hasMany(models.Certification, { foreignKey: 'category' });
+      this.hasMany(models.Product, { foreignKey: 'category_id' });
+      this.hasMany(models.Project, { foreignKey: 'category_id' });
+      this.hasMany(models.Certification, { foreignKey: 'category_id' });
     }
   }
   Category.init({
