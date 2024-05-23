@@ -55,6 +55,7 @@ const createSponsor = async (req, res) => {
       success: true,
       data: createdSponsor,
       message: "Sponsor berhasil dibuat",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error membuat sponsor:", error);
@@ -88,6 +89,7 @@ const updateSponsor = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Sponsor berhasil diperbarui",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error memperbarui sponsor:", error);
@@ -116,6 +118,7 @@ const deleteSponsor = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Sponsor berhasil dihapus",
+      error_code: 0,
     });
   } catch (error) {
     console.error("Error menghapus sponsor:", error);
