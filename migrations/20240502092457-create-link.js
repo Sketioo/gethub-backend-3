@@ -18,9 +18,15 @@ module.exports = {
         onDelete: "CASCADE",
         allowNull: true,
       },
-      category: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      category_id: {
+        type: Sequelize.UUID,
+        references: {
+          model: "categories",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        allowNull: true,
       },
       link: {
         type: Sequelize.STRING,

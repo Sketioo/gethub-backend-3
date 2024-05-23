@@ -65,6 +65,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN, 
         allowNull: true
       },
+      role_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: "Role", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
       theme_hub: DataTypes.INTEGER,
     },
     {
@@ -101,6 +108,11 @@ module.exports = (sequelize, DataTypes) => {
 
     // Asosiasi dengan model Certification
     User.hasMany(models.Certification, { foreignKey: "user_id" });
+
+    // Asosiasi dengan model Project
+    User.hasMany(models.Project, { foreignKey: "owner_id" });
+
+    User.hasMany(models.Project_User_Bid, { foreignKey: 'user_id' });
 
 };
   return User;

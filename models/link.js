@@ -10,6 +10,8 @@ module.exports = (sequelize) => {
      */
     static associate(models) {
       // Define association here
+      this.belongsTo(models.User, { foreignKey: "user_id" });
+      this.belongsTo(models.Category, { foreignKey: "category_id" });
     }
   }
   Link.init(
@@ -21,14 +23,17 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       user_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
         references: { model: 'User', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
         allowNull: true
       },
-      category: {
-        type: DataTypes.STRING,
+      category_id: {
+        type: DataTypes.UUID,
+        references: { model: 'Category', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
         allowNull: false,
       },
       link: {
@@ -42,9 +47,5 @@ module.exports = (sequelize) => {
       tableName: "links",
     }
   );
-  Link.associate = function (models) {
-    // Association with the User model
-    Link.belongsTo(models.User, { foreignKey: "user_id" });
-  };
   return Link;
 };

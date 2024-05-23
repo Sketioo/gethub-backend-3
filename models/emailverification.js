@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     user_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       references: { model: 'User', key: 'id' },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
