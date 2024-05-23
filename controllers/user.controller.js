@@ -308,7 +308,6 @@ const getPublicUser = async (req, res) => {
       include: [models.Product, models.Link]
     })
 
-    //HAlooooooooooo
     const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = publicUserData.dataValues;
 
     const userData = {

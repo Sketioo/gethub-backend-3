@@ -15,7 +15,8 @@ const enumeRoute = require("./routes/enumeration");
 const sponsorRoute = require("./routes/sponsor");
 const partnerRoute = require("./routes/partner");
 const informationRoute = require("./routes/information");
-const certificateRoute = require("./routes/certification")
+const certificateRoute = require("./routes/certification");
+const projectRoute = require("./routes/project");
 
 const app = express();
 
@@ -40,6 +41,8 @@ app.use("/api", sponsorRoute);
 app.use("/api", partnerRoute);
 app.use("/api", informationRoute);
 app.use("/api", certificateRoute);
+app.use("/api/project", projectRoute);
+
 
 //* Helper
 app.post("/api/upload-file", authenticateToken, upload.single("file"), imageUploader);
