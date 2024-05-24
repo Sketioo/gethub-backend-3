@@ -2,7 +2,7 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const { Sequelize } = require("sequelize");
 
-const { getUserId, getThemehub } = require("../helpers/utility");
+const { getUserId, getThemehub, getUserProfileCard } = require("../helpers/utility");
 
 
 const {
@@ -311,7 +311,7 @@ const getPublicUser = async (req, res) => {
       include: [models.Product, models.Link]
     })
 
-    const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = publicUserData.dataValues;
+    const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = user.dataValues;
 
     const userData = {
       ...otherData,
@@ -319,10 +319,14 @@ const getPublicUser = async (req, res) => {
       links: Links
     }
 
+    const getThemeHub = await getUserProfileCard(username);
+    userData.theme_hub = getThemeHub;
+
     return res.status(200).json({
       success: true,
       data: userData,
       message: "Data publik pengguna berhasil diambil",
+      error_code: 0
     });
   } catch (error) {
 
