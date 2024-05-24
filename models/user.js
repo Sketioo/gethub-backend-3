@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       username: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
@@ -72,13 +72,32 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      theme_hub: DataTypes.INTEGER,
+      theme_hub: {
+        type:DataTypes.INTEGER,
+        allowNull: false
+      },
+      sentiment_owner_analisis: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      sentiment_owner_score: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      sentiment_freelance_analisis: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      sentiment_freelance_score: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      }
     },
     {
       modelName: "User",
       tableName: "users",
       validUpdateColumns() {
-        const allowedColumns = ["full_name", "profession", "phone", "web", "address", "photo", "about", "theme_hub"];
+        const allowedColumns = ["full_name", "profession", "phone", "web", "address", "photo", "about", "theme_hub", "sentiment_owner_analisis", "sentiment_owner_score", "sentiment_freelance_analisis", "sentiment_freelance_score"];
         for (const key in this._changed) {
           if (!allowedColumns.includes(key)) {
             throw new Error(`Kolom ${key} tidak dapat diperbarui`);
@@ -112,8 +131,10 @@ module.exports = (sequelize, DataTypes) => {
     // Asosiasi dengan model Project
     User.hasMany(models.Project, { foreignKey: "owner_id" });
 
-    User.hasMany(models.Project_User_Bid, { foreignKey: 'user_id' });
+    // User can be assigned to many project tasks (as freelance)
+    User.hasMany(models.Project_Task, { foreignKey: 'task_freelance_id' });
 
-};
+    User.hasMany(models.Project_User_Bid, { foreignKey: 'user_id' });
+  };
   return User;
 };
