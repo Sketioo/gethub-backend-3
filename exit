@@ -1,0 +1,436 @@
+[33mcommit f86ff4cc736ba2828c72171f9f3f4aed80e8ed36[m[33m ([m[1;36mHEAD -> [m[1;32mimageCard[m[33m)[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 23 14:38:53 2024 +0700
+
+    Created CRUD functionality for category
+
+[33mcommit 767efb08eb28921f27c06f57ebdb15c60a3fb476[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 23 14:38:29 2024 +0700
+
+    Modified user controller and utility
+
+[33mcommit a6750c6693061ab795138e0d0dbd3df639a00be3[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 23 00:31:22 2024 +0700
+
+    "Solve bugs"
+
+[33mcommit 8293516c0121be26831553b4026ca28022950551[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 23 00:27:01 2024 +0700
+
+    Updated controllers, models, and helpers: added console logs, and modified schema and model references.
+
+[33mcommit 0e8e4f9ddf0afcf94283b5dd33362d323f54bed9[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 22 20:08:56 2024 +0700
+
+    Change port number from 3000 to 8080 in server.js
+
+[33mcommit 38a8f2f9eb451b17afe97711993caaa9f7692828[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 22 19:59:23 2024 +0700
+
+    Added error handling and validation to certification, link, partner, and product controllers; updated routes to include new endpoints and modified existing ones.
+
+[33mcommit 0969f73b3847e7fc7e4422bc72e0d24f4959d89c[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 22 19:03:55 2024 +0700
+
+    Added certificate route and controller,and input validator
+
+[33mcommit 30980cade241c9b42cc6f4d01ea806e63a6af068[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 22 15:43:22 2024 +0700
+
+    "Added certificationSchema to input-validator middleware and implemented validation for certification requests"
+
+[33mcommit ccceb5aa2374e1560aee0c9036c5075f4050ebde[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 16:18:09 2024 +0700
+
+    Updated .gitignore to ignore package.json, removed fields from user object in user.controller.js
+
+[33mcommit da130d65f1604d47a5afb539652bdd405292e428[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 14:47:37 2024 +0700
+
+    Update port from 3000 to 8080 in Dockerfile and server.js
+
+[33mcommit 1ef07fe56dd73dc5eeb843428d0d2b7dea8ce18d[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 14:30:14 2024 +0700
+
+    Added COPY package*.json ./ before npm install in Dockerfile.prod
+
+[33mcommit f237267336068bcb2c900980e6ff953f21cd2024[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 14:27:41 2024 +0700
+
+    Removed 'package-lock.json' from .gitignore
+
+[33mcommit 0f9cc5ba9ab91409b7bec3f0b5f7479d46994026[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 14:21:19 2024 +0700
+
+    Modified Dockerfile
+
+[33mcommit 0eb1632803807bd7f20aa341daf9f283dcd40fda[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 14:16:12 2024 +0700
+
+    Updated cicd.yaml, removed sa-key.json from .gitignore, and modified image-uploader.js to use process.env.KEY_FILENAME
+
+[33mcommit 6ebdb915d2e38a6c31e3a56909a706d76f407b7a[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 14:03:20 2024 +0700
+
+    Added 'runs' section to cicd.yaml workflow file
+
+[33mcommit 9500deaa66821b6ffd5234062f95a3e95da47188[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 21 13:59:50 2024 +0700
+
+    Add ./github/workflows
+
+[33mcommit 1dbb809e07c53c2022eb15a403adacb68e900129[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Mon May 20 20:26:20 2024 +0700
+
+    Added 404 error handling and category field to information schema
+
+[33mcommit 45e0d2efd2ee8bf75315b83d7e227da2aee75cad[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Mon May 20 19:57:29 2024 +0700
+
+    Modify migration to use uncapitalized tabel name
+
+[33mcommit 3f8413f15ab5d1a389ce8d4e33dd6df333a4d4b1[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Mon May 20 19:56:44 2024 +0700
+
+    Create email verify refresher
+
+[33mcommit 3f9b842e5603f1473b8d153ca900a098a12d5356[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Mon May 20 15:36:52 2024 +0700
+
+    Updating user public profile response
+
+[33mcommit ff6e39decf9aa1df4cf2460aa687713a90e7cdb4[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 22:50:53 2024 +0700
+
+    Modify cloud storage credential call
+
+[33mcommit f126a75e855adedfb9c715a344daa3f64fa9842a[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 20:49:22 2024 +0700
+
+    Change email verification button colour
+
+[33mcommit e64c1734bde65c6605a85b326294bda5055c1cea[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 20:37:11 2024 +0700
+
+    Modify Dockerfile
+
+[33mcommit ed224a9a9220e0402fa2de135da232b603f8328f[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 20:20:54 2024 +0700
+
+    "added userUpdateSchema to middleware and schemas"
+
+[33mcommit 512be0671d7e146a9f0739dec65a43c0688f14ef[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 20:19:56 2024 +0700
+
+    Create template for email verification proses
+
+[33mcommit 23ae131064515344a1c9b0ea2c94e46d864a80d6[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 03:19:12 2024 +0700
+
+    "Update controller functions to use Bahasa Indonesia; adjust error messages and response format"
+
+[33mcommit 101d08cc67fcc041c767eb9fe172ccde8eb85caa[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 02:28:13 2024 +0700
+
+    Modify controller to make conditional authorize and
+
+[33mcommit d750ddf4099ed937bf7b316af67c93a954620d99[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 16 02:26:11 2024 +0700
+
+    modify image-uploader functionality
+
+[33mcommit 64f9c685417aa0ee998eedd642d38bf832688566[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 15 23:21:35 2024 +0700
+
+    Repair link crud functionality
+
+[33mcommit 0bc6fe2d0518646c20c780d367e2b8fadf58d2b7[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 15 22:57:52 2024 +0700
+
+    Repair CRUD functionality
+
+[33mcommit 19de538652bff12ca5d4d7051ad71a4305e275fa[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 14 15:13:26 2024 +0700
+
+    Repair the image uploader functionality and changing the url format template
+
+[33mcommit 3cdcf1f9cd2b975c272f150d4dd1b9ae34da49cc[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 12 20:32:34 2024 +0700
+
+    Update user-related functionality:
+    
+    - Extract getUserId from request object in user controller
+    - Update email verification helper to use process.env.WEB\_HOST
+    - Update utility helper to extend access token expiration time to 3
+
+[33mcommit fb20763bfe71c256fa433d9eab06dc43cb71a8b2[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 12 15:35:35 2024 +0700
+
+    "Add user\_id to link, partner, and product models; extract getUserId function to utility helper; update input-validator middleware to handle validation errors"
+    
+    This diff adds the user\_id field to the link, partner, and
+
+[33mcommit 39d3fa25df90d7ee110619a0957acd0dbc6d9b8f[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 12 14:31:34 2024 +0700
+
+    Update user registration with email verification using nodemailer
+    
+    - Add nodemailer as a dependency
+    - Create email-verification helper for creating email and transporter
+    - Update user.controller.js to send email verification upon successful registration
+
+[33mcommit 5d31fc3022a5d77f051917ded0671a99d14a0b48[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 12 12:11:14 2024 +0700
+
+    create complete CRUD for sprint 1
+
+[33mcommit ea9ac9f38eada20059bd3ff10531f5756698a6ed[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 11 19:35:46 2024 +0700
+
+    modify migration and model structure
+
+[33mcommit 7a4cc9b3d7ba0a7ee0a78bb7f7ebadd76a5737c0[m
+Merge: c677811 77c4cb7
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 11 11:43:18 2024 +0700
+
+    Merge branch 'main' of https://github.com/Sketioo/gethub-backend-3
+
+[33mcommit 77c4cb76c533737452f96391d50ce50205a28c7e[m
+Author: ahmdirvn <ahmadirvan9c17@gmail.com>
+Date:   Sat May 11 08:16:01 2024 +0700
+
+    feat : fix migration create user
+
+[33mcommit c677811b4c644c7bf727042815bdfe73343db00d[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 11 00:56:09 2024 +0700
+
+    modify model and routes functionality
+
+[33mcommit e1b66e23aae6bd58e4d21fcfdf7376af47ca3bc2[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri May 10 23:10:00 2024 +0700
+
+    modify migrations and models
+
+[33mcommit a26a3adec1ad4f8ef919b642b5f5b8347cdc0c90[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri May 10 22:41:51 2024 +0700
+
+    modify validation functionality
+
+[33mcommit 65a8cf21abd4b6d10b41c06f5e378f6836d36339[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri May 10 09:23:50 2024 +0700
+
+    create link validation schema
+
+[33mcommit fff3e5ddc25a57eb05fe66ce2d4ca8e6a11841ed[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 8 21:29:00 2024 +0700
+
+    Create jwt functionality
+
+[33mcommit f4fce3db655a311653279c497602058585488c80[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Wed May 8 17:12:54 2024 +0700
+
+    create user validator schema
+
+[33mcommit 386221de48cf9c9404a7e2972105c44f1fc5973d[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 7 15:18:53 2024 +0700
+
+    create error-handler and utility
+
+[33mcommit 4c5468aad51e648ea2b5762fb5787d8e0cb35652[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue May 7 13:52:36 2024 +0700
+
+    modify model and migration uuid primary key
+
+[33mcommit ebd6559447431931a431965b9e3cf61f0f5f1fd9[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 5 18:55:41 2024 +0700
+
+    reconstruct image uploader helper
+
+[33mcommit 922a7db4d3ca945dabad7270889927fb89d116f5[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 5 15:17:40 2024 +0700
+
+    create file upload api functionality
+
+[33mcommit a987b87d666e063a5f137a67237cbaa9bbd657df[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sun May 5 01:04:01 2024 +0700
+
+    create crud for partner functionality
+
+[33mcommit 8b0f3bbb5e9744d818f45765e2721d6bff50062c[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 4 23:50:27 2024 +0700
+
+    create crud functionality for sponsor
+
+[33mcommit e5c84c2cdf4e670ed90d4b99092fff239c894235[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 4 23:49:50 2024 +0700
+
+    create crud functionality for sponsor
+
+[33mcommit 3256c5c8abcd4dcdd7b39e4de8578066fce57082[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 4 17:21:26 2024 +0700
+
+    create crud for enumeration table
+
+[33mcommit 0021d05d17826c7e684be67760b758f31c96144a[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat May 4 16:39:17 2024 +0700
+
+    modified complete profile api functionality
+
+[33mcommit 24788f8e125c2d587f057a4f2d64247d640f0bab[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri May 3 12:04:22 2024 +0700
+
+    modified crud functionality
+
+[33mcommit 40b53c89f9f0641aa8bc81c7d472fcf844db3855[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri May 3 08:48:45 2024 +0700
+
+    modified product and user functionality
+
+[33mcommit 465e4c2fe3a1dd689bd24ba9dd936d09f3dc4335[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri May 3 08:48:18 2024 +0700
+
+    create crud functionality for link
+
+[33mcommit 1d5da766cd09a85dc97b6ab1e6c28c91da5b5cd2[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 2 21:45:35 2024 +0700
+
+    create product crud functionality
+
+[33mcommit 2d3cc84bdf42a6238277c25566f7cc6c93615969[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 2 18:33:57 2024 +0700
+
+    create model and migration tabels
+
+[33mcommit 21eea9c822f87221040be5360adbf21f7fa9a0fd[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Thu May 2 16:37:42 2024 +0700
+
+    modified login and signup func
+
+[33mcommit a7080eeb3a86e7df6810c74d607a0a61ae02d1de[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Tue Apr 30 20:53:15 2024 +0700
+
+    modified auth-linkedin feature
+
+[33mcommit 38dace1ce5d302e64b8742c38c9983dcc1ca2f95[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Sat Apr 27 17:35:50 2024 +0700
+
+    Add linkedin auth
+
+[33mcommit 8a92889850adf6d27ae919f8c4c96ac80b6cc7c2[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri Apr 26 13:25:09 2024 +0700
+
+    Modify model and migration
+
+[33mcommit ebfa7eb791e11751f986fab337c2a83855759e2e[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri Apr 26 13:24:22 2024 +0700
+
+    Modified signup and register func
+
+[33mcommit 8e61cc593934abb6a6ca0723144b2669c24e6c4d[m
+Author: AmurTigro <martiohusein27@gmail.com>
+Date:   Fri Apr 26 09:39:00 2024 +0700
+
+    First commit
+
+[33mcommit d224542dc23a21b3c536e301084e0883cbfb9806[m
+Author: tharindulucky <tharindu.lakshitha.susl@gmail.com>
+Date:   Sun Jan 14 16:20:51 2024 +0530
+
+    remove unused vilumes property
+
+[33mcommit b00a2349d777fd460477d616cfe9611f900bbc49[m
+Author: tharindulucky <tharindu.lakshitha.susl@gmail.com>
+Date:   Wed Jan 3 00:18:06 2024 +0530
+
+    dockerization complete
+
+[33mcommit 6b08b7a1849ae06a68a434567179b617c42a6da3[m
+Author: tharindulucky <tharindu.lakshitha.susl@gmail.com>
+Date:   Tue Jan 2 22:57:22 2024 +0530
+
+    dockerization complete
+
+[33mcommit a3e5b6737a4064f380dd4106473e512689df0d96[m
+Author: tharindulucky <tharindu.lakshitha.susl@gmail.com>
+Date:   Tue Jan 2 22:34:14 2024 +0530
+
+    dockerization complete
+
+[33mcommit a643214fa897df1bb445e588c1f1b0e926cd456d[m
+Author: Tharindu Lakshitha <tharindulakshitha@arimaclanka.com>
+Date:   Thu Aug 31 16:17:58 2023 +0530
+
+    associations impleted on products -show method
+
+[33mcommit 19a91ef83d251953076efa8757ec4a967d9b6648[m
+Author: Tharindu Lakshitha <tharindu.lakshitha.susl@gmail.com>
+Date:   Wed Nov 4 01:30:40 2020 +0530
+
+    added image uploader
+
+[33mcommit 70292382a458e3e67af0f0edb4bfa7fc4fe7ec33[m
+Author: Tharindu Lakshitha <tharindu.lakshitha.susl@gmail.com>
+Date:   Sat Oct 24 00:54:53 2020 +0530
+
+    initial commit
