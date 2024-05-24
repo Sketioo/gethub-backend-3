@@ -20,7 +20,7 @@ module.exports = {
         allowNull: false  
       },
       ref_user_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       full_name: {
         type: Sequelize.STRING,

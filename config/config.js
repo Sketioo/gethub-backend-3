@@ -1,15 +1,15 @@
 const dotenv = require("dotenv").config();
 
 let config = {
-  database: process.env["DB_DATABASE"],
-  username: process.env["DB_USERNAME"],
-  password: process.env["DB_PASSWORD"],
-  host: process.env["DB_HOST"],
+  database: process.env.DB_DATABASE,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
   dialect: "mysql",
 };
 
 // let prodConfig = {
-//   database: process.env["PROD_DB_DATABASE"],
+//   database: process.env.PROD_DB_DATABASE"],
 //   username: process.env["PROD_DB_USERNAME"],
 //   password: process.env["PROD_DB_PASSWORD"],
 //   host: process.env["PROD_DB_HOST"],
@@ -19,7 +19,7 @@ let config = {
 
 module.exports = {
   development: config,
-  test: config,
+  // test: config,
   // production: prodConfig,
 };
 

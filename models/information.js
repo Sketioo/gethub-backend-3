@@ -43,6 +43,14 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Information',
     tableName: 'informations',
+    validateUpdateColumns() {
+      const allowedColumns = ["title", "description", "image_url", "category", "is_active"];
+      for (const key in this._changed) {
+        if (!allowedColumns.includes(key)) {
+          throw new Error(`Kolom ${key} tidak dapat diperbarui`);
+        }
+      }
+    }
   });
   return Information;
 };

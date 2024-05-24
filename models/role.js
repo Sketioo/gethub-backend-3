@@ -17,6 +17,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       modelName: "Role",
       tableName: "roles",
+      validateUpdateColumns() {
+        const allowedColumns = ["name"];
+        for (const key in this._changed) {
+          if (!allowedColumns.includes(key)) {
+            throw new Error(`Kolom ${key} tidak dapat diperbarui`);
+          }
+        }
+      }
     }
   );
   Role.associate = function (models) {

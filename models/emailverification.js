@@ -42,7 +42,15 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'EmailVerification',
-    tableName: 'email_verifications'
+    tableName: 'email_verifications',
+    validateUpdateColumns() {
+      const allowedColumns = [];
+      for (const key in this._changed) {
+        if (!allowedColumns.includes(key)) {
+          throw new Error(`Kolom ${key} tidak dapat diperbarui`);
+        }
+      }
+    }
   });
   EmailVerification.associate = function (models) {
     EmailVerification.belongsTo(models.User, { foreignKey: "user_id" });

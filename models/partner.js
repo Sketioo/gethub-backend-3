@@ -32,24 +32,31 @@ module.exports = (sequelize, DataTypes) => {
       },
       full_name: { 
         type: DataTypes.STRING,
+        allowNull: false
       },
       profession: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING,
+        allowNull: true
       },
       email: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING ,
+        allowNull: false
       },
       phone: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING ,
+        allowNull: false
       },
       photo: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING ,
+        allowNull: true
       },
       address: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING ,
+        allowNull: true
       },
       website: { 
-        type: DataTypes.STRING 
+        type: DataTypes.STRING ,
+        allowNull: true
       },
       image_url: { 
         type: DataTypes.STRING 
