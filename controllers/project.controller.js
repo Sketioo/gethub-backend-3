@@ -80,7 +80,7 @@ const getUserSelectedProjectBids = async (req, res) => {
   try {
     const userIdLogin = getUserId(req);
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
-      where: { 
+      where: {
         user_id: userIdLogin,
         is_selected: true
       },
@@ -104,9 +104,51 @@ const getUserSelectedProjectBids = async (req, res) => {
   }
 };
 
+const postBid = async (req, res) => {
+  try {
+    const user_id = getUserId(req);
+
+    const project = await models.Project.findOne({
+      where: {
+        owner_id: user_id
+      }
+    })
+    if (!project) {
+      const projectBid = await models.Project_User_Bid.create({ ...req.body, user_id });
+      if (!projectBid) {
+        return res.status(400).json({
+          success: false,
+          message: "Failed to create project bid",
+          error_code: 400,
+        })
+      }
+      return res.status(200).json({
+        success: true,
+        data: projectBid,
+        message: "Project bid created successfully",
+        error_code: 0,
+      })
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "You are the owner of this project",
+        error_code: 403,
+      })
+    }
+  } catch (error) {
+    console.error("Error creating project bid:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create project bid",
+      error_code: 500,
+    })
+  }
+}
+
 module.exports = {
   postProject,
   getOwnerProjects,
   getUserProjectBids,
-  getUserSelectedProjectBids
+  getUserSelectedProjectBids,
+  postBid
 };
