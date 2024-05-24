@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Product, { foreignKey: 'category_id' });
       this.hasMany(models.Project, { foreignKey: 'category_id' });
       this.hasMany(models.Certification, { foreignKey: 'category_id' });
-      this.hasOne(models.Category, {foreignKey: 'category_id'})
     }
   }
   Category.init({

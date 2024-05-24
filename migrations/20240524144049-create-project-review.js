@@ -1,8 +1,8 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('project_tasks', {
+    await queryInterface.createTable('project_reviews', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -19,43 +19,52 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      task_number: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      task_description: {
-        type: Sequelize.TEXT,
-        allowNull: false
-      },
-      task_status: {
-        type: Sequelize.ENUM('REVIEW', 'REVISION', 'DONE'),
-        allowNull: false
-      },
-      task_freelance_id: {
+      owner_id: {
         type: Sequelize.UUID,
-        allowNull: null,
+        allowNull: false,
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'CASCADE'
       },
-      task_feedback: {
+      freelance_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      message: {
         type: Sequelize.TEXT,
-        allowNull: true
+        allowNull: false
+      },
+      sentiment: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      sentiment_score: {
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('project_tasks');
+    await queryInterface.dropTable('project_reviews');
   }
 };

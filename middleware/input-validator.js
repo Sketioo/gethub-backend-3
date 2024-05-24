@@ -2,7 +2,8 @@ const {
   userRegisterSchema, userLoginSchema,
   productSchema, linkSchema, sponsorSchema,
   informationSchema, partnerSchema,
-  userUpdateSchema, certificationSchema
+  userUpdateSchema, certificationSchema,
+  projectSchema, categorySchema
 } = require("../schemas");
 
 //* User
@@ -316,3 +317,73 @@ exports.validateCertification = (req, res, next) => {
     })
   }
 }
+
+//* Category
+
+exports.validateCategory = (req, res, next) => {
+  const { error } = categorySchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "name":
+            return "Nama harus diisi.";
+          default:
+            return el.message.replace(/"/g, '');
+        }
+      }).join(', ');
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400
+    })
+  }
+}
+
+//* Project
+
+exports.validateProject = (req, res, next) => {
+  const { error } = projectSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case 'owner_id':
+            return 'Owner ID tidak valid.';
+          case 'title':
+            return 'Judul proyek tidak valid.';
+          case 'category_id':
+            return 'Kategori ID tidak valid.';
+          case 'min_budget':
+            return 'Budget minimum tidak valid.';
+          case 'max_budget':
+            return 'Budget maksimum tidak valid.';
+          case 'min_deadline':
+            return 'Tanggal deadline minimum tidak valid.';
+          case 'max_deadline':
+            return 'Tanggal deadline maksimum tidak valid.';
+          case 'chatroom_id':
+            return 'Chatroom ID tidak valid.';
+          case 'is_active':
+            return 'Status aktif tidak valid.';
+          case 'status_project':
+            return 'Status proyek tidak valid.';
+          case 'status_freelance_task':
+            return 'Status tugas freelance tidak valid.';
+          case 'status_payment':
+            return 'Status pembayaran tidak valid.';
+          default:
+            return el.message.replace(/"/g, '');
+        }
+      })
+      .join(', ');
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};

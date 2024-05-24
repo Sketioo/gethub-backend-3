@@ -49,20 +49,20 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       qr_code: {
-        type: DataTypes.STRING, 
+        type: DataTypes.STRING,
         allowNull: true
       },
       is_verify: {
-        type: DataTypes.BOOLEAN, 
+        type: DataTypes.BOOLEAN,
         allowNull: true,
         defaultValue: false,
       },
       is_complete_profile: {
-        type: DataTypes.BOOLEAN, 
+        type: DataTypes.BOOLEAN,
         allowNull: true
       },
       is_premium: {
-        type: DataTypes.BOOLEAN, 
+        type: DataTypes.BOOLEAN,
         allowNull: true
       },
       role_id: {
@@ -73,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
       },
       theme_hub: {
-        type:DataTypes.INTEGER,
+        type: DataTypes.INTEGER,
         allowNull: false
       },
       sentiment_owner_analisis: {
@@ -109,32 +109,26 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = function (models) {
     // Asosiasi dengan model Role
     User.belongsTo(models.Role, { foreignKey: "role_id" });
-
     // Asosiasi dengan model EmailVerification
     User.hasOne(models.EmailVerification, { foreignKey: "user_id" });
-
     // Asosiasi dengan model Product
     User.hasMany(models.Product, { foreignKey: "user_id" });
-
     // Asosiasi dengan model Link
     User.hasMany(models.Link, { foreignKey: "user_id" });
-
     // Asosiasi dengan model Partner
     User.hasMany(models.Partner, { foreignKey: "user_id" });
-
     // Asosiasi dengan model HistoryUpload
     User.hasMany(models.HistoryUpload, { foreignKey: "user_id" });
-
     // Asosiasi dengan model Certification
     User.hasMany(models.Certification, { foreignKey: "user_id" });
-
     // Asosiasi dengan model Project
     User.hasMany(models.Project, { foreignKey: "owner_id" });
 
     // User can be assigned to many project tasks (as freelance)
     User.hasMany(models.Project_Task, { foreignKey: 'task_freelance_id' });
-
     User.hasMany(models.Project_User_Bid, { foreignKey: 'user_id' });
+    User.hasMany(models.Project_Review, { as: 'owner', foreignKey: 'owner_id' });
+    User.hasMany(models.Project_Review, { as: 'freelancer', foreignKey: 'freelance_id' });
   };
   return User;
 };

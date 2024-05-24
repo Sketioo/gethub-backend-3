@@ -29,6 +29,65 @@ const postProject = async (req, res) => {
   }
 };
 
+const getAllProjects = async(req, res) => {
+  try {
+    const projects = await models.Project.findAll();
+    if(!projects || projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No projects found",
+        error_code: 404
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      data: projects,
+      message: "Projects fetched successfully",
+      error_code: 0
+    })
+  } catch (error) {
+    console.error("Error getting all projects:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get all projects",
+      error_code: 500,
+    })
+  }
+}
+
+const getProjectById= async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id)
+    const project = await models.Project.findByPk(id, {
+      include: [
+        { model: models.User, as: 'owner', attributes: ['id', 'full_name', 'username', 'email'] },
+        { model: models.Category, attributes: ['id', 'name'] }
+      ]
+    });
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+        error_code: 404,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: project,
+      message: "Project details fetched successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error fetching project details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch project details",
+      error_code: 500,
+    });
+  }
+};
+
 const getOwnerProjects = async (req, res) => {
   try {
     const owner_id = getUserId(req);
@@ -58,8 +117,18 @@ const getUserProjectBids = async (req, res) => {
       where: { user_id: userIdLogin },
       include: [{
         model: models.Project,
+        as: 'project'
       }]
     });
+
+    if (!userProjectBids) {
+      return res.status(404).json({
+        success: false,
+        message: "User's project bids not found",
+        error_code: 404,
+      })
+    }
+
     return res.status(200).json({
       success: true,
       data: userProjectBids,
@@ -76,6 +145,45 @@ const getUserProjectBids = async (req, res) => {
   }
 };
 
+const ownerSelectBidder = async (req, res) => {
+  try {
+    const { project_id, freelancer_id } = req.body;
+
+    const projectBid = await models.Project_User_Bid.findOne({
+      where: {
+        project_id: project_id,
+        user_id: freelancer_id
+      }
+    });
+
+    if (!projectBid) {
+      return res.status(404).json({
+        success: false,
+        message: "Project bid not found",
+        error_code: 404,
+      });
+    }
+
+    projectBid.is_selected = true;
+
+    await projectBid.save();
+
+    return res.status(200).json({
+      success: true,
+      data: projectBid,
+      message: "Freelancer selected successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error selecting freelancer:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to select freelancer",
+      error_code: 500,
+    });
+  }
+};
+
 const getUserSelectedProjectBids = async (req, res) => {
   try {
     const userIdLogin = getUserId(req);
@@ -86,8 +194,18 @@ const getUserSelectedProjectBids = async (req, res) => {
       },
       include: [{
         model: models.Project,
+        as: 'project'
       }]
     });
+    console.log(userSelectedProjectBids)
+
+    if (!userSelectedProjectBids) {
+      return res.status(404).json({
+        success: false,
+        message: "User's selected project bids not found",
+        error_code: 404,
+      })
+    }
     return res.status(200).json({
       success: true,
       data: userSelectedProjectBids,
@@ -150,5 +268,8 @@ module.exports = {
   getOwnerProjects,
   getUserProjectBids,
   getUserSelectedProjectBids,
-  postBid
+  postBid,
+  getProjectById,
+  ownerSelectBidder,
+  getAllProjects
 };

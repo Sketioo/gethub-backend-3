@@ -13,8 +13,9 @@ const createProduct = async (req, res) => {
         error_code: 404,
       });
     }
+
     const product = await models.Product.create({ ...req.body, user_id });
-    if(!product) {
+    if (!product) {
       return res.status(400).json({
         success: false,
         message: "Gagal membuat produk",
@@ -61,7 +62,7 @@ const getUserProducts = async (req, res) => {
       const { Category, ...otherData } = product.toJSON();
       return {
         ...otherData,
-        category: Category ? Category.name : null, 
+        category: Category ? Category.name : null,
       };
     });
 
@@ -90,7 +91,7 @@ const getAllProducts = async (req, res) => {
         attributes: ['name'],
       },
     });
-    
+
     const processedProducts = products.map(product => {
       const { Category, ...otherData } = product.toJSON();
       return {
@@ -99,7 +100,7 @@ const getAllProducts = async (req, res) => {
       };
     });
 
-    
+
     if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -144,7 +145,7 @@ const getProductById = async (req, res) => {
     const { Category, ...otherData } = product.toJSON();
     const modifiedProduct = {
       ...otherData,
-      category: Category ? Category.name : null,  
+      category: Category ? Category.name : null,
     };
 
     return res.status(200).json({
