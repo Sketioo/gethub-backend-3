@@ -1,7 +1,5 @@
-const models = require('../models')
-
+const models = require('../models');
 const { getUserId } = require("../helpers/utility");
-
 
 const postProject = async (req, res) => {
   try {
@@ -23,10 +21,10 @@ const postProject = async (req, res) => {
     });
   } catch (error) {
     console.error("Error posting project:", error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to post project",
-      error_code: 400,
+      error_code: 500,
     });
   }
 };
@@ -56,10 +54,10 @@ const getOwnerProjects = async (req, res) => {
 const getUserProjectBids = async (req, res) => {
   try {
     const userIdLogin = getUserId(req);
-    const userProjectBids = await models.Project.findAll({
+    const userProjectBids = await models.Project_User_Bid.findAll({
+      where: { user_id: userIdLogin },
       include: [{
-        model: models.Project_User_Bid,
-        where: { user_id: userIdLogin }
+        model: models.Project,
       }]
     });
     return res.status(200).json({
@@ -80,14 +78,14 @@ const getUserProjectBids = async (req, res) => {
 
 const getUserSelectedProjectBids = async (req, res) => {
   try {
-    const userIdLogin = getUserId(req); // Assuming you get the logged-in user's ID from authentication middleware
-    const userSelectedProjectBids = await models.Project.findAll({
+    const userIdLogin = getUserId(req);
+    const userSelectedProjectBids = await models.Project_User_Bid.findAll({
+      where: { 
+        user_id: userIdLogin,
+        is_selected: true
+      },
       include: [{
-        model: models.Project_User_Bid,
-        where: { 
-          user_id: userIdLogin,
-          is_selected: true
-        }
+        model: models.Project,
       }]
     });
     return res.status(200).json({
@@ -105,7 +103,6 @@ const getUserSelectedProjectBids = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   postProject,
