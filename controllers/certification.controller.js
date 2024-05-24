@@ -5,8 +5,8 @@ const { getUserId } = require("../helpers/utility");
 const createCertification = async (req, res) => {
   try {
     const user_id = getUserId(req);
-    const { category, title, image } = req.body;
-    const newCertification = await Certification.create({ category, title, image, user_id });
+    const { category_id, title, image } = req.body;
+    const newCertification = await Certification.create({ category_id, title, image, user_id });
     console.log(newCertification)
     if (!newCertification) {
       return res.status(400).json({

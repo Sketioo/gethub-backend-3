@@ -38,6 +38,13 @@ const getUserLinks = async (req, res) => {
         user_id: getUserId(req)
       }
     });
+    if(!links || links.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Link tidak ditemukan',
+        error_code: 404
+      })
+    }
     return res.status(200).json({
       success: true,
       data: links,
@@ -54,10 +61,18 @@ const getUserLinks = async (req, res) => {
   }
 };
 
+
 // Mendapatkan semua link
 const getAllLinks = async (req, res) => {
   try {
     const links = await Link.findAll();
+    if(!links || links.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Link tidak ditemukan',
+        error_code: 404
+      })
+    }
     return res.status(200).json({
       success: true,
       data: links,
@@ -78,7 +93,7 @@ const getAllLinks = async (req, res) => {
 const getLinkById = async (req, res) => {
   try {
     const link = await Link.findByPk(req.params.id);
-    if (!link) {
+    if (!link || link === 0) {
       return res.status(404).json({
         success: false,
         message: 'Link tidak ditemukan',

@@ -47,7 +47,7 @@ const register = async (req, res) => {
       photo: req.body.photo,
       about: req.body.about,
       qr_code: generateRandomString(12),
-      role_id,
+      role_id: null,
       is_verify: false,
       is_premium: false,
       theme_hub: getThemehub(),
@@ -335,6 +335,59 @@ const getPublicUser = async (req, res) => {
   }
 };
 
+const getAllRoles = async (req, res) => {
+  try {
+    const roles = await models.Role.findAll();
+    if(!roles || roles.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Tidak ada role yang ditemukan",
+        error_code: 404,
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: roles,
+      message: "Semua role berhasil diambil",
+      error_code: 0,
+    })
+  } catch (error) {
+    console.error("Error mengambil data:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan!",
+      error_code: 500,
+    })
+  }
+}
+
+const createRole = async (req, res) => {
+  try {
+    const role = await models.Role.create(req.body);
+    if(!role) {
+      return res.status(404).json({
+        success: false,
+        message: "Tidak ada role yang ditemukan",
+        error_code: 404,
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      data: role,
+      message: "Role berhasil dibuat",
+      error_code: 0,
+    })
+  } catch (error) {
+    console.error("Error mengambil data:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan!",
+      error_code: 500,
+    })
+  }
+}
+
 module.exports = {
   register,
   login,
@@ -343,4 +396,6 @@ module.exports = {
   updateProfile,
   deleteProfile,
   getPublicUser,
+  getAllRoles,
+  createRole
 };
