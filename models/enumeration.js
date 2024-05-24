@@ -32,6 +32,14 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Enumeration",
       tableName: "enumerations",
+      validateUpdateColumns() {
+        const allowedColumns = ["key", "value"];
+        for (const key in this._changed) {
+          if (!allowedColumns.includes(key)) {
+            throw new Error(`Kolom ${key} tidak dapat diperbarui`);
+          }
+        }
+      }
     }
   );
   return Enumeration;

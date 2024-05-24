@@ -1,6 +1,5 @@
 const express = require("express");
 const userController = require("../controllers/user.controller");
-const passport = require("passport");
 
 const {
   validateRegisterUser,
@@ -26,20 +25,26 @@ router.delete("/profile", authenticateToken, userController.deleteProfile);
 router.get("/verify/:token", verifyTokenEmail);
 router.get("/regenerate-verification", authenticateToken, regenerateVerificationToken);
 
+router.post('/role', authenticateToken, userController.createRole)
+router.get('/roles', authenticateToken, userController.getAllRoles)
 
-router.get(
-  "/auth/linkedin",
-  passport.authenticate("linkedin", {
-    scope: ["email", "profile"],
-  })
-);
-
-router.get(
-  "/auth/linkedin/redirect",
-  passport.authenticate("linkedin", {
-    successRedirect: "/profile",
-    failureRedirect: "/login",
-  })
-);
 
 module.exports = router;
+
+
+
+
+// router.get(
+//   "/auth/linkedin",
+//   passport.authenticate("linkedin", {
+//     scope: ["email", "profile"],
+//   })
+// );
+
+// router.get(
+//   "/auth/linkedin/redirect",
+//   passport.authenticate("linkedin", {
+//     successRedirect: "/profile",
+//     failureRedirect: "/login",
+//   })
+// );

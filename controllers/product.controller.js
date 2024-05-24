@@ -14,6 +14,13 @@ const createProduct = async (req, res) => {
       });
     }
     const product = await models.Product.create({ ...req.body, user_id });
+    if(!product) {
+      return res.status(400).json({
+        success: false,
+        message: "Gagal membuat produk",
+        error_code: 400,
+      })
+    }
     return res.status(201).json({
       success: true,
       data: product,
@@ -25,7 +32,7 @@ const createProduct = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "Gagal membuat produk",
-      error_code: 400,
+      error_code: 500,
     });
   }
 };
@@ -41,6 +48,7 @@ const getUserProducts = async (req, res) => {
         attributes: ['name'],
       },
     });
+
     if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -48,9 +56,18 @@ const getUserProducts = async (req, res) => {
         error_code: 404,
       });
     }
+
+    const modifiedProducts = products.map(product => {
+      const { Category, ...otherData } = product.toJSON();
+      return {
+        ...otherData,
+        category: Category ? Category.name : null, 
+      };
+    });
+
     return res.status(200).json({
       success: true,
-      data: products,
+      data: modifiedProducts,
       message: "Produk berhasil diambil",
       error_code: 0,
     });
@@ -67,14 +84,22 @@ const getUserProducts = async (req, res) => {
 // Mendapatkan semua produk
 const getAllProducts = async (req, res) => {
   try {
-    // const products = await models.Product.findAll({
-    //   include: {
-    //     model: models.Category,
-    //     attributes: ['name'],
-    //   },
-    // });
+    const products = await models.Product.findAll({
+      include: {
+        model: models.Category,
+        attributes: ['name'],
+      },
+    });
+    
+    const processedProducts = products.map(product => {
+      const { Category, ...otherData } = product.toJSON();
+      return {
+        ...otherData,
+        category: Category ? Category.name : null,
+      };
+    });
 
-    const products = await models.Product.findAll();
+    
     if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -84,7 +109,7 @@ const getAllProducts = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      data: products,
+      data: processedProducts,
       message: "Produk berhasil diambil",
       error_code: 0,
     });
@@ -107,6 +132,7 @@ const getProductById = async (req, res) => {
         attributes: ['name'],
       },
     });
+
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -114,9 +140,16 @@ const getProductById = async (req, res) => {
         error_code: 404,
       });
     }
+
+    const { Category, ...otherData } = product.toJSON();
+    const modifiedProduct = {
+      ...otherData,
+      category: Category ? Category.name : null,  
+    };
+
     return res.status(200).json({
       success: true,
-      data: product,
+      data: modifiedProduct,
       message: "Produk berhasil diambil",
       error_code: 0,
     });
@@ -129,6 +162,7 @@ const getProductById = async (req, res) => {
     });
   }
 };
+
 
 //! ------------
 
@@ -160,10 +194,10 @@ const updateProduct = async (req, res) => {
     }
   } catch (error) {
     console.error("Error memperbarui produk:", error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: "Gagal memperbarui produk",
-      error_code: 400,
+      error_code: 500,
     });
   }
 };

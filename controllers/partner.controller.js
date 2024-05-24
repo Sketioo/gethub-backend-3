@@ -161,7 +161,6 @@ const deletePartner = async (req, res) => {
     await partner.destroy();
     return res.status(200).json({
       success: true,
-      data: partner,
       message: "Partner berhasil dihapus",
       error_code: 0,
     });

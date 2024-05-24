@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Certification',
     tableName: 'certifications',
     validateUpdateColums() {
-      const allowedColumns = ["title", "image", "category"];
+      const allowedColumns = ["title", "image", "category_id"];
       for (const key in this._changed) {
         if (!allowedColumns.includes(key)) {
           throw new Error(`Kolom ${key} tidak dapat diperbarui`);

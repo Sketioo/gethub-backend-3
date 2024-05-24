@@ -77,7 +77,7 @@ const updateInformation = async (req, res, next) => {
       });
     }
     await models.Information.update(
-      { title, description, image_url, is_active },
+      { title, description, image_url, is_active, category },
       { where: { id: id } }
     );
     information = await models.Information.findByPk(id);

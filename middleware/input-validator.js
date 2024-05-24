@@ -107,10 +107,10 @@ exports.validateProduct = (req, res, next) => {
         switch (el.context.key) {
           case 'name':
             return 'Nama produk tidak boleh kosong.';
-          case 'price':
-            return 'Harga tidak boleh kosong.';
           case 'description':
             return 'Deskripsi tidak boleh kosong.';
+          case 'category_id':
+            return 'Id kategori tidak boleh kosong.';
           case 'image_url':
             return 'URL gambar tidak valid.';
           default:
