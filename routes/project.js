@@ -12,6 +12,14 @@ router.get("/:id", authenticateToken, projectController.getProjectById);
 router.get("/my/posting", authenticateToken, projectController.getOwnerProjects);
 router.get("/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/my/bids_selected", authenticateToken, projectController.getUserSelectedProjectBids);
-// router.delete("/sponsor/:id", authenticateToken, sponsorController.deleteSponsor);
+
+router.post("/projects", authenticateToken, verifyUserMiddleware, projectController.postProject);
+router.post("/projects/bid", authenticateToken, verifyUserMiddleware, projectController.postBid);
+router.post('/projects/select-bidder', authenticateToken, verifyUserMiddleware, projectController.ownerSelectBidder)
+router.get("/projects", authenticateToken, projectController.getAllProjects);
+router.get("/projects/:id", authenticateToken, projectController.getProjectById);
+router.get("/projects/my", authenticateToken, projectController.getOwnerProjects);
+router.get("/projects/my/selected-bids", authenticateToken, projectController.getUserSelectedProjectBids);
+router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 
 module.exports = router;

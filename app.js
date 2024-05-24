@@ -43,7 +43,7 @@ app.use("/api", partnerRoute);
 app.use("/api", informationRoute);
 app.use("/api", certificateRoute);
 app.use("/api", categoryRoute);
-app.use("/api/project", projectRoute);
+app.use("/api", projectRoute);
 
 
 
