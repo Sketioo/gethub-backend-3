@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     task_status: {
-      type: DataTypes.ENUM('REVIEW', 'REVISION', 'DONE'),
+      type: DataTypes.ENUM('ON-PROGRESS','REVIEW', 'REVISION', 'DONE'),
       allowNull: false
     },
     task_feedback: {

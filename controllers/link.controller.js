@@ -6,7 +6,8 @@ const createLink = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const { category, link } = req.body;
-    const newLink = await Link.create({ category, link, user_id });
+    const customCategory = category.toLowerCase()
+    const newLink = await Link.create({ category: customCategory, link, user_id });
     if(!newLink) {
       return res.status(400).json({
         success: false,
@@ -130,7 +131,9 @@ const updateLink = async (req, res) => {
       });
     }
     if (user_id === link.user_id) {
-      await link.update(req.body);
+      const {category} = rq.body;
+      const customCategory = category.toLowerCase();
+      await link.update({...req.body, category: customCategory});
       return res.status(200).json({
         success: true,
         message: 'Link berhasil diperbarui',

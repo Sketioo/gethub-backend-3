@@ -28,8 +28,9 @@ module.exports = {
         allowNull: false
       },
       task_status: {
-        type: Sequelize.ENUM('REVIEW', 'REVISION', 'DONE'),
-        allowNull: false
+        type: Sequelize.ENUM('ON-PROGRESS','REVIEW', 'REVISION', 'DONE'),
+        allowNull: false,
+        defaultValue: 'ON-PROGRESS'
       },
       task_feedback: {
         type: Sequelize.TEXT,

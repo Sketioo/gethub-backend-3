@@ -56,7 +56,8 @@ const getInformationById = async (req, res, next) => {
 const createInformation = async (req, res, next) => {
   try {
     const { title, description, image_url, is_active, category } = req.body;
-    const newInformation = await models.Information.create({ title, description, image_url, is_active, category });
+    const customCategory = category.toLowerCase()
+    const newInformation = await models.Information.create({ title, description, image_url, is_active, category: customCategory });
     res.status(201).json({
       success: true,
       data: newInformation,
@@ -76,6 +77,7 @@ const updateInformation = async (req, res, next) => {
   try {
     const id = req.params.id;
     const { title, description, image_url, is_active, category } = req.body;
+    const customCategory = category.toLowerCase()
     let information = await models.Information.findByPk(id);
     if (!information) {
       return res.status(404).json({
@@ -85,7 +87,7 @@ const updateInformation = async (req, res, next) => {
       });
     }
     await models.Information.update(
-      { title, description, image_url, is_active, category },
+      { title, description, image_url, is_active, category: customCategory },
       { where: { id: id } }
     );
     information = await models.Information.findByPk(id);
