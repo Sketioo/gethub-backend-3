@@ -64,6 +64,30 @@ const backgrounCards = [
     bg1: 'jgfjfjfjf',
     icon1: 'fjfjfjfjf',
     card1: 'fjjfjfffj'
+  },
+  {
+    id: 3,
+    bg1: 'dadasdad',
+    icon1: 'dadadadada',
+    card1: 'dadadadadhau'
+  },
+  {
+    id: 4,
+    bg1: 'jgfjfjfjf',
+    icon1: 'fjfjfjfjf',
+    card1: 'fjjfjfffj'
+  },
+  {
+    id: 5,
+    bg1: 'ini bg 5',
+    icon1: 'dadadadada',
+    card1: 'dadadadadhau'
+  },
+  {
+    id: 6,
+    bg1: 'jgfjfjfjf',
+    icon1: 'fjfjfjfjf',
+    card1: 'fjjfjfffj'
   }
 ]
 
