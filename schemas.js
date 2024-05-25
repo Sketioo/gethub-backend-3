@@ -147,8 +147,9 @@ exports.informationSchema = Joi.object({
 exports.partnerSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   user_id: Joi.string().guid({ version: "uuidv4" }).optional(),
-  ref_user_id: Joi.string().required(),
+  ref_user_id: Joi.string().optional(),
   full_name: Joi.string().optional(),
+  qr_code: Joi.string().optional(),
   profession: Joi.string().optional(),
   email: Joi.string().email().optional(),
   phone: Joi.string().optional(),

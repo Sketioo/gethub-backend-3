@@ -8,7 +8,7 @@ const postProject = async (req, res) => {
     if (!checkOwner) {
       return res.status(404).json({
         success: false,
-        message: "Owner not found",
+        message: "Pemilik tidak ditemukan",
         error_code: 404,
       });
     }
@@ -16,14 +16,14 @@ const postProject = async (req, res) => {
     return res.status(201).json({
       success: true,
       data: project,
-      message: "Project posted successfully",
+      message: "Proyek berhasil diposting",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error posting project:", error);
+    console.error("Kesalahan saat memposting proyek:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to post project",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -32,30 +32,30 @@ const postProject = async (req, res) => {
 const getAllProjects = async(req, res) => {
   try {
     const projects = await models.Project.findAll();
-    if(!projects || projects.length === 0) {
+    if (!projects || projects.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No projects found",
+        message: "Proyek tidak ditemukan",
         error_code: 404
       })
     }
     return res.status(200).json({
       success: true,
       data: projects,
-      message: "Projects fetched successfully",
+      message: "Proyek berhasil diambil",
       error_code: 0
     })
   } catch (error) {
-    console.error("Error getting all projects:", error);
+    console.error("Kesalahan saat mengambil semua proyek:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to get all projects",
+      message: "Kesalahan internal server",
       error_code: 500,
     })
   }
 }
 
-const getProjectById= async (req, res) => {
+const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id)
@@ -68,21 +68,21 @@ const getProjectById= async (req, res) => {
     if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Project not found",
+        message: "Proyek tidak ditemukan",
         error_code: 404,
       });
     }
     return res.status(200).json({
       success: true,
       data: project,
-      message: "Project details fetched successfully",
+      message: "Detail proyek berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error fetching project details:", error);
+    console.error("Kesalahan saat mengambil detail proyek:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch project details",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -97,14 +97,14 @@ const getOwnerProjects = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: projects,
-      message: "Projects fetched successfully",
+      message: "Proyek berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error fetching owner's projects:", error);
+    console.error("Kesalahan saat mengambil proyek pemilik:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch owner's projects",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -124,7 +124,7 @@ const getUserProjectBids = async (req, res) => {
     if (!userProjectBids) {
       return res.status(404).json({
         success: false,
-        message: "User's project bids not found",
+        message: "Tawaran proyek pengguna tidak ditemukan",
         error_code: 404,
       })
     }
@@ -132,14 +132,14 @@ const getUserProjectBids = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: userProjectBids,
-      message: "User's project bids fetched successfully",
+      message: "Tawaran proyek pengguna berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error fetching user's project bids:", error);
+    console.error("Kesalahan saat mengambil tawaran proyek pengguna:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch user's project bids",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -159,7 +159,7 @@ const ownerSelectBidder = async (req, res) => {
     if (!projectBid) {
       return res.status(404).json({
         success: false,
-        message: "Project bid not found",
+        message: "Tawaran proyek tidak ditemukan",
         error_code: 404,
       });
     }
@@ -171,14 +171,14 @@ const ownerSelectBidder = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: projectBid,
-      message: "Freelancer selected successfully",
+      message: "Freelancer berhasil dipilih",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error selecting freelancer:", error);
+    console.error("Kesalahan saat memilih freelancer:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to select freelancer",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -202,21 +202,21 @@ const getUserSelectedProjectBids = async (req, res) => {
     if (!userSelectedProjectBids) {
       return res.status(404).json({
         success: false,
-        message: "User's selected project bids not found",
+        message: "Tawaran proyek yang dipilih pengguna tidak ditemukan",
         error_code: 404,
       })
     }
     return res.status(200).json({
       success: true,
       data: userSelectedProjectBids,
-      message: "User's selected project bids fetched successfully",
+      message: "Tawaran proyek yang dipilih pengguna berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Error fetching user's selected project bids:", error);
+    console.error("Kesalahan saat mengambil tawaran proyek yang dipilih pengguna:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch user's selected project bids",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -236,28 +236,28 @@ const postBid = async (req, res) => {
       if (!projectBid) {
         return res.status(400).json({
           success: false,
-          message: "Failed to create project bid",
+          message: "Gagal membuat tawaran proyek",
           error_code: 400,
         })
       }
       return res.status(200).json({
         success: true,
         data: projectBid,
-        message: "Project bid created successfully",
+        message: "Tawaran proyek berhasil dibuat",
         error_code: 0,
       })
     } else {
       return res.status(403).json({
         success: false,
-        message: "You are the owner of this project",
+        message: "Anda adalah pemilik proyek ini",
         error_code: 403,
       })
     }
   } catch (error) {
-    console.error("Error creating project bid:", error);
+    console.error("Kesalahan saat membuat tawaran proyek:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to create project bid",
+      message: "Kesalahan internal server",
       error_code: 500,
     })
   }

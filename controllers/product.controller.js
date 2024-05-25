@@ -18,7 +18,7 @@ const createProduct = async (req, res) => {
     if (!product) {
       return res.status(400).json({
         success: false,
-        message: "Gagal membuat produk",
+        message: "Kesalahan internal server",
         error_code: 400,
       })
     }
@@ -32,7 +32,7 @@ const createProduct = async (req, res) => {
     console.error("Error membuat produk:", error);
     return res.status(400).json({
       success: false,
-      message: "Gagal membuat produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -76,7 +76,7 @@ const getUserProducts = async (req, res) => {
     console.error("Error mengambil produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -118,7 +118,7 @@ const getAllProducts = async (req, res) => {
     console.error("Error mengambil semua produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil semua produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -158,7 +158,7 @@ const getProductById = async (req, res) => {
     console.error("Error mengambil produk berdasarkan ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -197,7 +197,7 @@ const updateProduct = async (req, res) => {
     console.error("Error memperbarui produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal memperbarui produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -233,7 +233,7 @@ const deleteProduct = async (req, res) => {
     console.error("Error menghapus produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal menghapus produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }

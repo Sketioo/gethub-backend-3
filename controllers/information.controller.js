@@ -45,7 +45,11 @@ const getInformationById = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    })
   }
 };
 
@@ -60,7 +64,11 @@ const createInformation = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    })
   }
 };
 
@@ -87,7 +95,11 @@ const updateInformation = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
   }
 };
 
@@ -109,7 +121,11 @@ const deleteInformation = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
   }
 };
 

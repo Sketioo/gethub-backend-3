@@ -25,6 +25,13 @@ const createEnumeration = async (req, res) => {
 const getAllEnumerations = async (req, res) => {
   try {
     const enumerations = await models.Enumeration.findAll();
+    if(!enumerations || enumerations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Semua enumerasi tidak ditemukan",
+        error_code: 404,
+      })
+    }
     return res.status(200).json({
       success: true,
       data: enumerations,
@@ -35,7 +42,7 @@ const getAllEnumerations = async (req, res) => {
     console.error("Error getting all enumerations:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -63,7 +70,7 @@ const getEnumerationById = async (req, res) => {
     console.error("Error getting enumeration by ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -94,7 +101,7 @@ const updateEnumeration = async (req, res) => {
     console.error("Error updating enumeration:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -122,7 +129,7 @@ const deleteEnumeration = async (req, res) => {
     console.error("Error deleting enumeration:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
