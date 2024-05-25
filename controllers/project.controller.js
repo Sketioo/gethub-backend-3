@@ -4,7 +4,9 @@ const { getUserId } = require("../helpers/utility");
 const postProject = async (req, res) => {
   try {
     const owner_id = getUserId(req);
-    const checkOwner = await models.User.findByPk(owner_id);
+    const checkOwner = await models.User.findByPk(owner_id, {
+      where: [{ include: models.Category }]
+    });
     if (!checkOwner) {
       return res.status(404).json({
         success: false,
@@ -29,7 +31,20 @@ const postProject = async (req, res) => {
   }
 };
 
-const getAllProjects = async(req, res) => {
+const postTask = async (req, res) => {
+  try {
+
+  } catch (error) {
+    console.error("Kesalahan saat memposting tugas:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+}
+
+const getAllProjects = async (req, res) => {
   try {
     const projects = await models.Project.findAll();
     if (!projects || projects.length === 0) {

@@ -43,16 +43,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('REVIEW', 'REVISION', 'DONE'),
       allowNull: false
     },
-    task_freelance_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'Users',
-        key: 'id'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'SET NULL'
-    },
     task_feedback: {
       type: DataTypes.TEXT,
       allowNull: true

@@ -77,9 +77,9 @@ const getUserProfileCard = async (username) => {
   for (let bgCard of backgrounCards) {
     if (bgCard.id == user.theme_hub)
       return {
-        bg1: bgCard.bg1,
-        icon1: bgCard.icon1,
-        card1: bgCard.card1
+        bg: bgCard.bg1,
+        icon: bgCard.icon1,
+        card: bgCard.card1
       }
   }
 }
