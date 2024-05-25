@@ -13,11 +13,12 @@ const createProduct = async (req, res) => {
         error_code: 404,
       });
     }
+
     const product = await models.Product.create({ ...req.body, user_id });
-    if(!product) {
+    if (!product) {
       return res.status(400).json({
         success: false,
-        message: "Gagal membuat produk",
+        message: "Kesalahan internal server",
         error_code: 400,
       })
     }
@@ -31,7 +32,7 @@ const createProduct = async (req, res) => {
     console.error("Error membuat produk:", error);
     return res.status(400).json({
       success: false,
-      message: "Gagal membuat produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -61,7 +62,7 @@ const getUserProducts = async (req, res) => {
       const { Category, ...otherData } = product.toJSON();
       return {
         ...otherData,
-        category: Category ? Category.name : null, 
+        category: Category ? Category.name : null,
       };
     });
 
@@ -75,7 +76,7 @@ const getUserProducts = async (req, res) => {
     console.error("Error mengambil produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -90,7 +91,7 @@ const getAllProducts = async (req, res) => {
         attributes: ['name'],
       },
     });
-    
+
     const processedProducts = products.map(product => {
       const { Category, ...otherData } = product.toJSON();
       return {
@@ -99,7 +100,7 @@ const getAllProducts = async (req, res) => {
       };
     });
 
-    
+
     if (!products || products.length === 0) {
       return res.status(404).json({
         success: false,
@@ -117,7 +118,7 @@ const getAllProducts = async (req, res) => {
     console.error("Error mengambil semua produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil semua produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -144,7 +145,7 @@ const getProductById = async (req, res) => {
     const { Category, ...otherData } = product.toJSON();
     const modifiedProduct = {
       ...otherData,
-      category: Category ? Category.name : null,  
+      category: Category ? Category.name : null,
     };
 
     return res.status(200).json({
@@ -157,7 +158,7 @@ const getProductById = async (req, res) => {
     console.error("Error mengambil produk berdasarkan ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -196,7 +197,7 @@ const updateProduct = async (req, res) => {
     console.error("Error memperbarui produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal memperbarui produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -232,7 +233,7 @@ const deleteProduct = async (req, res) => {
     console.error("Error menghapus produk:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal menghapus produk",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }

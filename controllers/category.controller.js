@@ -21,7 +21,7 @@ const getAllCategories = async (req, res, next) => {
     console.error("Error retrieving categories:", error);
     return res.status(500).json({
       success: false,
-      message: "Gagal mengambil kategori",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -45,7 +45,11 @@ const getCategoryById = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
   }
 };
 
@@ -60,7 +64,11 @@ const createCategory = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
   }
 };
 
@@ -87,7 +95,11 @@ const updateCategory = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
   }
 };
 
@@ -109,7 +121,11 @@ const deleteCategory = async (req, res, next) => {
       error_code: 0,
     });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
   }
 };
 

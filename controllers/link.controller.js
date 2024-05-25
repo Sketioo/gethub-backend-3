@@ -55,7 +55,7 @@ const getUserLinks = async (req, res) => {
     console.error('Error retrieving links:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil link',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -83,7 +83,7 @@ const getAllLinks = async (req, res) => {
     console.error('Error retrieving links:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil link',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -111,7 +111,7 @@ const getLinkById = async (req, res) => {
     console.error('Error retrieving link by ID:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil link',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -147,7 +147,7 @@ const updateLink = async (req, res) => {
     console.error('Error updating link:', error);
     return res.status(500).json({
       success: false,
-      message: 'Server error',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -183,7 +183,7 @@ const deleteLink = async (req, res) => {
     console.error('Error deleting link:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal menghapus link',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }

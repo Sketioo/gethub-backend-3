@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Project_User_Bid extends Model {
+  class Project_Review extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,11 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Define association here
-      Project_User_Bid.belongsTo(models.User, { foreignKey: 'user_id' });
-      Project_User_Bid.belongsTo(models.Project, {as: "project", foreignKey: 'project_id' });
+      this.belongsTo(models.Project, { foreignKey: 'project_id' });
+      this.belongsTo(models.User, { as: 'owner', foreignKey: 'owner_id' });
+      this.belongsTo(models.User, { as: 'freelancer', foreignKey: 'freelance_id' });
     }
   }
-  Project_User_Bid.init({
+
+  Project_Review.init({
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -26,29 +28,40 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false,
       references: { model: 'Project', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
-    user_id: {
+    owner_id: {
       type: DataTypes.UUID,
       allowNull: false,
       references: { model: 'User', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
-    budget_bid: {
-      type: DataTypes.FLOAT,
+    freelance_id: {
+      type: DataTypes.UUID,
       allowNull: false,
+      references: { model: 'User', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     message: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false
     },
-    is_selected: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
+    sentiment: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
+    sentiment_score: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    }
   }, {
     sequelize,
-    modelName: 'Project_User_Bid',
-    tableName: 'project_user_bids',
+    modelName: 'Project_Review',
+    tableName: 'project_reviews',
   });
-  return Project_User_Bid;
+
+  return Project_Review;
 };

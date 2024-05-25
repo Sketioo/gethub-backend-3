@@ -14,7 +14,7 @@ const getAllSponsors = async (req, res) => {
     console.error("Error mengambil semua sponsor:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -42,7 +42,7 @@ const getSponsorById = async (req, res) => {
     console.error("Error mengambil sponsor berdasarkan ID:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -63,7 +63,7 @@ const createSponsor = async (req, res) => {
     console.error("Error membuat sponsor:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -97,7 +97,7 @@ const updateSponsor = async (req, res) => {
     console.error("Error memperbarui sponsor:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -126,7 +126,7 @@ const deleteSponsor = async (req, res) => {
     console.error("Error menghapus sponsor:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }

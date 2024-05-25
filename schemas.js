@@ -45,6 +45,11 @@ exports.userRegisterSchema = Joi.object({
   is_complete_profile: Joi.boolean().optional(),
   is_premium: Joi.boolean().optional(),
   theme_hub: Joi.number().integer().optional(),
+  role_id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  sentiment_owner_analisis: Joi.string().allow("").optional(),
+  sentiment_owner_score: Joi.number().optional(),
+  sentiment_freelance_analisis: Joi.string().allow("").optional(),
+  sentiment_freelance_score: Joi.number().optional(),
 });
 
 exports.userLoginSchema = Joi.object({
@@ -69,6 +74,7 @@ exports.userLoginSchema = Joi.object({
   theme_hub: Joi.number().integer().optional(),
 });
 
+//* Complete Profile
 exports.userUpdateSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   full_name: Joi.string().optional(),
@@ -114,8 +120,6 @@ exports.historyUploadSchema = Joi.object({
   user_id: Joi.string().guid({ version: "uuidv4" }).required(),
   link: Joi.string().optional(),
   extension: Joi.string().optional(),
-  date: Joi.date().optional(),
-
 });
 
 //* Sponsor
@@ -126,7 +130,6 @@ exports.sponsorSchema = Joi.object({
   image_url: Joi.string().uri().required(),
   link: Joi.string().uri().required(),
   is_active: Joi.boolean().required(),
-
 })
 
 //* Information
@@ -144,8 +147,9 @@ exports.informationSchema = Joi.object({
 exports.partnerSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
   user_id: Joi.string().guid({ version: "uuidv4" }).optional(),
-  ref_user_id: Joi.number().integer().optional(),
+  ref_user_id: Joi.string().optional(),
   full_name: Joi.string().optional(),
+  qr_code: Joi.string().optional(),
   profession: Joi.string().optional(),
   email: Joi.string().email().optional(),
   phone: Joi.string().optional(),
@@ -163,3 +167,35 @@ exports.certificationSchema = Joi.object({
   category_id: Joi.string().required(),
   image: Joi.string().required(),
 })
+
+//* Category
+
+exports.categorySchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  name: Joi.string().required(),
+})
+
+//* Project
+
+exports.projectSchema = Joi.object({
+  id: Joi.string().guid({ version: "uuidv4" }).optional(),
+  owner_id: Joi.string().guid({ version: "uuidv4" }).required(),
+  title: Joi.string().required(),
+  category_id: Joi.string().guid({ version: "uuidv4" }).required(),
+  description: Joi.string().allow(null).optional(),
+  min_budget: Joi.number().required(),
+  max_budget: Joi.number().required(),
+  min_deadline: Joi.date().required(),
+  max_deadline: Joi.date().required(),
+  created_date: Joi.date().allow(null).optional(),
+  chatroom_id: Joi.string().required(),
+  is_active: Joi.boolean().required(),
+  banned_message: Joi.string().allow(null).optional(),
+  status_project: Joi.string().valid('OPEN', 'BID', 'CLOSE', 'FINISHED').required(),
+  status_freelance_task: Joi.string().valid('OPEN', 'CLOSE').required(),
+  status_payment: Joi.string().valid('WAITING', 'SETTLEMENT').required(),
+  fee_owner_transaction_persen: Joi.number().allow(null).optional(),
+  fee_owner_transaction_value: Joi.number().allow(null).optional(),
+  fee_freelance_transaction_persen: Joi.number().allow(null).optional(),
+  fee_freelance_transaction_value: Joi.number().allow(null).optional(),
+});

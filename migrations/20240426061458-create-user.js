@@ -82,6 +82,22 @@ module.exports = {
       theme_hub: {
         type: Sequelize.INTEGER
       },
+      sentiment_owner_analisis: {
+        type: Sequelize.STRING,
+        allowNull: true 
+      },
+      sentiment_owner_score: { 
+        type: Sequelize.INTEGER,
+        allowNull: true 
+      },
+      sentiment_freelance_analisis: { 
+        type: Sequelize.STRING,
+        allowNull: true 
+      },
+      sentiment_freelance_score: { 
+        type: Sequelize.INTEGER,
+        allowNull: true 
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

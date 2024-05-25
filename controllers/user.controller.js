@@ -2,7 +2,7 @@ const models = require("../models");
 const bcryptjs = require("bcryptjs");
 const { Sequelize } = require("sequelize");
 
-const { getUserId, getThemehub } = require("../helpers/utility");
+const { getUserId, getThemehub, getUserProfileCard } = require("../helpers/utility");
 
 
 const {
@@ -82,7 +82,7 @@ const register = async (req, res) => {
   } catch (error) {
     console.log("Error di signup proses: ", error);
     return res.status(500).json({
-      message: "Ada kesalahan!",
+      message: "Kesalahan internal server",
       success: false,
       error_code: 500,
     });
@@ -128,7 +128,7 @@ const login = async (req, res) => {
   } catch (error) {
     console.log("Error pada proses login: ", error);
     return res.status(500).json({
-      message: "Ada kesalahan!",
+      message: "Kesalahan internal server",
       success: false,
       error_code: 500,
     });
@@ -164,7 +164,7 @@ const getProfileById = async (req, res) => {
     console.error("Error mengambil data:", error);
     return res.status(500).json({
       success: false,
-      message: "Ada kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -208,7 +208,7 @@ const getAllProfiles = async (req, res) => {
     console.error("Error mengambil data semua profil:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -242,7 +242,7 @@ const updateProfile = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -281,7 +281,7 @@ const deleteProfile = async (req, res) => {
     console.error("Error menghapus profil:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -311,7 +311,7 @@ const getPublicUser = async (req, res) => {
       include: [models.Product, models.Link]
     })
 
-    const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = publicUserData.dataValues;
+    const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = user.dataValues;
 
     const userData = {
       ...otherData,
@@ -319,17 +319,21 @@ const getPublicUser = async (req, res) => {
       links: Links
     }
 
+    const getThemeHub = await getUserProfileCard(username);
+    userData.theme_hub = getThemeHub;
+
     return res.status(200).json({
       success: true,
       data: userData,
       message: "Data publik pengguna berhasil diambil",
+      error_code: 0
     });
   } catch (error) {
 
     console.error("Error mengambil data pengguna:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     });
   }
@@ -356,7 +360,7 @@ const getAllRoles = async (req, res) => {
     console.error("Error mengambil data:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     })
   }
@@ -382,7 +386,7 @@ const createRole = async (req, res) => {
     console.error("Error mengambil data:", error);
     return res.status(500).json({
       success: false,
-      message: "Terjadi kesalahan!",
+      message: "Kesalahan internal server",
       error_code: 500,
     })
   }

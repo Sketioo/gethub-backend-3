@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const models = require('../models')
 
 const getThemehub = () => {
   const theme_hub = [1, 2, 3, 4, 5];
@@ -51,10 +52,43 @@ function generateRandomString(length) {
   return result;
 }
 
+const backgrounCards = [
+  {
+    id: 1,
+    bg1: 'dadasdad',
+    icon1: 'dadadadada',
+    card1: 'dadadadadhau'
+  },
+  {
+    id: 2,
+    bg1: 'jgfjfjfjf',
+    icon1: 'fjfjfjfjf',
+    card1: 'fjjfjfffj'
+  }
+]
+
+const getUserProfileCard = async (username) => {
+  const user = await models.User.findOne({
+    where: {
+      username: username
+    }
+  })
+
+  for (let bgCard of backgrounCards) {
+    if (bgCard.id == user.theme_hub)
+      return {
+        bg1: bgCard.bg1,
+        icon1: bgCard.icon1,
+        card1: bgCard.card1
+      }
+  }
+}
+
 module.exports = {
   generateRandomString,
   verifyAccessToken,
   generateAccessToken,
   getUserId,
-  getThemehub
+  getThemehub,
+  getUserProfileCard
 };

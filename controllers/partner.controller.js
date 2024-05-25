@@ -35,7 +35,7 @@ const getUserPartners = async (req, res) => {
         user_id: user_id,
       },
     });
-    console.log(partners);
+
     if (!partners || partners.length === 0) {
       return res.status(404).json({
         success: false,
@@ -84,12 +84,11 @@ const getPartnerById = async (req, res) => {
   }
 };
 
-const createPartner = async (req, res) => {
+const addPartner = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const partnerData = req.body;
-    const partner = await models.Partner.create({ ...partnerData, user_id });
-    console.log(req.body);
+    const partner = await models.Partner.create({ ...partnerData, ref_user_id: null, user_id });
     return res.status(201).json({
       success: true,
       data: partner,
@@ -104,6 +103,59 @@ const createPartner = async (req, res) => {
     });
   }
 };
+
+const addPartnerByQR = async (req, res) => {
+  try {
+    const { qr_code } = req.body;
+    const userId = getUserId(req);
+
+    const refUser = await models.User.findOne({ where: { qr_code } });
+
+    if (!refUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pengguna yang direferensikan tidak ditemukan',
+        error_code: 404,
+      });
+    }
+
+    if (refUser.id == userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Anda tidak bisa menambahkan diri sendiri sebagai partner',
+        error_code: 400,
+      });
+    }
+
+    const partner = await models.Partner.create({
+      user_id: userId,
+      ref_user_id: refUser.id,
+      full_name: refUser.full_name,
+      profession: refUser.profession,
+      email: refUser.email,
+      phone: refUser.phone,
+      photo: refUser.photo,
+      address: refUser.address,
+      website: refUser.web,
+      image_url: refUser.photo,
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: partner,
+      message: 'Partner berhasil ditambahkan',
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error('Terjadi kesalahan saat menambahkan mitra:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Kesalahan internal server',
+      error_code: 500,
+    });
+  }
+};
+
 
 const updatePartner = async (req, res) => {
   try {
@@ -177,7 +229,8 @@ module.exports = {
   getUserPartners,
   getAllPartners,
   getPartnerById,
-  createPartner,
+  addPartner,
   updatePartner,
   deletePartner,
+  addPartnerByQR
 };

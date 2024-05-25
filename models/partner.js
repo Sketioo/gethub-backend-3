@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.User, { foreignKey: "user_id" });
     }
   }
   Partner.init(
@@ -17,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        allowNull: false,
+        allowNull: true,
       },
       user_id: {
         type: DataTypes.UUID,
@@ -27,12 +28,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       ref_user_id: { 
-        type: DataTypes.STRING, 
-        allowNull: true 
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'User', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       full_name: { 
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
       profession: { 
         type: DataTypes.STRING,
@@ -40,11 +44,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: { 
         type: DataTypes.STRING ,
-        allowNull: false
+        allowNull: true
       },
       phone: { 
         type: DataTypes.STRING ,
-        allowNull: false
+        allowNull: true
       },
       photo: { 
         type: DataTypes.STRING ,
@@ -68,10 +72,5 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "partners",
     }
   );
-  Partner.associate = function (models) {
-    // associations can be defined here
-    Partner.belongsTo(models.User, { foreignKey: "user_id" });
-
-  };
   return Partner;
 };

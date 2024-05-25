@@ -11,7 +11,7 @@ const createCertification = async (req, res) => {
     if (!newCertification) {
       return res.status(400).json({
         success: false,
-        message: 'Gagal membuat certification',
+        message: 'Gagal menambahkan sertifikasi',
         error_code: 400
       })
     }
@@ -25,7 +25,7 @@ const createCertification = async (req, res) => {
     console.error('Error creating certification:', error);
     return res.status(500).json({
       success: false,
-      message: 'Server error',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -42,21 +42,21 @@ const getUserCertifications = async (req, res) => {
     if (!certifications || certifications.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Certifications tidak ditemukan',
+        message: 'Sertifikasi tidak ditemukan',
         error_code: 404
       })
     }
     return res.status(200).json({
       success: true,
       data: certifications,
-      message: 'Certifications berhasil diambil',
+      message: 'Sertifikasi berhasil diambil',
       error_code: 0
     });
   } catch (error) {
-    console.error('Error retrieving certifications:', error);
+    console.error('Error retrieving Sertifikasi:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil certifications',
+      message: 'Kesalah internal server',
       error_code: 500
     });
   }
@@ -70,21 +70,21 @@ const getAllCertifications = async (req, res) => {
     if (!certifications || certifications.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Certifications tidak ditemukan',
+        message: 'Sertifikasi tidak ditemukan',
         error_code: 404
       })
     }
     return res.status(200).json({
       success: true,
       data: certifications,
-      message: 'Certifications berhasil diambil',
+      message: 'Sertifikasi berhasil diambil',
       error_code: 0
     });
   } catch (error) {
     console.error('Error retrieving certifications:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil certifications',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -97,7 +97,7 @@ const getCertificationById = async (req, res) => {
     if (!certification) {
       return res.status(404).json({
         success: false,
-        message: 'Certification tidak ditemukan',
+        message: 'Sertifikasi tidak ditemukan',
         error_code: 404
       });
     }
@@ -105,14 +105,14 @@ const getCertificationById = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: certification,
-      message: 'Certification berhasil diambil',
+      message: 'Sertifikasi berhasil diambil',
       error_code: 0
     });
   } catch (error) {
     console.error('Error retrieving certification by ID:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil certification',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -126,7 +126,7 @@ const updateCertification = async (req, res) => {
     if (!certification) {
       return res.status(404).json({
         success: false,
-        message: 'Certification tidak ditemukan',
+        message: 'Sertifikasi tidak ditemukan',
         error_code: 404
       });
     }
@@ -134,22 +134,22 @@ const updateCertification = async (req, res) => {
       await certification.update(req.body);
       return res.status(200).json({
         success: true,
-        message: 'Certification berhasil diperbarui',
+        message: 'Sertifikasi berhasil diperbarui',
         error_code: 0
       });
     } else {
       return res.status(403).json({
         success: false,
-        message: 'Anda tidak diizinkan memperbarui certification ini',
+        message: 'Anda tidak diizinkan memperbarui sertifikasi ini',
         error_code: 403
       });
     }
   } catch (error) {
     console.error('Error updating certification:', error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
-      message: 'Gagal memperbarui certification',
-      error_code: 400
+      message: 'Kesalahan internal server',
+      error_code: 500
     });
   }
 };
@@ -162,7 +162,7 @@ const deleteCertification = async (req, res) => {
     if (!certification) {
       return res.status(404).json({
         success: false,
-        message: 'Certification tidak ditemukan',
+        message: 'Sertifikasi tidak ditemukan',
         error_code: 404
       });
     }
@@ -170,7 +170,7 @@ const deleteCertification = async (req, res) => {
       await certification.destroy();
       return res.status(200).json({
         success: true,
-        message: 'Certification berhasil dihapus',
+        message: 'Sertifikasi berhasil dihapus',
         error_code: 0
       });
     } else {
@@ -184,7 +184,7 @@ const deleteCertification = async (req, res) => {
     console.error('Error deleting certification:', error);
     return res.status(500).json({
       success: false,
-      message: 'Gagal menghapus certification',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
