@@ -33,7 +33,21 @@ const postProject = async (req, res) => {
 
 const postTask = async (req, res) => {
   try {
-
+    const { id } = req.params;
+    const task = await models.Project_Task.create({ ...req.body, project_id: id });
+    if(!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Tugas tidak dapat dibuat",
+        error_code: 404
+      })
+    }
+    return res.status(201).json({
+      success: true,
+      data: task,
+      message: "Tugas berhasil diposting",
+      error_code: 0,
+    });
   } catch (error) {
     console.error("Kesalahan saat memposting tugas:", error);
     return res.status(500).json({
@@ -50,7 +64,7 @@ const getAllProjects = async (req, res) => {
     if (!projects || projects.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Proyek tidak ditemukan",
+        message: "Proyek tidak ditemukan!",
         error_code: 404
       })
     }
@@ -286,5 +300,6 @@ module.exports = {
   postBid,
   getProjectById,
   ownerSelectBidder,
-  getAllProjects
+  getAllProjects,
+  postTask
 };
