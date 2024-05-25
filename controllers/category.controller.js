@@ -56,7 +56,8 @@ const getCategoryById = async (req, res, next) => {
 const createCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
-    const newCategory = await models.Category.create({ name });
+    const customName = name.toLowerCase()
+    const newCategory = await models.Category.create({ name: customName });
     res.status(201).json({
       success: true,
       data: newCategory,
@@ -76,6 +77,7 @@ const updateCategory = async (req, res, next) => {
   try {
     const id = req.params.id;
     const { name } = req.body;
+    const customName = name.toLowerCase()
     let category = await models.Category.findByPk(id);
     if (!category) {
       return res.status(404).json({
@@ -85,7 +87,7 @@ const updateCategory = async (req, res, next) => {
       });
     }
     await models.Category.update(
-      { name },
+      { name: customName },
       { where: { id: id } }
     );
     category = await models.Category.findByPk(id);

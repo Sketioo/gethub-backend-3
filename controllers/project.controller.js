@@ -1,4 +1,5 @@
 const models = require('../models');
+const { Op } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
 const postProject = async (req, res) => {
@@ -35,7 +36,7 @@ const postTask = async (req, res) => {
   try {
     const { id } = req.params;
     const task = await models.Project_Task.create({ ...req.body, project_id: id });
-    if(!task) {
+    if (!task) {
       return res.status(404).json({
         success: false,
         message: "Tugas tidak dapat dibuat",
@@ -123,6 +124,8 @@ const getOwnerProjects = async (req, res) => {
     const projects = await models.Project.findAll({
       where: { owner_id }
     });
+    console.log(owner_id)
+    console.log(projects)
     return res.status(200).json({
       success: true,
       data: projects,
@@ -226,7 +229,6 @@ const getUserSelectedProjectBids = async (req, res) => {
         as: 'project'
       }]
     });
-    console.log(userSelectedProjectBids)
 
     if (!userSelectedProjectBids) {
       return res.status(404).json({
@@ -243,6 +245,57 @@ const getUserSelectedProjectBids = async (req, res) => {
     });
   } catch (error) {
     console.error("Kesalahan saat mengambil tawaran proyek yang dipilih pengguna:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+};
+
+const getListProjects = async (req, res) => {
+  try {
+    const { title, category, min_price, max_price } = req.query;
+
+    const where = { is_active: true };
+
+    if (title) {
+      where.title = { [Op.like]: `%${title}%` };
+    }
+
+    let categoryFilter = {};
+    if (category) {
+      categoryFilter.name = { [Op.like]: `%${category}%` };
+    }
+
+    if (min_price) {
+      where.min_budget = { [Op.gte]: parseFloat(min_price) };
+    }
+
+    if (max_price) {
+      if (!where.min_budget) {
+        where.min_budget = {};
+      }
+      where.min_budget[Op.lte] = parseFloat(max_price);
+    }
+    console.log(categoryFilter)
+    const projects = await models.Project.findAll({
+      where,
+      include: [{
+        model: models.Category,
+        where: category,
+        attributes: []
+      }]
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: projects,
+      message: 'Projects fetched successfully',
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil semua proyek:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
@@ -292,6 +345,309 @@ const postBid = async (req, res) => {
   }
 }
 
+//! PROJECT OWNER
+
+// Create a project review
+const createProjectReview = async (req, res) => {
+  try {
+    const { project_id, owner_id, freelance_id, message, sentiment, sentiment_score } = req.body;
+
+    const projectReview = await models.Project_Review.create({
+      project_id,
+      owner_id,
+      freelance_id,
+      message,
+      sentiment,
+      sentiment_score
+    });
+
+    const reviews = await models.Project_Review.findAll({
+      where: { owner_id }
+    });
+
+    let totalPositif = 0;
+    let totalNegatif = 0;
+    let totalNetral = 0;
+
+    reviews.forEach(review => {
+      if (review.sentiment === 'Positif') {
+        totalPositif++;
+      } else if (review.sentiment === 'Negatif') {
+        totalNegatif++;
+      } else if (review.sentiment === 'Netral') {
+        totalNetral++;
+      }
+    });
+
+    let sentimentResult = '';
+    let totalSentimentResult = 0;
+
+    if (totalPositif > totalNegatif) {
+      sentimentResult = 'Positif';
+      totalSentimentResult = totalPositif;
+    }
+
+    const user = await models.User.findByPk(owner_id);
+    if (user) {
+      user.sentiment_owner_analisis = sentimentResult;
+      user.sentiment_owner_score = totalSentimentResult;
+      await user.save();
+    }
+
+    return res.status(201).json({
+      success: true,
+      data: projectReview,
+      message: 'Ulasan proyek berhasil dibuat',
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error('Kesalahan saat membuat ulasan proyek:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal membuat ulasan proyek',
+      error_code: 500,
+    });
+  }
+};
+
+// Get project review by ID
+const getProjectReviewById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const projectReview = await models.Project_Review.findByPk(id);
+    if (!projectReview) {
+      return res.status(404).json({
+        success: false,
+        message: "Project review not found",
+        error_code: 404,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: projectReview,
+      message: "Project review fetched successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error fetching project review:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch project review",
+      error_code: 500,
+    });
+  }
+};
+
+// Update project review
+const updateProjectReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message, sentiment, sentiment_score } = req.body;
+    const projectReview = await models.Project_Review.findByPk(id);
+    if (!projectReview) {
+      return res.status(404).json({
+        success: false,
+        message: "Project review not found",
+        error_code: 404,
+      });
+    }
+    await projectReview.update({ message, sentiment, sentiment_score });
+    res.status(200).json({
+      success: true,
+      data: projectReview,
+      message: "Project review updated successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error updating project review:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update project review",
+      error_code: 500,
+    });
+  }
+};
+
+// Delete project review
+const deleteProjectReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const projectReview = await models.Project_Review.findByPk(id);
+    if (!projectReview) {
+      return res.status(404).json({
+        success: false,
+        message: "Project review not found",
+        error_code: 404,
+      });
+    }
+    await projectReview.destroy();
+    res.status(200).json({
+      success: true,
+      message: "Project review deleted successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error deleting project review:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete project review",
+      error_code: 500,
+    });
+  }
+};
+
+//! Freelancer Review
+
+// Create a project review for a freelance
+const createFreelancerReview = async (req, res) => {
+  try {
+    const { project_id, owner_id, freelance_id, message, sentiment, sentiment_score } = req.body;
+
+    const projectReview = await models.Project_Review.create({
+      project_id,
+      owner_id,
+      freelance_id,
+      message,
+      sentiment,
+      sentiment_score
+    });
+
+    const reviews = await models.Project_Review.findAll({
+      where: { freelance_id }
+    });
+
+    let totalPositif = 0;
+    let totalNegatif = 0;
+    let totalNetral = 0;
+
+    reviews.forEach(review => {
+      if (review.sentiment === 'Positif') {
+        totalPositif++;
+      } else if (review.sentiment === 'Negatif') {
+        totalNegatif++;
+      } else if (review.sentiment === 'Netral') {
+        totalNetral++;
+      }
+    });
+
+    let sentimentResult = '';
+    let totalSentimentResult = 0;
+
+    if (totalPositif > totalNegatif) {
+      sentimentResult = 'Positif';
+      totalSentimentResult = totalPositif;
+    }
+
+    const user = await models.User.findByPk(freelance_id);
+    if (user) {
+      user.sentiment_owner_analisis = sentimentResult;
+      user.sentiment_owner_score = totalSentimentResult;
+      await user.save();
+    }
+
+    return res.status(201).json({
+      success: true,
+      data: projectReview,
+      message: 'Ulasan proyek berhasil dibuat',
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error('Kesalahan saat membuat ulasan proyek:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal membuat ulasan proyek',
+      error_code: 500,
+    });
+  }
+};
+
+// Get project review for freelance by ID
+const getProjectReviewFreelanceById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const projectReviewFreelance = await models.Project_Review_Freelance.findByPk(id);
+    if (!projectReviewFreelance) {
+      return res.status(404).json({
+        success: false,
+        message: "Project review for freelance not found",
+        error_code: 404,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: projectReviewFreelance,
+      message: "Project review for freelance fetched successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error fetching project review for freelance:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch project review for freelance",
+      error_code: 500,
+    });
+  }
+};
+
+// Update project review for freelance
+const updateProjectReviewFreelance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message, sentiment, sentiment_score } = req.body;
+    const projectReviewFreelance = await models.Project_Review_Freelance.findByPk(id);
+    if (!projectReviewFreelance) {
+      return res.status(404).json({
+        success: false,
+        message: "Project review for freelance not found",
+        error_code: 404,
+      });
+    }
+    await projectReviewFreelance.update({ message, sentiment, sentiment_score });
+    res.status(200).json({
+      success: true,
+      data: projectReviewFreelance,
+      message: "Project review for freelance updated successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error updating project review for freelance:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update project review for freelance",
+      error_code: 500,
+    });
+  }
+};
+
+// Delete project review for freelance
+const deleteProjectReviewFreelance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const projectReviewFreelance = await models.Project_Review_Freelance.findByPk(id);
+    if (!projectReviewFreelance) {
+      return res.status(404).json({
+        success: false,
+        message: "Project review for freelance not found",
+        error_code: 404,
+      });
+    }
+    await projectReviewFreelance.destroy();
+    res.status(200).json({
+      success: true,
+      message: "Project review for freelance deleted successfully",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error deleting project review for freelance:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete project review for freelance",
+      error_code: 500,
+    });
+  }
+};
+
+
 module.exports = {
   postProject,
   getOwnerProjects,
@@ -301,5 +657,16 @@ module.exports = {
   getProjectById,
   ownerSelectBidder,
   getAllProjects,
-  postTask
+  postTask,
+  getListProjects,
+  //*Project Owner review
+  createProjectReview,
+  getProjectReviewById,
+  updateProjectReview,
+  deleteProjectReview,
+  //*Freelancer review 
+  createFreelancerReview,
+  getProjectReviewFreelanceById,
+  updateProjectReviewFreelance,
+  deleteProjectReviewFreelance,
 };
