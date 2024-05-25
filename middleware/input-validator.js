@@ -313,7 +313,9 @@ exports.validateCertification = (req, res, next) => {
     }).join(', ')
 
     return res.status(400).json({
-
+      success: false,
+      message: messages,
+      error_code: 400
     })
   }
 }
