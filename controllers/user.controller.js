@@ -313,14 +313,15 @@ const getPublicUser = async (req, res) => {
 
     const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = user.dataValues;
 
+    const getThemeHub = await getUserProfileCard(username);
+    backgroundCard = getThemeHub;
+
     const userData = {
       ...otherData,
+      backgroundCard : backgroundCard,
       products: Products,
       links: Links
     }
-
-    const getThemeHub = await getUserProfileCard(username);
-    userData.theme_hub = getThemeHub;
 
     return res.status(200).json({
       success: true,

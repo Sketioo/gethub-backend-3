@@ -135,10 +135,42 @@ const deleteEnumeration = async (req, res) => {
   }
 };
 
+
+const getEnumerationsByCriteria = async (req, res) => {
+  try {
+    const enumerations = await models.Enumeration.findAll({
+      where:{
+        key: req.query.key
+      }
+    });
+    if(!enumerations || enumerations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Semua enumerasi tidak ditemukan",
+        error_code: 404,
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      data: enumerations,
+      message: "enumerasi by key berhasil diambil",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error getting enumerations by key:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+}
+
 module.exports = {
   createEnumeration,
   getAllEnumerations,
   getEnumerationById,
   updateEnumeration,
   deleteEnumeration,
+  getEnumerationsByCriteria
 };

@@ -53,16 +53,70 @@ function generateRandomString(length) {
 }
 
 const backgrounCards = [
-  { id: 1, bg: 'bd-gratis', icon: 'dadadadada', card: 'dadadadadhau', isPremium: false },
-  { id: 2, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: false },
-  { id: 3, bg: 'dadasdad', icon: 'dadadadada', card: 'dadadadadhau', isPremium: false },
-  { id: 4, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: false },
-  { id: 5, bg: 'ini bg 5', icon: 'dadadadada', card: 'dadadadadhau', isPremium: false },
-  { id: 6, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: false },
-  { id: 7, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: true },
-  { id: 8, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: true },
-  { id: 9, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: true }
-];
+  {
+    id: 1,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card1/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card1/getHub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card1/card1.png',
+    isPremium: false
+  },
+  {
+    id: 2,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card2/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card2/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card2/card2.png  ',
+    isPremium: false
+  },
+  {
+    id: 3,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card3/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card3/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card3/card3.png',
+    isPremium: false
+  },
+  {
+    id: 4,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card4/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card4/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card4/card4.png',
+    isPremium: false
+  },
+  {
+    id: 5,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card5/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card5/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card5/card5.png',
+    isPremium: false
+  },
+  {
+    id: 6,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card6/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card6/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card6/card6.png',
+    isPremium: false
+  },
+  {
+    id: 7,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card7/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card7/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card7/card7.png',
+    isPremium: true
+  },
+  {
+    id: 8,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card8/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card8/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card8/card8.png',
+    isPremium: true
+  },
+  {
+    id: 9,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/card9.png',
+    isPremium: true
+  }
+]
 
 const getUserProfileCard = async (username) => {
   const user = await models.User.findOne({ where: { username: username } });
@@ -77,13 +131,10 @@ const getUserProfileCard = async (username) => {
         };
       }
     }
-  }
-
-  return {
-    message: 'Bukan punyamu'
+  }return {
+    message : "User tidak dapat menggunakan theme ini"
   }
 };
-
 
 const formatDate = (date, dateFormat = 'd-MMM-yyyy') => {
   const options = {
