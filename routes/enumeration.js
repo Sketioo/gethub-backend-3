@@ -10,6 +10,6 @@ router.get('/enumerations', authenticateToken, enumeController.getAllEnumeration
 router.get('/enumeration/:id', authenticateToken, enumeController.getEnumerationById);
 router.put('/enumeration/:id', authenticateToken, enumeController.updateEnumeration);
 router.delete('/enumeration/:id', authenticateToken, enumeController.deleteEnumeration);
-router.get('/enumeration/', authenticateToken, enumeController.getEnumerationsByCriteria);
+router.get('/filter-enumeration', authenticateToken, enumeController.getEnumerationsByCriteria);
 
 module.exports = router;
