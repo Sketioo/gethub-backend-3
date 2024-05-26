@@ -1,4 +1,5 @@
 const models = require('../models');
+const {formatDates} = require('../helpers/utility')
 const { Op } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
@@ -8,6 +9,7 @@ const postProject = async (req, res) => {
     const checkOwner = await models.User.findByPk(owner_id, {
       where: [{ include: models.Category }]
     });
+
     if (!checkOwner) {
       return res.status(404).json({
         success: false,
@@ -15,10 +17,14 @@ const postProject = async (req, res) => {
         error_code: 404,
       });
     }
+
     const project = await models.Project.create({ ...req.body, owner_id });
+
+    const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
+
     return res.status(201).json({
       success: true,
-      data: project,
+      data: formattedProject,
       message: "Proyek berhasil diposting",
       error_code: 0,
     });
@@ -69,9 +75,16 @@ const getAllProjects = async (req, res) => {
         error_code: 404
       })
     }
+
+    const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
+
+    const formattedProjects = projects.map(project => {
+      return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
+    });
+
     return res.status(200).json({
       success: true,
-      data: projects,
+      data: formattedProjects,
       message: "Proyek berhasil diambil",
       error_code: 0
     })
@@ -122,13 +135,20 @@ const getOwnerProjects = async (req, res) => {
   try {
     const owner_id = getUserId(req);
     const projects = await models.Project.findAll({
-      where: { owner_id }
+      where: { owner_id: owner_id }
     });
-    console.log(owner_id)
-    console.log(projects)
+
+    // Extract date fields to be formatted
+    const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
+
+    // Format dates in each project object
+    const formattedProjects = projects.map(project => {
+      return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
+    });
+    
     return res.status(200).json({
       success: true,
-      data: projects,
+      data: formattedProjects,
       message: "Proyek berhasil diambil",
       error_code: 0,
     });

@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
-const models = require('../models')
+const models = require('../models');
+const { format } = require('date-fns');
+const { id } = require('date-fns/locale'); 
 
 const getThemehub = () => {
   const theme_hub = [1, 2, 3, 4, 5];
@@ -17,8 +19,6 @@ const generateAccessToken = (user) => {
 const getUserId = (req) => {
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-  // console.log(token)
-  console.log(decodedToken)
   return decodedToken.userId;
 }
 
@@ -84,11 +84,40 @@ const getUserProfileCard = async (username) => {
   }
 }
 
+const formatDate = (date, dateFormat = 'd-MMM-yyyy') => {
+  const options = {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  };
+
+  const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(new Date(date));
+  const [day, month, year] = formattedDate.split(' ');
+
+  return dateFormat
+    .replace('d', day)
+    .replace('MMM', month)
+    .replace('yyyy', year);
+};
+
+const formatDates = (obj, dateFields, dateFormat = 'd-MMM-yyyy') => {
+  const formattedObj = { ...obj };
+  dateFields.forEach(field => {
+    if (obj[field]) {
+      formattedObj[field] = formatDate(obj[field], dateFormat);
+    }
+  });
+  return formattedObj;
+};
+
+
 module.exports = {
   generateRandomString,
   verifyAccessToken,
   generateAccessToken,
   getUserId,
   getThemehub,
-  getUserProfileCard
+  getUserProfileCard,
+  formatDates
 };
