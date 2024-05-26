@@ -125,7 +125,7 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Project, { foreignKey: "owner_id" });
 
     // User can be assigned to many project tasks (as freelance)
-    User.hasMany(models.Project_User_Bid, { foreignKey: 'user_id' });
+    User.hasMany(models.Project_User_Bid, { as:'users_bid' ,foreignKey: 'user_id' });
     User.hasMany(models.Project_Review, { as: 'owner', foreignKey: 'owner_id' });
     User.hasMany(models.Project_Review, { as: 'freelancer', foreignKey: 'freelance_id' });
   };

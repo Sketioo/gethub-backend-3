@@ -137,20 +137,7 @@ const getUserProfileCard = async (username) => {
 };
 
 const formatDate = (date, dateFormat = 'd-MMM-yyyy') => {
-  const options = {
-    timeZone: 'Asia/Jakarta',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  };
-
-  const formattedDate = new Intl.DateTimeFormat('id-ID', options).format(new Date(date));
-  const [day, month, year] = formattedDate.split(' ');
-
-  return dateFormat
-    .replace('d', day)
-    .replace('MMM', month)
-    .replace('yyyy', year);
+  return format(new Date(date), dateFormat, { locale: id });
 };
 
 const formatDates = (obj, dateFields, dateFormat = 'd-MMM-yyyy') => {
@@ -162,7 +149,6 @@ const formatDates = (obj, dateFields, dateFormat = 'd-MMM-yyyy') => {
   });
   return formattedObj;
 };
-
 
 module.exports = {
   generateRandomString,

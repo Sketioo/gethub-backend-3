@@ -1,4 +1,5 @@
 // controllers/categoryController.js
+const { check } = require("express-validator");
 const models = require("../models");
 
 const getAllCategories = async (req, res, next) => {
@@ -57,6 +58,17 @@ const createCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
     const customName = name.toLowerCase()
+    const checkCategory = await models.Category.findOne({where: {
+      name: customName
+    }})
+
+    if(checkCategory) {
+      return res.status(400).json({
+        success: false,
+        message: 'Kategori sudah ada',
+        error_code: 400
+      })
+    }
     const newCategory = await models.Category.create({ name: customName });
     res.status(201).json({
       success: true,

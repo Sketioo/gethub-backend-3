@@ -1,5 +1,5 @@
 const models = require('../models');
-const {formatDates} = require('../helpers/utility')
+const { formatDates } = require('../helpers/utility')
 const { Op } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
@@ -67,7 +67,9 @@ const postTask = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await models.Project.findAll();
+    const projects = await models.Project.findAll({
+      include: [{ model: models.User, as: 'owner', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }]
+    });
     if (!projects || projects.length === 0) {
       return res.status(404).json({
         success: false,
@@ -76,15 +78,12 @@ const getAllProjects = async (req, res) => {
       })
     }
 
-    const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
-
-    const formattedProjects = projects.map(project => {
-      return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
-    });
-
     return res.status(200).json({
       success: true,
-      data: formattedProjects,
+      data: {
+        projects,
+        total_data: projects.length
+      },
       message: "Proyek berhasil diambil",
       error_code: 0
     })
@@ -101,13 +100,14 @@ const getAllProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id)
+
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner', attributes: ['id', 'full_name', 'username', 'email'] },
-        { model: models.Category, attributes: ['id', 'name'] }
+        { model: models.User, as: 'owner', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] },
+        { model: models.Category, as: 'category', attributes: ['id', 'name'] }
       ]
     });
+    console.dir(project)
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -115,12 +115,40 @@ const getProjectById = async (req, res) => {
         error_code: 404,
       });
     }
+
+    const bids = await models.Project_User_Bid.findAll({
+      where: { project_id: id },
+      include: [
+        { model: models.User, as: 'users_bid', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }
+      ]
+    });
+
+    const users = [];
+
+    bids.forEach(bid => {
+      const user = bid.users_bid;
+      if (user) {
+        users.push(user);
+      }
+    });
+
+    const totalUsersBid = users.length;
+
+    const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
+
+    const responseData = {
+      ...formattedProject,
+      users_bid: users,
+      total_users_bid: totalUsersBid
+    };
+
     return res.status(200).json({
       success: true,
-      data: project,
+      data: responseData,
       message: "Detail proyek berhasil diambil",
       error_code: 0,
     });
+
   } catch (error) {
     console.error("Kesalahan saat mengambil detail proyek:", error);
     return res.status(500).json({
@@ -130,6 +158,8 @@ const getProjectById = async (req, res) => {
     });
   }
 };
+
+
 
 const getOwnerProjects = async (req, res) => {
   try {
@@ -145,7 +175,7 @@ const getOwnerProjects = async (req, res) => {
     const formattedProjects = projects.map(project => {
       return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
     });
-    
+
     return res.status(200).json({
       success: true,
       data: formattedProjects,

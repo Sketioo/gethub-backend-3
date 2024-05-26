@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // Define association here
       this.belongsTo(models.User, { as: 'owner',foreignKey: 'owner_id' });
-      this.hasMany(models.Project_User_Bid, {as:'project', foreignKey: 'project_id' });
+      this.hasMany(models.Project_User_Bid, {as:'users_bid', foreignKey: 'project_id' });
       this.hasMany(models.Project_Task, { foreignKey: 'project_id' });
-      this.belongsTo(models.Category, {foreignKey: 'category_id'});
+      this.belongsTo(models.Category, {as:'category', foreignKey: 'category_id'});
       this.hasMany(models.Project_Review, { foreignKey: 'project_id' });
     }
   }
@@ -57,13 +57,25 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       allowNull: false,
     },
-    min_deadline: {
-      type: DataTypes.DATE,
+    min_budget: {
+      type: DataTypes.FLOAT,
       allowNull: false,
+      validate: {
+        budgetRange() {
+          if (this.min_budget > this.max_budget) {
+            throw new Error('Minimum budget cannot be greater than maximum budget');
+          }
+        }
+      }
     },
     max_deadline: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    min_deadline: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
     created_date: {
       type: DataTypes.DATE,
