@@ -55,58 +55,86 @@ function generateRandomString(length) {
 const backgrounCards = [
   {
     id: 1,
-    bg1: 'dadasdad',
-    icon1: 'dadadadada',
-    card1: 'dadadadadhau'
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card1/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card1/getHub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card1/card1.png',
+    isPremium: false
   },
   {
     id: 2,
-    bg1: 'jgfjfjfjf',
-    icon1: 'fjfjfjfjf',
-    card1: 'fjjfjfffj'
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card2/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card2/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card2/card2.png  ',
+    isPremium: false
   },
   {
     id: 3,
-    bg1: 'dadasdad',
-    icon1: 'dadadadada',
-    card1: 'dadadadadhau'
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card3/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card3/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card3/card3.png',
+    isPremium: false
   },
   {
     id: 4,
-    bg1: 'jgfjfjfjf',
-    icon1: 'fjfjfjfjf',
-    card1: 'fjjfjfffj'
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card4/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card4/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card4/card4.png',
+    isPremium: false
   },
   {
     id: 5,
-    bg1: 'ini bg 5',
-    icon1: 'dadadadada',
-    card1: 'dadadadadhau'
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card5/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card5/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card5/card5.png',
+    isPremium: false
   },
   {
     id: 6,
-    bg1: 'jgfjfjfjf',
-    icon1: 'fjfjfjfjf',
-    card1: 'fjjfjfffj'
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card6/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card6/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card6/card6.png',
+    isPremium: false
+  },
+  {
+    id: 7,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card7/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card7/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card7/card7.png',
+    isPremium: true
+  },
+  {
+    id: 8,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card8/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card8/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card8/card8.png',
+    isPremium: true
+  },
+  {
+    id: 9,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/backgroundCard.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/gethub.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/card9.png',
+    isPremium: true
   }
 ]
 
 const getUserProfileCard = async (username) => {
-  const user = await models.User.findOne({
-    where: {
-      username: username
-    }
-  })
+  const user = await models.User.findOne({ where: { username: username } });
 
   for (let bgCard of backgrounCards) {
-    if (bgCard.id == user.theme_hub)
-      return {
-        bg: bgCard.bg1,
-        icon: bgCard.icon1,
-        card: bgCard.card1
+    if (bgCard.id === user.theme_hub) {
+      if (user.is_premium || !bgCard.isPremium) {
+        return {
+          bg: bgCard.bg,
+          icon: bgCard.icon,
+          card: bgCard.card
+        };
       }
+    }
+  }return {
+    message : "User tidak dapat menggunakan theme ini"
   }
-}
+};
 
 const formatDate = (date, dateFormat = 'd-MMM-yyyy') => {
   const options = {
