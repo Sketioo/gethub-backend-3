@@ -6,7 +6,7 @@ const helmet = require("helmet");
 const cors = require('cors');
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
-const { authenticateToken } = require("./middleware/check-auth")
+const { authenticateToken } = require("./middleware/check-auth");
 
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
@@ -44,7 +44,6 @@ app.use("/api", informationRoute);
 app.use("/api", certificateRoute);
 app.use("/api", categoryRoute);
 app.use("/api", projectRoute);
-
 
 
 //* Helper

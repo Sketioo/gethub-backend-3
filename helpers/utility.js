@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const models = require('../models');
 const { format } = require('date-fns');
-const { id } = require('date-fns/locale'); 
+const { id } = require('date-fns/locale');
 
 const getThemehub = () => {
   const theme_hub = [1, 2, 3, 4, 5];
@@ -53,36 +53,37 @@ function generateRandomString(length) {
 }
 
 const backgrounCards = [
-  {
-    id: 1,
-    bg1: 'dadasdad',
-    icon1: 'dadadadada',
-    card1: 'dadadadadhau'
-  },
-  {
-    id: 2,
-    bg1: 'jgfjfjfjf',
-    icon1: 'fjfjfjfjf',
-    card1: 'fjjfjfffj'
-  }
-]
+  { id: 1, bg: 'bd-gratis', icon: 'dadadadada', card: 'dadadadadhau', isPremium: false },
+  { id: 2, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: false },
+  { id: 3, bg: 'dadasdad', icon: 'dadadadada', card: 'dadadadadhau', isPremium: false },
+  { id: 4, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: false },
+  { id: 5, bg: 'ini bg 5', icon: 'dadadadada', card: 'dadadadadhau', isPremium: false },
+  { id: 6, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: false },
+  { id: 7, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: true },
+  { id: 8, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: true },
+  { id: 9, bg: 'jgfjfjfjf', icon: 'fjfjfjfjf', card: 'fjjfjfffj', isPremium: true }
+];
 
 const getUserProfileCard = async (username) => {
-  const user = await models.User.findOne({
-    where: {
-      username: username
-    }
-  })
+  const user = await models.User.findOne({ where: { username: username } });
 
   for (let bgCard of backgrounCards) {
-    if (bgCard.id == user.theme_hub)
-      return {
-        bg: bgCard.bg1,
-        icon: bgCard.icon1,
-        card: bgCard.card1
+    if (bgCard.id === user.theme_hub) {
+      if (user.is_premium || !bgCard.isPremium) {
+        return {
+          bg: bgCard.bg,
+          icon: bgCard.icon,
+          card: bgCard.card
+        };
       }
+    }
   }
-}
+
+  return {
+    message: 'Bukan punyamu'
+  }
+};
+
 
 const formatDate = (date, dateFormat = 'd-MMM-yyyy') => {
   const options = {
