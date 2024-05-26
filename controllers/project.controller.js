@@ -5,8 +5,9 @@ const { getUserId } = require("../helpers/utility");
 
 const postProject = async (req, res) => {
   try {
-    const owner_id = getUserId(req);
-    const checkOwner = await models.User.findByPk(owner_id, {
+    const user_id = getUserId(req);
+    console.log(user_id)
+    const checkOwner = await models.User.findByPk(user_id, {
       where: [{ include: models.Category }]
     });
 
@@ -18,7 +19,7 @@ const postProject = async (req, res) => {
       });
     }
 
-    const project = await models.Project.create({ ...req.body, owner_id });
+    const project = await models.Project.create({ ...req.body, owner_id: user_id });
 
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
@@ -68,7 +69,7 @@ const postTask = async (req, res) => {
 const getAllProjects = async (req, res) => {
   try {
     const projects = await models.Project.findAll({
-      include: [{ model: models.User, as: 'owner', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }]
+      include: [{ model: models.User, as: 'owner_project', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }]
     });
     if (!projects || projects.length === 0) {
       return res.status(404).json({
@@ -103,8 +104,8 @@ const getProjectById = async (req, res) => {
 
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: ['id', 'name'] }
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
+        { model: models.Category, as: 'category', attributes: ['name'] }
       ]
     });
     console.dir(project)
@@ -119,7 +120,7 @@ const getProjectById = async (req, res) => {
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
       include: [
-        { model: models.User, as: 'users_bid', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }
+        { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
       ]
     });
 
@@ -165,13 +166,12 @@ const getOwnerProjects = async (req, res) => {
   try {
     const owner_id = getUserId(req);
     const projects = await models.Project.findAll({
-      where: { owner_id: owner_id }
+      where: { owner_id: owner_id },
+      include: [{ model: models.User, as: 'owner_project', attributes: [ 'full_name', 'username', 'profession', 'photo'] }]
     });
 
-    // Extract date fields to be formatted
     const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
 
-    // Format dates in each project object
     const formattedProjects = projects.map(project => {
       return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
     });
@@ -229,14 +229,32 @@ const getUserProjectBids = async (req, res) => {
 
 const ownerSelectBidder = async (req, res) => {
   try {
-    const { project_id, freelancer_id } = req.body;
+    const { id } = req.params;
+    const userId = getUserId(req);
+    const { freelancer_id } = req.body; 
+    
+    const project = await models.Project.findOne({
+      where: {
+        id: id,
+        owner_id: userId
+      }
+    });
+
+    if (!project) {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki izin untuk memilih bidder untuk proyek ini",
+        error_code: 403,
+      });
+    }
 
     const projectBid = await models.Project_User_Bid.findOne({
       where: {
-        project_id: project_id,
+        project_id: id,
         user_id: freelancer_id
       }
     });
+    console.log(projectBid)
 
     if (!projectBid) {
       return res.status(404).json({
@@ -247,7 +265,6 @@ const ownerSelectBidder = async (req, res) => {
     }
 
     projectBid.is_selected = true;
-
     await projectBid.save();
 
     return res.status(200).json({
@@ -265,6 +282,7 @@ const ownerSelectBidder = async (req, res) => {
     });
   }
 };
+
 
 const getUserSelectedProjectBids = async (req, res) => {
   try {
@@ -697,6 +715,58 @@ const deleteProjectReviewFreelance = async (req, res) => {
   }
 };
 
+const getProjectBidders = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const project = await models.Project.findByPk(id, {
+      include: [
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
+        { model: models.Category, as: 'category', attributes: [ 'name'] }
+      ]
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    const bids = await models.Project_User_Bid.findAll({
+      where: { project_id: id },
+      include: [
+        { model: models.User, as: 'users_bid', attributes: [ 'full_name', 'username', 'profession', 'photo'] }
+      ]
+    });
+
+    const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
+
+    const bidders = bids.map(bid => bid.users_bid).filter(user => user !== null);
+
+    const responseData = {
+      ...formattedProject,
+      users_bid: bidders,
+      total_bidders: bidders.length
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: responseData,
+      message: "Detail proyek dan informasi bidders berhasil diambil",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil detail proyek dan informasi bidders:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+};
+
 
 module.exports = {
   postProject,
@@ -709,6 +779,7 @@ module.exports = {
   getAllProjects,
   postTask,
   getListProjects,
+  getProjectBidders,
   //*Project Owner review
   createProjectReview,
   getProjectReviewById,

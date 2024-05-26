@@ -122,7 +122,7 @@ module.exports = (sequelize, DataTypes) => {
     // Asosiasi dengan model Certification
     User.hasMany(models.Certification, { foreignKey: "user_id" });
     // Asosiasi dengan model Project
-    User.hasMany(models.Project, { foreignKey: "owner_id" });
+    User.hasMany(models.Project, { as: 'owner_project',foreignKey: "owner_id" });
 
     // User can be assigned to many project tasks (as freelance)
     User.hasMany(models.Project_User_Bid, { as:'users_bid' ,foreignKey: 'user_id' });
