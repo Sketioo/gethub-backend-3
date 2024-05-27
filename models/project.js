@@ -91,7 +91,7 @@ module.exports = (sequelize, DataTypes) => {
         const maxDeadline = this.getDataValue('max_deadline');
         if (minDeadline && maxDeadline) {
           const daysDifference = differenceInDays(new Date(maxDeadline), new Date(minDeadline));
-          return `${daysDifference}d`;
+          return `${daysDifference}`;
         }
         return null;
       }
