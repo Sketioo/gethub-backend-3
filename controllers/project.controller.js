@@ -33,6 +33,14 @@ const getUserJobStatsAndBids = async (req, res) => {
       ]
     });
 
+    if(!bids) {
+      return res.status(200).json({
+        success: false,
+        message: "Informasi job bidding dan daftar proyek yang dibid tidak ditemukan",
+        error_code: 200
+      })
+    }
+
     const bidProjects = bids.map(bid => ({
       projectId: bid.project.id,
       title: bid.project.title,
@@ -135,10 +143,10 @@ const getAllProjects = async (req, res) => {
       include: [{ model: models.User, as: 'owner_project', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }]
     });
     if (!projects || projects.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Proyek tidak ditemukan!",
-        error_code: 404
+        error_code: 200
       })
     }
 
@@ -171,14 +179,6 @@ const getProjectById = async (req, res) => {
       ]
     });
 
-    if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: "Proyek tidak ditemukan",
-        error_code: 404,
-      });
-    }
-
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
       include: [
@@ -186,6 +186,16 @@ const getProjectById = async (req, res) => {
       ]
     });
 
+    if (!project || !bids || bids.length === 0) {
+      return res.status(200).json({
+        success: false,
+        data: [],
+        message: "Proyek tidak ditemukan",
+        error_code: 200
+      })
+    }
+
+    
     const users = [];
     bids.forEach(bid => {
       const user = bid.users_bid;
@@ -193,9 +203,9 @@ const getProjectById = async (req, res) => {
         users.push(user);
       }
     });
-
+    
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
-
+    
     const responseData = {
       ...formattedProject,
       users_bid: users,
@@ -230,6 +240,15 @@ const getOwnerProjects = async (req, res) => {
       include: [{ model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] }]
     });
 
+    if (!projects || projects.length === 0) {
+      return res.status(200).json({
+        success: false,
+        data: [],
+        message: "Proyek tidak ditemukan!",
+        error_code: 200
+      })
+    }
+
     const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
 
     const formattedProjects = projects.map(project => {
@@ -263,11 +282,12 @@ const getUserProjectBids = async (req, res) => {
       }]
     });
 
-    if (!userProjectBids) {
-      return res.status(404).json({
+    if (!userProjectBids || userProjectBids.length === 0) {
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Tawaran proyek pengguna tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       })
     }
 
@@ -314,13 +334,12 @@ const ownerSelectBidder = async (req, res) => {
         user_id: freelancer_id
       }
     });
-    console.log(projectBid)
 
     if (!projectBid) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Tawaran proyek tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -358,11 +377,12 @@ const getUserSelectedProjectBids = async (req, res) => {
       }]
     });
 
-    if (!userSelectedProjectBids) {
-      return res.status(404).json({
+    if (!userSelectedProjectBids || userSelectedProjectBids === 0) {
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Tawaran proyek yang dipilih pengguna tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       })
     }
     return res.status(200).json({
@@ -422,10 +442,11 @@ const getProjectList = async (req, res) => {
     });
 
     if (projects.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Proyek tidak ditemukan",
-        error_code: 404
+        error_code: 200
       });
     }
 
@@ -507,6 +528,15 @@ const createProjectReview = async (req, res) => {
       where: { owner_id }
     });
 
+    if(!reviews || reviews.length === 0) {
+      return res.status(200).json({
+        success: false,
+        data: [],
+        message: "Ulasan tidak ditemukan",
+        error_code: 200,
+      })
+    }
+
     let totalPositif = 0;
     let totalNegatif = 0;
     let totalNetral = 0;
@@ -558,23 +588,24 @@ const getProjectReviewById = async (req, res) => {
     const { id } = req.params;
     const projectReview = await models.Project_Review.findByPk(id);
     if (!projectReview) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: "Project review not found",
-        error_code: 404,
+        data: [],
+        message: "Ulasan proyek tidak ditemukan",
+        error_code: 200,
       });
     }
     res.status(200).json({
       success: true,
       data: projectReview,
-      message: "Project review fetched successfully",
+      message: "Ulasan proyek berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error fetching project review:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch project review",
+      message: "Gagal mengambil ulasan proyek",
       error_code: 500,
     });
   }
@@ -658,6 +689,15 @@ const createFreelancerReview = async (req, res) => {
       where: { freelance_id }
     });
 
+    if(!reviews || reviews.length === 0) {
+      return res.status(200).json({
+        success: false,
+        data: [],
+        message: "Ulasan proyek freelance tidak ditemukan",
+        error_code: 200
+      })
+    }
+
     let totalPositif = 0;
     let totalNegatif = 0;
     let totalNetral = 0;
@@ -703,91 +743,92 @@ const createFreelancerReview = async (req, res) => {
   }
 };
 
-// Get project review for freelance by ID
+// Dapatkan ulasan proyek untuk freelance berdasarkan ID
 const getProjectReviewFreelanceById = async (req, res) => {
   try {
     const { id } = req.params;
     const projectReviewFreelance = await models.Project_Review_Freelance.findByPk(id);
     if (!projectReviewFreelance) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: "Project review for freelance not found",
-        error_code: 404,
+        message: "Ulasan proyek untuk freelance tidak ditemukan",
+        error_code: 200,
       });
     }
     res.status(200).json({
       success: true,
       data: projectReviewFreelance,
-      message: "Project review for freelance fetched successfully",
+      message: "Ulasan proyek untuk freelance berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error fetching project review for freelance:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch project review for freelance",
+      message: "Gagal mengambil ulasan proyek untuk freelance",
       error_code: 500,
     });
   }
 };
 
-// Update project review for freelance
+// Perbarui ulasan proyek untuk freelance
 const updateProjectReviewFreelance = async (req, res) => {
   try {
     const { id } = req.params;
     const { message, sentiment, sentiment_score } = req.body;
     const projectReviewFreelance = await models.Project_Review_Freelance.findByPk(id);
     if (!projectReviewFreelance) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: "Project review for freelance not found",
-        error_code: 404,
+        message: "Ulasan proyek untuk freelance tidak ditemukan",
+        error_code: 200,
       });
     }
     await projectReviewFreelance.update({ message, sentiment, sentiment_score });
     res.status(200).json({
       success: true,
       data: projectReviewFreelance,
-      message: "Project review for freelance updated successfully",
+      message: "Ulasan proyek untuk freelance berhasil diperbarui",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error updating project review for freelance:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to update project review for freelance",
+      message: "Gagal memperbarui ulasan proyek untuk freelance",
       error_code: 500,
     });
   }
 };
 
-// Delete project review for freelance
+// Hapus ulasan proyek untuk freelance
 const deleteProjectReviewFreelance = async (req, res) => {
   try {
     const { id } = req.params;
     const projectReviewFreelance = await models.Project_Review_Freelance.findByPk(id);
     if (!projectReviewFreelance) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: "Project review for freelance not found",
-        error_code: 404,
+        message: "Ulasan proyek untuk freelance tidak ditemukan",
+        error_code: 200,
       });
     }
     await projectReviewFreelance.destroy();
     res.status(200).json({
       success: true,
-      message: "Project review for freelance deleted successfully",
+      message: "Ulasan proyek untuk freelance berhasil dihapus",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error deleting project review for freelance:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to delete project review for freelance",
+      message: "Gagal menghapus ulasan proyek untuk freelance",
       error_code: 500,
     });
   }
 };
+
 
 const getProjectBidders = async (req, res) => {
   try {
@@ -801,10 +842,11 @@ const getProjectBidders = async (req, res) => {
     });
 
     if (!project) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Proyek tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -814,6 +856,15 @@ const getProjectBidders = async (req, res) => {
         { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
       ]
     });
+
+    if (!bids || bids.length === 0) {
+      return res.status(200).json({
+        success: false,
+        data: [],
+        message: "Tidak ada bidders untuk proyek ini",
+        error_code: 200,
+      })
+    }
 
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
