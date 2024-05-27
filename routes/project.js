@@ -11,7 +11,8 @@ router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddlewa
 router.post('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, projectController.postTask);
 router.get("/projects", authenticateToken, projectController.getAllProjects);
 router.get("/projects/my", authenticateToken, projectController.getOwnerProjects);
-router.get("/projects/list", authenticateToken, projectController.getListProjects);
+router.get("/projects/list", authenticateToken, projectController.getProjectList);
+router.get('/projects/dashboard/my', authenticateToken, verifyUserMiddleware, projectController.getUserJobStatsAndBids);
 //* Perhatikan penggunaan params
 router.get("/projects/:id", authenticateToken, projectController.getProjectById);
 router.get("/projects/my/selected-bids", authenticateToken, projectController.getUserSelectedProjectBids);

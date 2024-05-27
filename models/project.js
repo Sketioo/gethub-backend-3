@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const { differenceInDays } = require('date-fns');
 
 module.exports = (sequelize, DataTypes) => {
   class Project extends Model {
@@ -81,6 +82,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+    },
+    deadline_duration: {
+      type: DataTypes.VIRTUAL,
+      allowNull: true,
+      get() {
+        const minDeadline = this.getDataValue('min_deadline');
+        const maxDeadline = this.getDataValue('max_deadline');
+        if (minDeadline && maxDeadline) {
+          const daysDifference = differenceInDays(new Date(maxDeadline), new Date(minDeadline));
+          return `${daysDifference}d`;
+        }
+        return null;
+      }
     },
     chatroom_id: {
       type: DataTypes.STRING,

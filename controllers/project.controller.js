@@ -3,6 +3,69 @@ const { formatDates } = require('../helpers/utility')
 const { Op } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
+
+const getUserJobStatsAndBids = async (req, res) => {
+  try {
+    const userId = getUserId(req);
+
+    const jobPostedCount = await models.Project.count({
+      where: { owner_id: userId }
+    });
+
+    const bidsMadeCount = await models.Project_User_Bid.count({
+      where: { user_id: userId }
+    });
+
+    const bidsAcceptedCount = await models.Project_User_Bid.count({
+      where: {
+        user_id: userId,
+        is_selected: true
+      }
+    });
+
+    const bids = await models.Project_User_Bid.findAll({
+      where: {
+        user_id: userId,
+        is_selected: false
+      },
+      include: [
+        { model: models.Project, as: 'project', include: [{ model: models.User, as: 'owner_project', attributes: ['id', 'full_name', 'username'] }] }
+      ]
+    });
+
+    const bidProjects = bids.map(bid => ({
+      projectId: bid.project.id,
+      title: bid.project.title,
+      owner: bid.project.owner,
+      min_budget: bid.project.min_budget,
+      max_budget: bid.project.max_budget,
+      min_deadline: bid.project.min_deadline,
+      max_deadline: bid.project.max_deadline,
+      created_date: bid.project.created_date,
+      is_selected: bid.is_selected,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        job_posted: jobPostedCount,
+        bids_made: bidsMadeCount,
+        bids_accepted: bidsAcceptedCount,
+        bid_projects: bidProjects
+      },
+      message: "Informasi job bidding dan daftar proyek yang dibid berhasil diambil",
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil informasi job bidding dan daftar proyek yang dibid:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    });
+  }
+};
+
 const postProject = async (req, res) => {
   try {
     const user_id = getUserId(req);
@@ -101,14 +164,13 @@ const getAllProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: ['name'] }
+        { model: models.User, as: 'owner_project', attributes: [ 'full_name', 'username', 'profession', 'photo'] },
+        { model: models.Category, as: 'category', attributes: ['id', 'name'] },
       ]
     });
-    console.dir(project)
+
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -125,7 +187,6 @@ const getProjectById = async (req, res) => {
     });
 
     const users = [];
-
     bids.forEach(bid => {
       const user = bid.users_bid;
       if (user) {
@@ -133,14 +194,13 @@ const getProjectById = async (req, res) => {
       }
     });
 
-    const totalUsersBid = users.length;
-
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
     const responseData = {
       ...formattedProject,
       users_bid: users,
-      total_users_bid: totalUsersBid
+      total_bidders: users.length,
+      deadline_duration: project.deadline_duration
     };
 
     return res.status(200).json({
@@ -149,7 +209,6 @@ const getProjectById = async (req, res) => {
       message: "Detail proyek berhasil diambil",
       error_code: 0,
     });
-
   } catch (error) {
     console.error("Kesalahan saat mengambil detail proyek:", error);
     return res.status(500).json({
@@ -162,12 +221,13 @@ const getProjectById = async (req, res) => {
 
 
 
+
 const getOwnerProjects = async (req, res) => {
   try {
     const owner_id = getUserId(req);
     const projects = await models.Project.findAll({
       where: { owner_id: owner_id },
-      include: [{ model: models.User, as: 'owner_project', attributes: [ 'full_name', 'username', 'profession', 'photo'] }]
+      include: [{ model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] }]
     });
 
     const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
@@ -231,8 +291,8 @@ const ownerSelectBidder = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = getUserId(req);
-    const { freelancer_id } = req.body; 
-    
+    const { freelancer_id } = req.body;
+
     const project = await models.Project.findOne({
       where: {
         id: id,
@@ -321,56 +381,70 @@ const getUserSelectedProjectBids = async (req, res) => {
   }
 };
 
-const getListProjects = async (req, res) => {
+const getProjectList = async (req, res) => {
   try {
-    const { title, category, min_price, max_price } = req.query;
+    const { title, category, min_budget, max_budget } = req.query;
 
-    const where = { is_active: true };
+    const searchConditions = {};
 
     if (title) {
-      where.title = { [Op.like]: `%${title}%` };
+      searchConditions.title = { [Op.like]: `%${title}%` };
     }
 
-    let categoryFilter = {};
     if (category) {
-      categoryFilter.name = { [Op.like]: `%${category}%` };
+      searchConditions.category_id = category;
     }
 
-    if (min_price) {
-      where.min_budget = { [Op.gte]: parseFloat(min_price) };
+    if (min_budget) {
+      if (!searchConditions.min_budget) searchConditions.min_budget = {};
+      searchConditions.min_budget[Op.gte] = parseFloat(min_budget);
     }
 
-    if (max_price) {
-      if (!where.min_budget) {
-        where.min_budget = {};
-      }
-      where.min_budget[Op.lte] = parseFloat(max_price);
+    if (max_budget) {
+      if (!searchConditions.max_budget) searchConditions.max_budget = {};
+      searchConditions.max_budget[Op.lte] = parseFloat(max_budget);
     }
-    console.log(categoryFilter)
+
     const projects = await models.Project.findAll({
-      where,
-      include: [{
-        model: models.Category,
-        where: category,
-        attributes: []
-      }]
+      where: searchConditions,
+      include: [
+        {
+          model: models.User,
+          as: 'owner_project',
+          attributes: ['full_name', 'username', 'email', 'photo']
+        },
+        {
+          model: models.Category,
+          as: 'category',
+          attributes: ['name']
+        }
+      ]
     });
+
+    if (projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404
+      });
+    }
 
     return res.status(200).json({
       success: true,
       data: projects,
-      message: 'Projects fetched successfully',
-      error_code: 0,
+      message: "Daftar proyek berhasil diambil",
+      error_code: 0
     });
   } catch (error) {
-    console.error("Kesalahan saat mengambil semua proyek:", error);
+    console.error("Kesalahan saat mengambil daftar proyek:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
-      error_code: 500,
+      error_code: 500
     });
   }
 };
+
 
 const postBid = async (req, res) => {
   try {
@@ -722,7 +796,7 @@ const getProjectBidders = async (req, res) => {
     const project = await models.Project.findByPk(id, {
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: [ 'name'] }
+        { model: models.Category, as: 'category', attributes: ['name'] }
       ]
     });
 
@@ -737,7 +811,7 @@ const getProjectBidders = async (req, res) => {
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
       include: [
-        { model: models.User, as: 'users_bid', attributes: [ 'full_name', 'username', 'profession', 'photo'] }
+        { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
       ]
     });
 
@@ -778,8 +852,9 @@ module.exports = {
   ownerSelectBidder,
   getAllProjects,
   postTask,
-  getListProjects,
+  getProjectList,
   getProjectBidders,
+  getUserJobStatsAndBids,
   //*Project Owner review
   createProjectReview,
   getProjectReviewById,
