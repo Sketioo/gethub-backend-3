@@ -298,10 +298,17 @@ const getUserProjectBids = async (req, res) => {
         error_code: 200,
       })
     }
+    
+    const totalBids = await models.Project_User_Bid.count({
+      where: { user_id: userIdLogin }
+    });
 
     return res.status(200).json({
       success: true,
-      data: userProjectBids,
+      data: {
+        users_bid: userProjectBids,
+        total_bids: totalBids,
+      },
       message: "Tawaran proyek pengguna berhasil diambil",
       error_code: 0,
     });
