@@ -270,6 +270,7 @@ const deleteProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Profil pengguna berhasil dihapus",
+      error_code: 0,
     });
   } catch (error) {
     if (error instanceof Sequelize.ForeignKeyConstraintError) {
@@ -375,7 +376,6 @@ const createRole = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      data: role,
       message: "Role berhasil dibuat",
       error_code: 0,
     })

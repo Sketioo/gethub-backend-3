@@ -140,7 +140,10 @@ const postTask = async (req, res) => {
 const getAllProjects = async (req, res) => {
   try {
     const projects = await models.Project.findAll({
-      include: [{ model: models.User, as: 'owner_project', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }]
+      include: [
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
+        {model: models.Category, as: 'category', attributes: ['name']}
+    ]
     });
     if (!projects || projects.length === 0) {
       return res.status(200).json({
@@ -154,7 +157,7 @@ const getAllProjects = async (req, res) => {
       success: true,
       data: {
         projects,
-        total_data: projects.length
+        total_projects: projects.length
       },
       message: "Proyek berhasil diambil",
       error_code: 0
@@ -278,7 +281,12 @@ const getUserProjectBids = async (req, res) => {
       where: { user_id: userIdLogin },
       include: [{
         model: models.Project,
-        as: 'project'
+        as: 'project',
+        include: [{
+          model: models.User,
+          as: 'owner_project',
+          attributes: ['full_name', 'username', 'email', 'photo']
+        }]
       }]
     });
 
