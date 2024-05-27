@@ -112,9 +112,9 @@ module.exports = (sequelize, DataTypes) => {
     // Asosiasi dengan model EmailVerification
     User.hasOne(models.EmailVerification, { foreignKey: "user_id" });
     // Asosiasi dengan model Product
-    User.hasMany(models.Product, { foreignKey: "user_id" });
+    User.hasMany(models.Product, { as:'products', foreignKey: "user_id" });
     // Asosiasi dengan model Link
-    User.hasMany(models.Link, { foreignKey: "user_id" });
+    User.hasMany(models.Link, { as: 'links',foreignKey: "user_id" });
     // Asosiasi dengan model Partner
     User.hasMany(models.Partner, { foreignKey: "user_id" });
     // Asosiasi dengan model HistoryUpload

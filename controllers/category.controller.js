@@ -6,10 +6,11 @@ const getAllCategories = async (req, res, next) => {
   try {
     const categories = await models.Category.findAll();
     if (!categories || categories.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: 'Kategori tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
     return res.status(200).json({
@@ -33,10 +34,11 @@ const getCategoryById = async (req, res, next) => {
   try {
     const category = await models.Category.findByPk(id);
     if (!category) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: 'Kategori tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
     res.status(200).json({
@@ -63,10 +65,10 @@ const createCategory = async (req, res, next) => {
     }})
 
     if(checkCategory) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Kategori sudah ada',
-        error_code: 400
+        error_code: 200
       })
     }
     const newCategory = await models.Category.create({ name: customName });
@@ -92,10 +94,10 @@ const updateCategory = async (req, res, next) => {
     const customName = name.toLowerCase()
     let category = await models.Category.findByPk(id);
     if (!category) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Kategori tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
     await models.Category.update(
@@ -122,10 +124,10 @@ const deleteCategory = async (req, res, next) => {
   try {
     const category = await models.Category.findByPk(id);
     if (!category) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Kategori tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
     await models.Category.destroy({ where: { id: id } });

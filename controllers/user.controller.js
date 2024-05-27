@@ -18,10 +18,10 @@ const register = async (req, res) => {
       where: { email: req.body.email },
     });
     if (existingUser) {
-      return res.status(409).json({
+      return res.status(200).json({
         message: "Email sudah terdaftar!",
         success: false,
-        error_code: 409,
+        error_code: 200,
       });
     }
 
@@ -95,10 +95,10 @@ const login = async (req, res) => {
       where: { email: req.body.email },
     });
     if (!user) {
-      return res.status(401).json({
+      return res.status(200).json({
         message: "Kredensial tidak valid!",
         success: false,
-        error_code: 401,
+        error_code: 200,
       });
     }
 
@@ -107,10 +107,10 @@ const login = async (req, res) => {
       user.password
     );
     if (!isPasswordValid) {
-      return res.status(401).json({
+      return res.status(200).json({
         message: "Kredensial tidak valid!",
         success: false,
-        error_code: 401,
+        error_code: 200,
       });
     }
 
@@ -141,10 +141,11 @@ const getProfileById = async (req, res) => {
     const user_id = getUserId(req)
     const user = await models.User.findByPk(user_id);
     if (!user) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: "Pengguna tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -175,10 +176,11 @@ const getAllProfiles = async (req, res) => {
   try {
     const users = await models.User.findAll();
     if (!users || users.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Tidak ada profil yang ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -228,16 +230,17 @@ const updateProfile = async (req, res) => {
     });
 
     if (updatedRows === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Pengguna tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Profil pengguna berhasil diperbarui",
+      error_code: 0,
     });
   } catch (error) {
     return res.status(500).json({
@@ -257,10 +260,10 @@ const deleteProfile = async (req, res) => {
     });
 
     if (!deletedUser) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Pengguna tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -288,30 +291,24 @@ const deleteProfile = async (req, res) => {
 };
 
 const getPublicUser = async (req, res) => {
-  console.log('triggered')
   try {
     const username = req.query.username;
     const user = await models.User.findOne({
       where: { username: username },
       include: [
-        { model: models.Link, as: "Links" },
-        { model: models.Product, as: "Products" },
+        { model: models.Link, as: "links" },
+        { model: models.Product, as: "products" },
       ],
     });
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: "Pengguna tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
-
-    const publicUserData = await models.User.findByPk(user.id, {
-      include: [models.Product, models.Link]
-    })
-
-    const { Products, Links, password, role_id, updatedAt, createdAt, ...otherData } = user.dataValues;
 
     const getThemeHub = await getUserProfileCard(username);
     backgroundCard = getThemeHub;
@@ -319,8 +316,6 @@ const getPublicUser = async (req, res) => {
     const userData = {
       ...otherData,
       backgroundCard : backgroundCard,
-      products: Products,
-      links: Links
     }
 
     return res.status(200).json({
@@ -344,10 +339,11 @@ const getAllRoles = async (req, res) => {
   try {
     const roles = await models.Role.findAll();
     if(!roles || roles.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Tidak ada role yang ditemukan",
-        error_code: 404,
+        error_code: 200,
       })
     }
 
@@ -371,10 +367,10 @@ const createRole = async (req, res) => {
   try {
     const role = await models.Role.create(req.body);
     if(!role) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Tidak ada role yang ditemukan",
-        error_code: 404,
+        error_code: 200,
       })
     }
     return res.status(200).json({

@@ -5,10 +5,11 @@ const getAllInformation = async (req, res, next) => {
   try {
     const information = await models.Information.findAll();
     if (!information || information.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: 'Informasi tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
     return res.status(200).json({
@@ -32,10 +33,11 @@ const getInformationById = async (req, res, next) => {
   try {
     const information = await models.Information.findByPk(id);
     if (!information) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: 'Informasi tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
     res.status(200).json({
@@ -58,6 +60,15 @@ const createInformation = async (req, res, next) => {
     const { title, description, image_url, is_active, category } = req.body;
     const customCategory = category.toLowerCase()
     const newInformation = await models.Information.create({ title, description, image_url, is_active, category: customCategory });
+    
+    if(!newInformation) {
+      return res.status(200).json({
+        success: false,
+        message: 'Gagal membuat informasi',
+        error_code: 200
+      })
+    }
+
     res.status(201).json({
       success: true,
       data: newInformation,
@@ -78,19 +89,27 @@ const updateInformation = async (req, res, next) => {
     const id = req.params.id;
     const { title, description, image_url, is_active, category } = req.body;
     const customCategory = category.toLowerCase()
-    let information = await models.Information.findByPk(id);
-    if (!information) {
-      return res.status(404).json({
+    let checkInformation = await models.Information.findByPk(id);
+    if (!checkInformation) {
+      return res.status(200).json({
         success: false,
         message: 'Informasi tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
-    await models.Information.update(
+    const information = await models.Information.update(
       { title, description, image_url, is_active, category: customCategory },
       { where: { id: id } }
     );
-    information = await models.Information.findByPk(id);
+
+    if (!information) {
+      return res.status(200).json({
+        success: false,
+        message: 'Informasi gagal diperbarui',
+        error_code: 200,
+      })
+    }
+
     res.status(200).json({
       success: true,
       message: "Informasi berhasil diperbarui",
@@ -110,13 +129,20 @@ const deleteInformation = async (req, res, next) => {
   try {
     const information = await models.Information.findByPk(id);
     if (!information) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Informasi tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
-    await models.Information.destroy({ where: { id: id } });
+    const deleteInfo = await models.Information.destroy({ where: { id: id } });
+    if (!deleteInfo) {
+      return res.status(200).json({
+        success: false,
+        message: 'Informasi gagal dihapus',
+        error_code: 200,
+      })
+    }
     res.status(200).json({
       success: true,
       message: "Informasi berhasil dihapus",

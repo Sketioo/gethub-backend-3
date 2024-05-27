@@ -9,10 +9,10 @@ const createLink = async (req, res) => {
     const customCategory = category.toLowerCase()
     const newLink = await Link.create({ category: customCategory, link, user_id });
     if(!newLink) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Gagal membuat link',
-        error_code: 400
+        error_code: 200
       })
     }
     return res.status(201).json({
@@ -40,10 +40,11 @@ const getUserLinks = async (req, res) => {
       }
     });
     if(!links || links.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: 'Link tidak ditemukan',
-        error_code: 404
+        error_code: 200
       })
     }
     return res.status(200).json({
@@ -68,10 +69,11 @@ const getAllLinks = async (req, res) => {
   try {
     const links = await Link.findAll();
     if(!links || links.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: 'Link tidak ditemukan',
-        error_code: 404
+        error_code: 200
       })
     }
     return res.status(200).json({
@@ -95,10 +97,11 @@ const getLinkById = async (req, res) => {
   try {
     const link = await Link.findByPk(req.params.id);
     if (!link || link === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: 'Link tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
 
@@ -124,10 +127,10 @@ const updateLink = async (req, res) => {
     const user_id = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Link tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
     if (user_id === link.user_id) {
@@ -162,10 +165,10 @@ const deleteLink = async (req, res) => {
     const user_id = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Link tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
     if (user_id === link.user_id) {

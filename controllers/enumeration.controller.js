@@ -5,6 +5,14 @@ const createEnumeration = async (req, res) => {
   try {
     const { key, value } = req.body;
     const enumeration = await models.Enumeration.create({ key, value });
+    if(!enumeration) {
+      return res.status(200).json({
+        success: false,
+        data: {},
+        message: "Enumerasi gagal dibuat",
+        error_code: 200,
+      })
+    }
     return res.status(201).json({
       success: true,
       data: enumeration,
@@ -26,10 +34,11 @@ const getAllEnumerations = async (req, res) => {
   try {
     const enumerations = await models.Enumeration.findAll();
     if(!enumerations || enumerations.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Semua enumerasi tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       })
     }
     return res.status(200).json({
@@ -54,10 +63,11 @@ const getEnumerationById = async (req, res) => {
     const enumerationId = req.params.id;
     const enumeration = await models.Enumeration.findByPk(enumerationId);
     if (!enumeration) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: "Enumerasi tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
     return res.status(200).json({
@@ -84,10 +94,10 @@ const updateEnumeration = async (req, res) => {
     
     const enumeration = await models.Enumeration.findByPk(enumerationId);
     if (!enumeration) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Enumerasi tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
     await enumeration.update({ key, value });
@@ -113,10 +123,10 @@ const deleteEnumeration = async (req, res) => {
     const enumerationId = req.params.id;
     const deletedEnumeration = await models.Enumeration.findByPk(enumerationId);
     if (!deletedEnumeration) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Enumerasi tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
     await deletedEnumeration.destroy();
@@ -144,10 +154,11 @@ const getEnumerationsByCriteria = async (req, res) => {
       }
     });
     if(!enumerations || enumerations.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Semua enumerasi tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       })
     }
     return res.status(200).json({

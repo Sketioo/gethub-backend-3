@@ -7,10 +7,11 @@ const getAllPartners = async (req, res) => {
     const partners = await models.Partner.findAll();
     console.log(partners);
     if (!partners || partners.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Partner tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
     return res.status(200).json({
@@ -37,10 +38,11 @@ const getUserPartners = async (req, res) => {
     });
 
     if (!partners || partners.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Partner tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
     return res.status(200).json({
@@ -65,6 +67,7 @@ const getPartnerById = async (req, res) => {
     if (!partner) {
       return res.status(404).json({
         success: false,
+        data: {},
         message: "Partner tidak ditemukan",
         error_code: 404,
       });
@@ -89,6 +92,13 @@ const addPartner = async (req, res) => {
     const user_id = getUserId(req);
     const partnerData = req.body;
     const partner = await models.Partner.create({ ...partnerData, ref_user_id: null, user_id });
+    if(!partner) {
+      return res.status(200).json({
+        success: false,
+        message: "Partner gagal dibuat",
+        error_code: 200,
+      })
+    }
     return res.status(201).json({
       success: true,
       data: partner,
@@ -112,18 +122,18 @@ const addPartnerByQR = async (req, res) => {
     const refUser = await models.User.findOne({ where: { qr_code } });
 
     if (!refUser) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Pengguna yang direferensikan tidak ditemukan',
-        error_code: 404,
+        error_code: 200,
       });
     }
 
     if (refUser.id == userId) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: 'Anda tidak bisa menambahkan diri sendiri sebagai partner',
-        error_code: 400,
+        error_code: 200,
       });
     }
 
@@ -164,10 +174,10 @@ const updatePartner = async (req, res) => {
 
     const partner = await models.Partner.findByPk(partnerId);
     if (!partner) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Partner tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -193,10 +203,10 @@ const deletePartner = async (req, res) => {
   try {
     const partner = await models.Partner.findByPk(partnerId);
     if (!partner) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Partner tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
 
@@ -204,10 +214,10 @@ const deletePartner = async (req, res) => {
       where: { id: partnerId },
     });
     if (deletedRowsCount === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Partner tidak ditemukan",
-        error_code: 404,
+        error_code: 200,
       });
     }
     await partner.destroy();

@@ -7,12 +7,12 @@ const createCertification = async (req, res) => {
     const user_id = getUserId(req);
     const { category_id, title, image } = req.body;
     const newCertification = await Certification.create({ category_id, title, image, user_id });
-    console.log(newCertification)
     if (!newCertification) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: 'Gagal menambahkan sertifikasi',
-        error_code: 400
+        error_code: 200
       })
     }
     return res.status(201).json({
@@ -40,10 +40,11 @@ const getUserCertifications = async (req, res) => {
       }
     });
     if (!certifications || certifications.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 404
+        error_code: 200
       })
     }
     return res.status(200).json({
@@ -68,10 +69,11 @@ const getAllCertifications = async (req, res) => {
     const certifications = await Certification.findAll();
 
     if (!certifications || certifications.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 404
+        error_code: 200
       })
     }
     return res.status(200).json({
@@ -95,10 +97,11 @@ const getCertificationById = async (req, res) => {
   try {
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: {},
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
 
@@ -124,10 +127,10 @@ const updateCertification = async (req, res) => {
     const user_id = getUserId(req);
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
     if (user_id === certification.user_id) {
@@ -160,10 +163,10 @@ const deleteCertification = async (req, res) => {
     const user_id = getUserId(req);
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
     if (user_id === certification.user_id) {
