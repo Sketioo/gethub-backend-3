@@ -67,7 +67,6 @@ const register = async (req, res) => {
       email: user.email
     });
 
-    console.log(user.email)
     const mail = createMail(req.body.email, token)
 
     await transporter.sendMail(mail)
@@ -184,7 +183,6 @@ const getAllProfiles = async (req, res) => {
       });
     }
 
-    // Memfilter data sensitif untuk semua pengguna
     const customizedUsers = users.map((user) => {
       const {
         password,

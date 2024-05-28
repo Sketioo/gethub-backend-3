@@ -108,7 +108,7 @@ const regenerateVerificationToken = async (req, res) => {
       return res.status(404).render('email-verification', {
         emailVerifSent: false,
         success: false,
-        message: "User not found",
+        message: "Token user tidak ditemukan",
         error_code: 404
       });
     }
@@ -140,7 +140,7 @@ const regenerateVerificationToken = async (req, res) => {
     console.error('Error regenerating verification token:', error);
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Internal server error",
       error_code: 500
     });
   }

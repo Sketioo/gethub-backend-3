@@ -481,6 +481,54 @@ const getProjectList = async (req, res) => {
   }
 };
 
+const searchProjectsByTitle = async (req, res) => {
+  try {
+    const { title } = req.query;
+
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: "Masukan title project",
+        error_code: 400,
+      });
+    }
+
+    const projects = await models.Project.findAll({
+      where: {
+        title: {
+          [Op.like]: `%${title}%`,
+        },
+      },
+    });
+
+    if (!projects || projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan!",
+        error_code: 404,
+      });
+    }
+
+    const formattedProjects = projects.map(project =>
+      formatDates(project.toJSON(), ["min_deadline", "max_deadline", "created_date"])
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: formattedProjects,
+      message: "Proyek berhasil diambil",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mencari proyek:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+};
+
 
 const postBid = async (req, res) => {
   try {
@@ -921,6 +969,7 @@ module.exports = {
   getProjectList,
   getProjectBidders,
   getUserJobStatsAndBids,
+  searchProjectsByTitle,
   //*Project Owner review
   createProjectReview,
   getProjectReviewById,
