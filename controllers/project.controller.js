@@ -33,6 +33,7 @@ const getUserJobStatsAndBids = async (req, res) => {
         {
           model: models.Project,
           as: 'project',
+
           include: [
             {
               model: models.User,
@@ -56,6 +57,7 @@ const getUserJobStatsAndBids = async (req, res) => {
       const projectData = {
         projectId: bid.project.id,
         title: bid.project.title,
+        description: bid.project.description,
         owner: {
           id: bid.project.owner_project.id,
           full_name: bid.project.owner_project.full_name,
@@ -568,9 +570,11 @@ const searchProjectsByTitle = async (req, res) => {
 const postBid = async (req, res) => {
   try {
     const user_id = getUserId(req);
+    const { project_id } = req.body;
 
     const project = await models.Project.findOne({
       where: {
+        id: project_id,
         owner_id: user_id
       }
     });
@@ -580,6 +584,21 @@ const postBid = async (req, res) => {
         success: false,
         message: "Anda adalah pemilik proyek ini",
         error_code: 403,
+      });
+    }
+
+    const existingBid = await models.Project_User_Bid.findOne({
+      where: {
+        project_id,
+        user_id
+      }
+    });
+
+    if (existingBid) {
+      return res.status(400).json({
+        success: false,
+        message: "Anda sudah membuat tawaran untuk proyek ini",
+        error_code: 400,
       });
     }
 
@@ -608,6 +627,7 @@ const postBid = async (req, res) => {
     });
   }
 };
+
 
 
 //! PROJECT OWNER
