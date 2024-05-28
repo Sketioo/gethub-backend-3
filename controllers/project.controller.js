@@ -1,6 +1,6 @@
 const models = require('../models');
 const { formatDates } = require('../helpers/utility');
-const {differenceInDays} = require('date-fns')
+const { differenceInDays } = require('date-fns')
 const { Op } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
@@ -85,7 +85,8 @@ const getUserJobStatsAndBids = async (req, res) => {
         job_posted: jobPostedCount,
         bids_made: bidsMadeCount,
         bids_accepted: bidsAcceptedCount,
-        bid_projects: bidProjects
+        bid_projects: bidProjects,
+        total_bidders: bidProjects.length
       },
       message: "Informasi job bidding dan daftar proyek yang dibid berhasil diambil",
       error_code: 0
@@ -105,7 +106,7 @@ const postProject = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const checkOwner = await models.User.findByPk(user_id, {
-      where: [{ include: models.Category }]
+      where: [{ include: models.Category, as: 'category', attributes: ['name'] }]
     });
 
     if (!checkOwner) {
@@ -202,12 +203,14 @@ const getAllProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id)
     const project = await models.Project.findByPk(id, {
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
       ]
     });
+    console.log(project)
 
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
@@ -515,10 +518,22 @@ const searchProjectsByTitle = async (req, res) => {
       where: {
         title: {
           [Op.like]: `%${title}%`,
-        },
-        include
+        }
       },
+      include: [
+        {
+          model: models.User,
+          as: 'owner_project',
+          attributes: ['full_name', 'username', 'profession', 'photo']
+        },
+        {
+          model: models.Category,
+          as: 'category',
+          attributes: ['name']
+        }
+      ]
     });
+
 
     if (!projects || projects.length === 0) {
       return res.status(404).json({
@@ -534,7 +549,7 @@ const searchProjectsByTitle = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {projects: formattedProjects},
+      data: { projects: formattedProjects },
       message: "Proyek berhasil diambil",
       error_code: 0,
     });

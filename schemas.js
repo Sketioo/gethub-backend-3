@@ -179,7 +179,7 @@ exports.categorySchema = Joi.object({
 
 exports.projectSchema = Joi.object({
   id: Joi.string().guid({ version: "uuidv4" }).optional(),
-  owner_id: Joi.string().guid({ version: "uuidv4" }).required(),
+  owner_id: Joi.string().guid({ version: "uuidv4" }).optional(),
   title: Joi.string().required(),
   category_id: Joi.string().guid({ version: "uuidv4" }).required(),
   description: Joi.string().allow(null).optional(),
@@ -188,12 +188,12 @@ exports.projectSchema = Joi.object({
   min_deadline: Joi.date().required(),
   max_deadline: Joi.date().required(),
   created_date: Joi.date().allow(null).optional(),
-  chatroom_id: Joi.string().required(),
-  is_active: Joi.boolean().required(),
+  chatroom_id: Joi.string().optional(),
+  is_active: Joi.boolean().optional(),
   banned_message: Joi.string().allow(null).optional(),
-  status_project: Joi.string().valid('OPEN', 'BID', 'CLOSE', 'FINISHED').required(),
-  status_freelance_task: Joi.string().valid('OPEN', 'CLOSE').required(),
-  status_payment: Joi.string().valid('WAITING', 'SETTLEMENT').required(),
+  status_project: Joi.string().valid('OPEN', 'BID', 'CLOSE', 'FINISHED').optional(),
+  status_freelance_task: Joi.string().valid('OPEN', 'CLOSE').optional(),
+  status_payment: Joi.string().valid('WAITING', 'SETTLEMENT').optional(),
   fee_owner_transaction_persen: Joi.number().allow(null).optional(),
   fee_owner_transaction_value: Joi.number().allow(null).optional(),
   fee_freelance_transaction_persen: Joi.number().allow(null).optional(),
@@ -215,10 +215,8 @@ exports.projectTaskSchema = Joi.object({
 exports.projectUserBidSchema = Joi.object({
   id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
   project_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
-  user_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
   budget_bid: Joi.number().required(),
   message: Joi.string().allow('').optional(),
-  is_selected: Joi.boolean().required(),
 }).options({ stripUnknown: true });
 
 //* Project Review
