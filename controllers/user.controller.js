@@ -309,22 +309,20 @@ const getPublicUser = async (req, res) => {
       });
     }
 
-    const getThemeHub = await getUserProfileCard(username);
-    backgroundCard = getThemeHub;
+    const backgroundCard = await getUserProfileCard(username);
 
     const userData = {
-      ...user,
-      backgroundCard : backgroundCard,
+      ...user.toJSON(),
+      backgroundCard: backgroundCard,
     }
 
     return res.status(200).json({
       success: true,
       data: userData,
       message: "Data publik pengguna berhasil diambil",
-      error_code: 0
+      error_code: 0,
     });
   } catch (error) {
-
     console.error("Error mengambil data pengguna:", error);
     return res.status(500).json({
       success: false,
@@ -334,16 +332,17 @@ const getPublicUser = async (req, res) => {
   }
 };
 
+
 const getAllRoles = async (req, res) => {
   try {
     const roles = await models.Role.findAll();
-    if(!roles || roles.length === 0) {
+    if (!roles || roles.length === 0) {
       return res.status(200).json({
         success: false,
         data: [],
         message: "Tidak ada role yang ditemukan",
         error_code: 200,
-      })
+      });
     }
 
     return res.status(200).json({
@@ -351,16 +350,17 @@ const getAllRoles = async (req, res) => {
       data: roles,
       message: "Semua role berhasil diambil",
       error_code: 0,
-    })
+    });
   } catch (error) {
     console.error("Error mengambil data:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
       error_code: 500,
-    })
+    });
   }
-}
+};
+
 
 const createRole = async (req, res) => {
   try {
