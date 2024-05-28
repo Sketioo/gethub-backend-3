@@ -1,5 +1,6 @@
 const models = require('../models');
-const { formatDates } = require('../helpers/utility')
+const { formatDates } = require('../helpers/utility');
+const {differenceInDays} = require('date-fns')
 const { Op } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
@@ -29,29 +30,54 @@ const getUserJobStatsAndBids = async (req, res) => {
         is_selected: false
       },
       include: [
-        { model: models.Project, as: 'project', include: [{ model: models.User, as: 'owner_project', attributes: ['id', 'full_name', 'username'] }] }
+        {
+          model: models.Project,
+          as: 'project',
+          include: [
+            {
+              model: models.User,
+              as: 'owner_project',
+              attributes: ['id', 'full_name', 'username', 'email', 'photo', 'profession']
+            }
+          ]
+        }
       ]
     });
 
     if (!bids || bids.length === 0) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(200).json({
         success: false,
         message: "Informasi job bidding dan daftar proyek yang dibid tidak ditemukan",
-        error_code: 404
+        error_code: 200
       });
     }
 
-    const bidProjects = bids.map(bid => ({
-      projectId: bid.project.id,
-      title: bid.project.title,
-      owner: bid.project.owner,
-      min_budget: bid.project.min_budget,
-      max_budget: bid.project.max_budget,
-      min_deadline: bid.project.min_deadline,
-      max_deadline: bid.project.max_deadline,
-      created_date: bid.project.created_date,
-      is_selected: bid.is_selected,
-    }));
+    const bidProjects = bids.map(bid => {
+      const projectData = {
+        projectId: bid.project.id,
+        title: bid.project.title,
+        owner: {
+          id: bid.project.owner_project.id,
+          full_name: bid.project.owner_project.full_name,
+          username: bid.project.owner_project.username,
+          email: bid.project.owner_project.email,
+          photo: bid.project.owner_project.photo,
+          profession: bid.project.owner_project.profession
+        },
+        min_budget: bid.project.min_budget,
+        max_budget: bid.project.max_budget,
+        min_deadline: bid.project.min_deadline,
+        max_deadline: bid.project.max_deadline,
+        created_date: bid.project.created_date,
+        is_selected: bid.is_selected
+      };
+
+      const formattedProjectData = formatDates(projectData, ['min_deadline', 'max_deadline', 'created_date']);
+      const daysDifference = differenceInDays(new Date(bid.project.max_deadline), new Date(bid.project.min_deadline));
+      formattedProjectData.deadline_duration = `${daysDifference}d`;
+
+      return formattedProjectData;
+    });
 
     return res.status(200).json({
       success: true,
@@ -74,10 +100,10 @@ const getUserJobStatsAndBids = async (req, res) => {
   }
 };
 
+
 const postProject = async (req, res) => {
   try {
     const user_id = getUserId(req);
-    console.log(user_id)
     const checkOwner = await models.User.findByPk(user_id, {
       where: [{ include: models.Category }]
     });
@@ -146,7 +172,7 @@ const getAllProjects = async (req, res) => {
       ]
     });
     if (!projects || projects.length === 0) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         message: "Proyek tidak ditemukan!",
         error_code: 404
@@ -179,7 +205,7 @@ const getProjectById = async (req, res) => {
     const project = await models.Project.findByPk(id, {
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: ['id', 'name'] },
+        { model: models.Category, as: 'category', attributes: ['name'] },
       ]
     });
 
@@ -191,7 +217,7 @@ const getProjectById = async (req, res) => {
     });
 
     if (!project || !bids || bids.length === 0) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Proyek tidak ditemukan",
@@ -199,14 +225,14 @@ const getProjectById = async (req, res) => {
       });
     }
 
-    const users = bids.map(bid => bid.users_bid).filter(user => user);
+    const usersBid = bids.map(bid => bid.users_bid).filter(user => user);
 
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
     const responseData = {
       ...formattedProject,
-      users_bid: users,
-      total_bidders: users.length,
+      users_bid: usersBid,
+      total_bidders: usersBid.length,
       deadline_duration: project.deadline_duration
     };
 
@@ -236,7 +262,7 @@ const getOwnerProjects = async (req, res) => {
     });
 
     if (!projects || projects.length === 0) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Proyek tidak ditemukan!",
@@ -283,14 +309,14 @@ const getUserProjectBids = async (req, res) => {
     });
 
     if (!userProjectBids || userProjectBids.length === 0) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Tawaran proyek pengguna tidak ditemukan",
         error_code: 404,
       });
     }
-    
+
     const totalBids = await models.Project_User_Bid.count({
       where: { user_id: userIdLogin }
     });
@@ -343,7 +369,7 @@ const ownerSelectBidder = async (req, res) => {
     });
 
     if (!projectBid) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         message: "Tawaran proyek tidak ditemukan",
         error_code: 404,
@@ -385,7 +411,7 @@ const getUserSelectedProjectBids = async (req, res) => {
     });
 
     if (!userSelectedProjectBids || userSelectedProjectBids.length === 0) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Tawaran proyek yang dipilih pengguna tidak ditemukan",
@@ -490,6 +516,7 @@ const searchProjectsByTitle = async (req, res) => {
         title: {
           [Op.like]: `%${title}%`,
         },
+        include
       },
     });
 
@@ -507,7 +534,7 @@ const searchProjectsByTitle = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: formattedProjects,
+      data: {projects: formattedProjects},
       message: "Proyek berhasil diambil",
       error_code: 0,
     });
