@@ -199,3 +199,47 @@ exports.projectSchema = Joi.object({
   fee_freelance_transaction_persen: Joi.number().allow(null).optional(),
   fee_freelance_transaction_value: Joi.number().allow(null).optional(),
 });
+
+//* Project Task
+exports.projectTaskSchema = Joi.object({
+  id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
+  project_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  task_number: Joi.number().integer().required(),
+  task_description: Joi.string().required(),
+  task_status: Joi.string().valid('ON-PROGRESS', 'REVIEW', 'REVISION', 'DONE').required(),
+  task_feedback: Joi.string().allow('').optional(),
+}).options({ stripUnknown: true });
+
+//* Project User Bid
+
+exports.projectUserBidSchema = Joi.object({
+  id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
+  project_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  user_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  budget_bid: Joi.number().required(),
+  message: Joi.string().allow('').optional(),
+  is_selected: Joi.boolean().required(),
+}).options({ stripUnknown: true });
+
+//* Project Review
+exports.projectReviewSchema = Joi.object({
+  id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
+  project_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  owner_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  freelance_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  message: Joi.string().required(),
+  sentiment: Joi.string().required(),
+  sentiment_score: Joi.number().required(),
+}).options({ stripUnknown: true });
+
+//* Project Review Freelance 
+
+exports.projectReviewFreelanceSchema = Joi.object({
+  id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
+  project_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  owner_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  freelance_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  message: Joi.string().required(),
+  sentiment: Joi.string().required(),
+  sentiment_score: Joi.number().required(),
+}).options({ stripUnknown: true });

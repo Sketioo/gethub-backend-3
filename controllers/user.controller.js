@@ -1,3 +1,17 @@
+const models = require("../models");
+const bcryptjs = require("bcryptjs");
+const { Sequelize } = require("sequelize");
+
+const { getUserId, getThemehub, getUserProfileCard } = require("../helpers/utility");
+
+
+const {
+  generateRandomString,
+  generateAccessToken,
+} = require("../helpers/utility");
+const { createMail, transporter, createVerificationToken } = require("../helpers/email-verification")
+
+
 const register = async (req, res) => {
   try {
     const existingUser = await models.User.findOne({
@@ -316,7 +330,6 @@ const getPublicUser = async (req, res) => {
     });
   }
 };
-
 
 
 const getAllRoles = async (req, res) => {

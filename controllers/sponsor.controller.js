@@ -1,4 +1,5 @@
-// Mendapatkan semua sponsor
+const models = require("../models");
+
 const getAllSponsors = async (req, res) => {
   try {
     const sponsors = await models.Sponsor.findAll();
@@ -32,11 +33,11 @@ const getSponsorById = async (req, res) => {
     const sponsorId = req.params.id;
     const sponsor = await models.Sponsor.findByPk(sponsorId);
     if (!sponsor) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({
         success: false,
         data: {},
         message: "Sponsor tidak ditemukan",
-        error_code: 404, // Changed error code to 404
+        error_code: 404,
       });
     }
     return res.status(200).json({

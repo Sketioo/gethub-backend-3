@@ -146,7 +146,7 @@ const getAllProjects = async (req, res) => {
       ]
     });
     if (!projects || projects.length === 0) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({ 
         success: false,
         message: "Proyek tidak ditemukan!",
         error_code: 404
@@ -191,7 +191,7 @@ const getProjectById = async (req, res) => {
     });
 
     if (!project || !bids || bids.length === 0) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({ 
         success: false,
         data: [],
         message: "Proyek tidak ditemukan",
@@ -236,7 +236,7 @@ const getOwnerProjects = async (req, res) => {
     });
 
     if (!projects || projects.length === 0) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({ 
         success: false,
         data: [],
         message: "Proyek tidak ditemukan!",
@@ -283,7 +283,7 @@ const getUserProjectBids = async (req, res) => {
     });
 
     if (!userProjectBids || userProjectBids.length === 0) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({ 
         success: false,
         data: [],
         message: "Tawaran proyek pengguna tidak ditemukan",
@@ -343,7 +343,7 @@ const ownerSelectBidder = async (req, res) => {
     });
 
     if (!projectBid) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({ 
         success: false,
         message: "Tawaran proyek tidak ditemukan",
         error_code: 404,
@@ -385,7 +385,7 @@ const getUserSelectedProjectBids = async (req, res) => {
     });
 
     if (!userSelectedProjectBids || userSelectedProjectBids.length === 0) {
-      return res.status(404).json({ // Changed status code to 404 Not Found
+      return res.status(404).json({ 
         success: false,
         data: [],
         message: "Tawaran proyek yang dipilih pengguna tidak ditemukan",

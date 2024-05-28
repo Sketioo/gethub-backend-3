@@ -3,7 +3,8 @@ const {
   productSchema, linkSchema, sponsorSchema,
   informationSchema, partnerSchema,
   userUpdateSchema, certificationSchema,
-  projectSchema, categorySchema
+  projectSchema, categorySchema, projectReviewFreelanceSchema,
+  projectTaskSchema, projectReviewSchema, projectUserBidSchema
 } = require("../schemas");
 
 //* User
@@ -329,7 +330,7 @@ exports.validateCategory = (req, res, next) => {
       .map((el) => {
         switch (el.context.key) {
           case "name":
-            return "Nama harus diisi.";
+            return "Nama kategori harus diisi.";
           default:
             return el.message.replace(/"/g, '');
         }
@@ -379,6 +380,187 @@ exports.validateProject = (req, res, next) => {
         }
       })
       .join(', ');
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};
+
+//* Project
+
+exports.validateProject = (req, res, next) => {
+  const { error } = projectSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "owner_id":
+            return "ID Pemilik diperlukan dan harus berupa UUID yang valid.";
+          case "title":
+            return "Judul diperlukan.";
+          case "category_id":
+            return "ID Kategori diperlukan dan harus berupa UUID yang valid.";
+          case "min_budget":
+          case "max_budget":
+            return "Anggaran harus berupa angka.";
+          case "min_deadline":
+          case "max_deadline":
+            return "Batas waktu harus berupa tanggal yang valid dalam format ISO.";
+          case "chatroom_id":
+            return "ID Ruang Obrolan diperlukan dan harus berupa UUID yang valid.";
+          case "status_project":
+            return "Status proyek harus salah satu dari: BUKA, PENAWARAN, TUTUP, SELESAI.";
+          case "status_freelance_task":
+            return "Status tugas freelancer harus salah satu dari: BUKA, TUTUP.";
+          case "status_payment":
+            return "Status pembayaran harus salah satu dari: MENUNGGU, PENYELESAIAN.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};
+
+//* Project User Bid
+exports.validateProjectUserBid = (req, res, next) => {
+  const { error } = projectUserBidSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "project_id":
+            return "ID Proyek diperlukan dan harus berupa UUID yang valid.";
+          case "user_id":
+            return "ID Pengguna diperlukan dan harus berupa UUID yang valid.";
+          case "budget_bid":
+            return "Penawaran anggaran diperlukan dan harus berupa angka.";
+          case "is_selected":
+            return "Status seleksi harus berupa boolean.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};
+
+
+//* Project Task
+
+exports.validateProjectTask = (req, res, next) => {
+  const { error } = projectTaskSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "project_id":
+            return "ID Proyek diperlukan dan harus berupa UUID yang valid.";
+          case "task_number":
+            return "Nomor tugas diperlukan dan harus berupa bilangan bulat.";
+          case "task_description":
+            return "Deskripsi tugas diperlukan.";
+          case "task_status":
+            return "Status tugas harus salah satu dari: DALAM PROSES, ULANGI, SELESAI.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};
+
+//* Project Review
+
+
+exports.validateProjectReview = (req, res, next) => {
+  const { error } = projectReviewSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "project_id":
+            return "ID Proyek diperlukan dan harus berupa UUID yang valid.";
+          case "owner_id":
+            return "ID Pemilik diperlukan dan harus berupa UUID yang valid.";
+          case "freelance_id":
+            return "ID Freelancer diperlukan dan harus berupa UUID yang valid.";
+          case "message":
+            return "Pesan diperlukan.";
+          case "sentiment":
+            return "Sentimen diperlukan.";
+          case "sentiment_score":
+            return "Skor sentimen diperlukan dan harus berupa angka.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
+
+    return res.status(400).json({
+      success: false,
+      message: messages,
+      error_code: 400,
+    });
+  } else {
+    next();
+  }
+};
+
+//* Project Review Freelance
+
+exports.validateProjectReviewFreelance = (req, res, next) => {
+  const { error } = projectReviewFreelanceSchema.validate(req.body);
+  if (error) {
+    const messages = error.details
+      .map((el) => {
+        switch (el.context.key) {
+          case "project_id":
+            return "ID Proyek diperlukan dan harus berupa UUID yang valid.";
+          case "owner_id":
+            return "ID Pemilik diperlukan dan harus berupa UUID yang valid.";
+          case "freelance_id":
+            return "ID Freelancer diperlukan dan harus berupa UUID yang valid.";
+          case "message":
+            return "Pesan diperlukan.";
+          case "sentiment":
+            return "Sentimen diperlukan.";
+          case "sentiment_score":
+            return "Skor sentimen diperlukan dan harus berupa angka.";
+          default:
+            return el.message.replace(/"/g, "");
+        }
+      })
+      .join(", ");
 
     return res.status(400).json({
       success: false,
