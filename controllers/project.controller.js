@@ -210,7 +210,7 @@ const getProjectById = async (req, res) => {
         { model: models.Category, as: 'category', attributes: ['name'] },
       ]
     });
-    console.log(project)
+    // console.log(project)
 
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
@@ -219,7 +219,9 @@ const getProjectById = async (req, res) => {
       ]
     });
 
-    if (!project || !bids || bids.length === 0) {
+    console.log(bids)
+
+    if (!project || !bids ) {
       return res.status(404).json({
         success: false,
         data: [],

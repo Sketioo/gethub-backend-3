@@ -14,12 +14,12 @@ router.post("/projects/bid", authenticateToken, verifyUserMiddleware, validatePr
 router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddleware, projectController.ownerSelectBidder);
 router.post('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, validateProjectTask, projectController.postTask);
 router.get("/projects", authenticateToken, projectController.getAllProjects);
+router.get("/projects/:id", authenticateToken, projectController.getProjectById);
 router.get("/projects/my", authenticateToken, projectController.getOwnerProjects);
 router.get("/projects/list", authenticateToken, projectController.getProjectList);
 router.get("/projects/search", projectController.searchProjectsByTitle);
 router.get('/projects/dashboard/my', authenticateToken, verifyUserMiddleware, projectController.getUserJobStatsAndBids);
 //* Perhatikan penggunaan params
-router.get("/projects/:id", authenticateToken, projectController.getProjectById);
 router.get("/projects/my/selected-bids", authenticateToken, projectController.getUserSelectedProjectBids);
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
