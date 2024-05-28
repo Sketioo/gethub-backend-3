@@ -115,6 +115,27 @@ const backgrounCards = [
     icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/gethub.png',
     card: 'https://storage.googleapis.com/gethub_bucket/CARD/card9/card9.png',
     isPremium: true
+  },
+  {
+    id: 10,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card10/bg.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card10/icon.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card10/card.png  ',
+    isPremium: true
+  },
+  {
+    id: 11,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card11/bg.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card11/icon.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card11/card.png',
+    isPremium: true
+  },
+  {
+    id: 12,
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/bg.png',
+    icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/icon.png',
+    card: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/card.png',
+    isPremium: true
   }
 ]
 
