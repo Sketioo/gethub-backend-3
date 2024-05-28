@@ -6,15 +6,9 @@ const createLink = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const { category, link } = req.body;
-    const customCategory = category.toLowerCase()
+    const customCategory = category.toLowerCase();
     const newLink = await Link.create({ category: customCategory, link, user_id });
-    if(!newLink) {
-      return res.status(200).json({
-        success: false,
-        message: 'Gagal membuat link',
-        error_code: 200
-      })
-    }
+
     return res.status(201).json({
       success: true,
       data: newLink,
@@ -39,13 +33,13 @@ const getUserLinks = async (req, res) => {
         user_id: getUserId(req)
       }
     });
-    if(!links || links.length === 0) {
-      return res.status(200).json({
+    if (!links || links.length === 0) {
+      return res.status(404).json({
         success: false,
         data: [],
         message: 'Link tidak ditemukan',
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
     return res.status(200).json({
       success: true,
@@ -63,18 +57,17 @@ const getUserLinks = async (req, res) => {
   }
 };
 
-
 // Mendapatkan semua link
 const getAllLinks = async (req, res) => {
   try {
     const links = await Link.findAll();
-    if(!links || links.length === 0) {
-      return res.status(200).json({
+    if (!links || links.length === 0) {
+      return res.status(404).json({
         success: false,
         data: [],
         message: 'Link tidak ditemukan',
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
     return res.status(200).json({
       success: true,
@@ -96,12 +89,12 @@ const getAllLinks = async (req, res) => {
 const getLinkById = async (req, res) => {
   try {
     const link = await Link.findByPk(req.params.id);
-    if (!link || link === 0) {
-      return res.status(200).json({
+    if (!link) {
+      return res.status(404).json({
         success: false,
         data: {},
         message: 'Link tidak ditemukan',
-        error_code: 200
+        error_code: 404
       });
     }
 
@@ -127,16 +120,16 @@ const updateLink = async (req, res) => {
     const user_id = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: 'Link tidak ditemukan',
-        error_code: 200
+        error_code: 404
       });
     }
     if (user_id === link.user_id) {
-      const {category} = rq.body;
+      const { category } = req.body;
       const customCategory = category.toLowerCase();
-      await link.update({...req.body, category: customCategory});
+      await link.update({ ...req.body, category: customCategory });
       return res.status(200).json({
         success: true,
         message: 'Link berhasil diperbarui',
@@ -165,19 +158,15 @@ const deleteLink = async (req, res) => {
     const user_id = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: 'Link tidak ditemukan',
-        error_code: 200
+        error_code: 404
       });
     }
     if (user_id === link.user_id) {
       await link.destroy();
-      return res.status(200).json({
-        success: true,
-        message: 'Link berhasil dihapus',
-        error_code: 0
-      });
+      return res.status(204).send();
     } else {
       return res.status(403).json({
         success: false,

@@ -1,27 +1,13 @@
-const models = require("../models");
-const bcryptjs = require("bcryptjs");
-const { Sequelize } = require("sequelize");
-
-const { getUserId, getThemehub, getUserProfileCard } = require("../helpers/utility");
-
-
-const {
-  generateRandomString,
-  generateAccessToken,
-} = require("../helpers/utility");
-const { createMail, transporter, createVerificationToken } = require("../helpers/email-verification")
-
-// Function expressions
 const register = async (req, res) => {
   try {
     const existingUser = await models.User.findOne({
       where: { email: req.body.email },
     });
     if (existingUser) {
-      return res.status(200).json({
+      return res.status(409).json({
         message: "Email sudah terdaftar!",
         success: false,
-        error_code: 200,
+        error_code: 409,
       });
     }
 
@@ -94,10 +80,10 @@ const login = async (req, res) => {
       where: { email: req.body.email },
     });
     if (!user) {
-      return res.status(200).json({
+      return res.status(401).json({
         message: "Kredensial tidak valid!",
         success: false,
-        error_code: 200,
+        error_code: 401,
       });
     }
 
@@ -106,10 +92,10 @@ const login = async (req, res) => {
       user.password
     );
     if (!isPasswordValid) {
-      return res.status(200).json({
+      return res.status(401).json({
         message: "Kredensial tidak valid!",
         success: false,
-        error_code: 200,
+        error_code: 401,
       });
     }
 
@@ -134,17 +120,16 @@ const login = async (req, res) => {
   }
 };
 
-// Get profile by ID
 const getProfileById = async (req, res) => {
   try {
     const user_id = getUserId(req)
     const user = await models.User.findByPk(user_id);
     if (!user) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: {},
         message: "Pengguna tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -170,16 +155,16 @@ const getProfileById = async (req, res) => {
   }
 };
 
-// Mendapatkan semua profil
+
 const getAllProfiles = async (req, res) => {
   try {
     const users = await models.User.findAll();
     if (!users || users.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Tidak ada profil yang ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -228,10 +213,10 @@ const updateProfile = async (req, res) => {
     });
 
     if (updatedRows === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "Pengguna tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -258,10 +243,10 @@ const deleteProfile = async (req, res) => {
     });
 
     if (!deletedUser) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "Pengguna tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -301,11 +286,11 @@ const getPublicUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: {},
         message: "Pengguna tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -333,15 +318,16 @@ const getPublicUser = async (req, res) => {
 };
 
 
+
 const getAllRoles = async (req, res) => {
   try {
     const roles = await models.Role.findAll();
     if (!roles || roles.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Tidak ada role yang ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -366,19 +352,19 @@ const createRole = async (req, res) => {
   try {
     const role = await models.Role.create(req.body);
     if(!role) {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
-        message: "Tidak ada role yang ditemukan",
-        error_code: 200,
+        message: "Gagal membuat role",
+        error_code: 400,
       })
     }
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
       message: "Role berhasil dibuat",
       error_code: 0,
     })
   } catch (error) {
-    console.error("Error mengambil data:", error);
+    console.error("Error membuat role:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
@@ -386,6 +372,7 @@ const createRole = async (req, res) => {
     })
   }
 }
+
 
 module.exports = {
   register,

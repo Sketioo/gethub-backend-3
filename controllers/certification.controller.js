@@ -7,22 +7,14 @@ const createCertification = async (req, res) => {
     const user_id = getUserId(req);
     const { category_id, title, image } = req.body;
     const newCertification = await Certification.create({ category_id, title, image, user_id });
-    if (!newCertification) {
-      return res.status(200).json({
-        success: false,
-        data: {},
-        message: 'Gagal menambahkan sertifikasi',
-        error_code: 200
-      })
-    }
     return res.status(201).json({
       success: true,
       data: newCertification,
-      message: 'Certification berhasil dibuat',
+      message: 'Sertifikasi berhasil dibuat',
       error_code: 0
     });
   } catch (error) {
-    console.error('Error creating certification:', error);
+    console.error('Error creating sertifikasi:', error);
     return res.status(500).json({
       success: false,
       message: 'Kesalahan internal server',
@@ -40,12 +32,12 @@ const getUserCertifications = async (req, res) => {
       }
     });
     if (!certifications || certifications.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: [],
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
     return res.status(200).json({
       success: true,
@@ -57,7 +49,7 @@ const getUserCertifications = async (req, res) => {
     console.error('Error retrieving Sertifikasi:', error);
     return res.status(500).json({
       success: false,
-      message: 'Kesalah internal server',
+      message: 'Kesalahan internal server',
       error_code: 500
     });
   }
@@ -67,14 +59,13 @@ const getUserCertifications = async (req, res) => {
 const getAllCertifications = async (req, res) => {
   try {
     const certifications = await Certification.findAll();
-
     if (!certifications || certifications.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: [],
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
     return res.status(200).json({
       success: true,
@@ -97,14 +88,13 @@ const getCertificationById = async (req, res) => {
   try {
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: {},
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 200
+        error_code: 404
       });
     }
-
     return res.status(200).json({
       success: true,
       data: certification,
@@ -127,10 +117,10 @@ const updateCertification = async (req, res) => {
     const user_id = getUserId(req);
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 200
+        error_code: 404
       });
     }
     if (user_id === certification.user_id) {
@@ -163,15 +153,15 @@ const deleteCertification = async (req, res) => {
     const user_id = getUserId(req);
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: 'Sertifikasi tidak ditemukan',
-        error_code: 200
+        error_code: 404
       });
     }
     if (user_id === certification.user_id) {
       await certification.destroy();
-      return res.status(200).json({
+      return res.status(204).json({
         success: true,
         message: 'Sertifikasi berhasil dihapus',
         error_code: 0
@@ -179,7 +169,7 @@ const deleteCertification = async (req, res) => {
     } else {
       return res.status(403).json({
         success: false,
-        message: 'Anda tidak diizinkan menghapus certification ini',
+        message: 'Anda tidak diizinkan menghapus sertifikasi ini',
         error_code: 403
       });
     }

@@ -1,16 +1,14 @@
-const models = require("../models");
-
 // Mendapatkan semua sponsor
 const getAllSponsors = async (req, res) => {
   try {
     const sponsors = await models.Sponsor.findAll();
-    if(!sponsors || sponsors.length === 0) {
+    if (!sponsors || sponsors.length === 0) {
       return res.status(200).json({
         success: true,
         data: [],
         message: "Semua sponsor berhasil diambil",
         error_code: 0,
-      })
+      });
     }
     return res.status(200).json({
       success: true,
@@ -34,11 +32,11 @@ const getSponsorById = async (req, res) => {
     const sponsorId = req.params.id;
     const sponsor = await models.Sponsor.findByPk(sponsorId);
     if (!sponsor) {
-      return res.status(200).json({
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         data: {},
         message: "Sponsor tidak ditemukan",
-        error_code: 200,
+        error_code: 404, // Changed error code to 404
       });
     }
     return res.status(200).json({
@@ -62,14 +60,14 @@ const createSponsor = async (req, res) => {
   try {
     const newSponsor = req.body;
     const createdSponsor = await models.Sponsor.create(newSponsor);
-    if(!createSponsor) {
-      return res.status(200).json({
+    if (!createdSponsor) {
+      return res.status(500).json({ 
         success: false,
         message: "Sponsor tidak dapat dibuat",
-        error_code: 200,
-      })
+        error_code: 500, 
+      });
     }
-    return res.status(201).json({
+    return res.status(201).json({ 
       success: true,
       data: createdSponsor,
       message: "Sponsor berhasil dibuat",
@@ -92,10 +90,10 @@ const updateSponsor = async (req, res) => {
     const updatedSponsorData = req.body;
     const sponsor = await models.Sponsor.findByPk(sponsorId)
     if (!sponsor) {
-      return res.status(200).json({
+      return res.status(404).json({ 
         success: false,
         message: "Sponsor tidak ditemukan",
-        error_code: 200,
+        error_code: 404, 
       });
     }
     await models.Sponsor.update(updatedSponsorData, {
@@ -127,10 +125,10 @@ const deleteSponsor = async (req, res) => {
       where: { id: sponsorId },
     });
     if (deletedRowsCount === 0) {
-      return res.status(200).json({
+      return res.status(404).json({ 
         success: false,
         message: "Sponsor tidak ditemukan",
-        error_code: 200,
+        error_code: 404, 
       });
     }
     return res.status(200).json({

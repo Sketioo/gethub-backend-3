@@ -7,21 +7,14 @@ const createProduct = async (req, res) => {
     const user_id = getUserId(req);
     const checkUser = await models.User.findByPk(user_id);
     if (!checkUser) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "Pengguna tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
     const product = await models.Product.create({ ...req.body, user_id });
-    if (!product) {
-      return res.status(200).json({
-        success: false,
-        message: "Kesalahan internal server",
-        error_code: 200,
-      })
-    }
     return res.status(201).json({
       success: true,
       data: product,
@@ -30,7 +23,7 @@ const createProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error membuat produk:", error);
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
       error_code: 500,
@@ -51,11 +44,11 @@ const getUserProducts = async (req, res) => {
     });
 
     if (!products || products.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Produk tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -93,6 +86,15 @@ const getAllProducts = async (req, res) => {
       },
     });
 
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        data: [],
+        message: "Produk tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
     const processedProducts = products.map(product => {
       const { Category, ...otherData } = product.toJSON();
       return {
@@ -101,15 +103,6 @@ const getAllProducts = async (req, res) => {
       };
     });
 
-
-    if (!products || products.length === 0) {
-      return res.status(200).json({
-        success: false,
-        data: [],
-        message: "Produk tidak ditemukan",
-        error_code: 200,
-      });
-    }
     return res.status(200).json({
       success: true,
       data: processedProducts,
@@ -137,11 +130,11 @@ const getProductById = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: {},
         message: "Produk tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -167,19 +160,16 @@ const getProductById = async (req, res) => {
   }
 };
 
-
-//! ------------
-
 // Memperbarui produk berdasarkan ID
 const updateProduct = async (req, res) => {
   try {
     const user_id = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "Produk tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
     if (user_id === product.user_id) {
@@ -190,10 +180,10 @@ const updateProduct = async (req, res) => {
         error_code: 0,
       });
     } else {
-      return res.status(200).json({
+      return res.status(403).json({
         success: false,
         message: "Anda tidak diizinkan memperbarui produk ini",
-        error_code: 200,
+        error_code: 403,
       });
     }
   } catch (error) {
@@ -212,24 +202,20 @@ const deleteProduct = async (req, res) => {
     const user_id = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         message: "Produk tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
     if (user_id === product.user_id) {
       await product.destroy();
-      return res.status(200).json({
-        success: true,
-        message: "Produk berhasil dihapus",
-        error_code: 0,
-      });
+      return res.status(204).send();
     } else {
-      return res.status(200).json({
+      return res.status(403).json({
         success: false,
         message: "Anda tidak diizinkan menghapus produk ini",
-        error_code: 200,
+        error_code: 403,
       });
     }
   } catch (error) {

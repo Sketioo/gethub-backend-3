@@ -33,12 +33,12 @@ const getUserJobStatsAndBids = async (req, res) => {
       ]
     });
 
-    if(!bids) {
-      return res.status(200).json({
+    if (!bids || bids.length === 0) {
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         message: "Informasi job bidding dan daftar proyek yang dibid tidak ditemukan",
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
 
     const bidProjects = bids.map(bid => ({
@@ -142,15 +142,15 @@ const getAllProjects = async (req, res) => {
     const projects = await models.Project.findAll({
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        {model: models.Category, as: 'category', attributes: ['name']}
-    ]
+        { model: models.Category, as: 'category', attributes: ['name'] }
+      ]
     });
     if (!projects || projects.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         message: "Proyek tidak ditemukan!",
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
 
     return res.status(200).json({
@@ -161,23 +161,24 @@ const getAllProjects = async (req, res) => {
       },
       message: "Proyek berhasil diambil",
       error_code: 0
-    })
+    });
   } catch (error) {
     console.error("Kesalahan saat mengambil semua proyek:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
       error_code: 500,
-    })
+    });
   }
-}
+};
+
 
 const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner_project', attributes: [ 'full_name', 'username', 'profession', 'photo'] },
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['id', 'name'] },
       ]
     });
@@ -190,25 +191,18 @@ const getProjectById = async (req, res) => {
     });
 
     if (!project || !bids || bids.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         data: [],
         message: "Proyek tidak ditemukan",
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
 
-    
-    const users = [];
-    bids.forEach(bid => {
-      const user = bid.users_bid;
-      if (user) {
-        users.push(user);
-      }
-    });
-    
+    const users = bids.map(bid => bid.users_bid).filter(user => user);
+
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
-    
+
     const responseData = {
       ...formattedProject,
       users_bid: users,
@@ -233,8 +227,6 @@ const getProjectById = async (req, res) => {
 };
 
 
-
-
 const getOwnerProjects = async (req, res) => {
   try {
     const owner_id = getUserId(req);
@@ -244,12 +236,12 @@ const getOwnerProjects = async (req, res) => {
     });
 
     if (!projects || projects.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         data: [],
         message: "Proyek tidak ditemukan!",
-        error_code: 200
-      })
+        error_code: 404
+      });
     }
 
     const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
@@ -291,12 +283,12 @@ const getUserProjectBids = async (req, res) => {
     });
 
     if (!userProjectBids || userProjectBids.length === 0) {
-      return res.status(200).json({
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         data: [],
         message: "Tawaran proyek pengguna tidak ditemukan",
-        error_code: 200,
-      })
+        error_code: 404,
+      });
     }
     
     const totalBids = await models.Project_User_Bid.count({
@@ -351,10 +343,10 @@ const ownerSelectBidder = async (req, res) => {
     });
 
     if (!projectBid) {
-      return res.status(200).json({
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         message: "Tawaran proyek tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -392,13 +384,13 @@ const getUserSelectedProjectBids = async (req, res) => {
       }]
     });
 
-    if (!userSelectedProjectBids || userSelectedProjectBids === 0) {
-      return res.status(200).json({
+    if (!userSelectedProjectBids || userSelectedProjectBids.length === 0) {
+      return res.status(404).json({ // Changed status code to 404 Not Found
         success: false,
         data: [],
         message: "Tawaran proyek yang dipilih pengguna tidak ditemukan",
-        error_code: 200,
-      })
+        error_code: 404,
+      });
     }
     return res.status(200).json({
       success: true,
@@ -529,7 +521,6 @@ const searchProjectsByTitle = async (req, res) => {
   }
 };
 
-
 const postBid = async (req, res) => {
   try {
     const user_id = getUserId(req);
@@ -538,38 +529,42 @@ const postBid = async (req, res) => {
       where: {
         owner_id: user_id
       }
-    })
-    if (!project) {
-      const projectBid = await models.Project_User_Bid.create({ ...req.body, user_id });
-      if (!projectBid) {
-        return res.status(400).json({
-          success: false,
-          message: "Gagal membuat tawaran proyek",
-          error_code: 400,
-        })
-      }
-      return res.status(200).json({
-        success: true,
-        data: projectBid,
-        message: "Tawaran proyek berhasil dibuat",
-        error_code: 0,
-      })
-    } else {
+    });
+
+    if (project) {
       return res.status(403).json({
         success: false,
         message: "Anda adalah pemilik proyek ini",
         error_code: 403,
-      })
+      });
     }
+
+    const projectBid = await models.Project_User_Bid.create({ ...req.body, user_id });
+
+    if (!projectBid) {
+      return res.status(400).json({
+        success: false,
+        message: "Gagal membuat tawaran proyek",
+        error_code: 400,
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      data: projectBid,
+      message: "Tawaran proyek berhasil dibuat",
+      error_code: 0,
+    });
   } catch (error) {
     console.error("Kesalahan saat membuat tawaran proyek:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
       error_code: 500,
-    })
+    });
   }
-}
+};
+
 
 //! PROJECT OWNER
 
@@ -591,7 +586,7 @@ const createProjectReview = async (req, res) => {
       where: { owner_id }
     });
 
-    if(!reviews || reviews.length === 0) {
+    if (!reviews || reviews.length === 0) {
       return res.status(200).json({
         success: false,
         data: [],
@@ -645,7 +640,6 @@ const createProjectReview = async (req, res) => {
   }
 };
 
-// Get project review by ID
 const getProjectReviewById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -674,7 +668,6 @@ const getProjectReviewById = async (req, res) => {
   }
 };
 
-// Update project review
 const updateProjectReview = async (req, res) => {
   try {
     const { id } = req.params;
@@ -683,7 +676,7 @@ const updateProjectReview = async (req, res) => {
     if (!projectReview) {
       return res.status(404).json({
         success: false,
-        message: "Project review not found",
+        message: "Ulasan proyek tidak ditemukan",
         error_code: 404,
       });
     }
@@ -691,20 +684,19 @@ const updateProjectReview = async (req, res) => {
     res.status(200).json({
       success: true,
       data: projectReview,
-      message: "Project review updated successfully",
+      message: "Ulasan proyek berhasil diperbarui",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error updating project review:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to update project review",
+      message: "Gagal memperbarui ulasan proyek",
       error_code: 500,
     });
   }
 };
 
-// Delete project review
 const deleteProjectReview = async (req, res) => {
   try {
     const { id } = req.params;
@@ -712,25 +704,26 @@ const deleteProjectReview = async (req, res) => {
     if (!projectReview) {
       return res.status(404).json({
         success: false,
-        message: "Project review not found",
+        message: "Ulasan proyek tidak ditemukan",
         error_code: 404,
       });
     }
     await projectReview.destroy();
     res.status(200).json({
       success: true,
-      message: "Project review deleted successfully",
+      message: "Ulasan proyek berhasil dihapus",
       error_code: 0,
     });
   } catch (error) {
     console.error("Error deleting project review:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to delete project review",
+      message: "Gagal menghapus ulasan proyek",
       error_code: 500,
     });
   }
 };
+
 
 //! Freelancer Review
 
@@ -752,7 +745,7 @@ const createFreelancerReview = async (req, res) => {
       where: { freelance_id }
     });
 
-    if(!reviews || reviews.length === 0) {
+    if (!reviews || reviews.length === 0) {
       return res.status(200).json({
         success: false,
         data: [],
@@ -806,7 +799,6 @@ const createFreelancerReview = async (req, res) => {
   }
 };
 
-// Dapatkan ulasan proyek untuk freelance berdasarkan ID
 const getProjectReviewFreelanceById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -834,7 +826,6 @@ const getProjectReviewFreelanceById = async (req, res) => {
   }
 };
 
-// Perbarui ulasan proyek untuk freelance
 const updateProjectReviewFreelance = async (req, res) => {
   try {
     const { id } = req.params;
@@ -864,7 +855,6 @@ const updateProjectReviewFreelance = async (req, res) => {
   }
 };
 
-// Hapus ulasan proyek untuk freelance
 const deleteProjectReviewFreelance = async (req, res) => {
   try {
     const { id } = req.params;
@@ -924,7 +914,7 @@ const getProjectBidders = async (req, res) => {
       return res.status(200).json({
         success: false,
         data: [],
-        message: "Tidak ada bidders untuk proyek ini",
+        message: "Tidak ada penawar untuk proyek ini",
         error_code: 200,
       })
     }
@@ -942,11 +932,11 @@ const getProjectBidders = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: responseData,
-      message: "Detail proyek dan informasi bidders berhasil diambil",
+      message: "Detail proyek dan informasi penawar berhasil diambil",
       error_code: 0,
     });
   } catch (error) {
-    console.error("Kesalahan saat mengambil detail proyek dan informasi bidders:", error);
+    console.error("Kesalahan saat mengambil detail proyek dan informasi penawar:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
