@@ -313,7 +313,7 @@ const getPublicUser = async (req, res) => {
     backgroundCard = getThemeHub;
 
     const userData = {
-      ...otherData,
+      ...user,
       backgroundCard : backgroundCard,
     }
 
