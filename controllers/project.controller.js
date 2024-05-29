@@ -570,16 +570,10 @@ const searchProjectsByTitle = async (req, res) => {
 const postBid = async (req, res) => {
   try {
     const user_id = getUserId(req);
-    const { project_id } = req.body;
+    const { project_id, budget_bid } = req.body;
+    const project = await models.Project.findByPk(project_id);
 
-    const project = await models.Project.findOne({
-      where: {
-        id: project_id,
-        owner_id: user_id
-      }
-    });
-
-    if (project) {
+    if (project.owner_id === user_id) {
       return res.status(403).json({
         success: false,
         message: "Anda adalah pemilik proyek ini",
@@ -602,15 +596,23 @@ const postBid = async (req, res) => {
       });
     }
 
-    const projectBid = await models.Project_User_Bid.create({ ...req.body, user_id });
-
-    if (!projectBid) {
+    if (budget_bid < project.min_budget) {
       return res.status(400).json({
         success: false,
-        message: "Gagal membuat tawaran proyek",
+        message: "Budget bid tidak boleh lebih rendah dari minimum budget proyek",
         error_code: 400,
       });
     }
+
+    if (budget_bid > project.max_budget * 2) {
+      return res.status(400).json({
+        success: false,
+        message: "Budget bid tidak boleh lebih dari 2 kali maksimal budget proyek",
+        error_code: 400,
+      });
+    }
+
+    const projectBid = await models.Project_User_Bid.create({ ...req.body, user_id });
 
     return res.status(201).json({
       success: true,
@@ -627,6 +629,7 @@ const postBid = async (req, res) => {
     });
   }
 };
+
 
 
 
