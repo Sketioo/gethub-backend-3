@@ -223,7 +223,7 @@ const getProjectById = async (req, res) => {
 
     console.log(bids)
 
-    if (!project || !bids ) {
+    if (!project || !bids) {
       return res.status(404).json({
         success: false,
         data: [],
@@ -265,7 +265,10 @@ const getOwnerProjects = async (req, res) => {
     const owner_id = getUserId(req);
     const projects = await models.Project.findAll({
       where: { owner_id: owner_id },
-      include: [{ model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] }]
+      include: [
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
+        { model: models.Category, as: 'category', attributes: ['name'] }
+      ]
     });
 
     if (!projects || projects.length === 0) {
@@ -285,7 +288,10 @@ const getOwnerProjects = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: formattedProjects,
+      data: {
+        projects: formattedProjects,
+        total_projects: projects.length,
+      },
       message: "Proyek berhasil diambil",
       error_code: 0,
     });
@@ -368,27 +374,48 @@ const ownerSelectBidder = async (req, res) => {
       });
     }
 
-    const projectBid = await models.Project_User_Bid.findOne({
+    const existingSelectedBid = await models.Project_User_Bid.findOne({
       where: {
         project_id: id,
-        user_id: freelancer_id
+        is_selected: true
       }
     });
 
-    if (!projectBid) {
-      return res.status(404).json({
+    if (existingSelectedBid) {
+      return res.status(400).json({
         success: false,
-        message: "Tawaran proyek tidak ditemukan",
-        error_code: 404,
+        message: "Bidder telah dipilih untuk proyek ini",
+        error_code: 400,
       });
     }
 
-    projectBid.is_selected = true;
-    await projectBid.save();
+    const existingUnselectedBid = await models.Project_User_Bid.findOne({
+      where: {
+        project_id: id,
+        is_selected: false
+      }
+    });
+
+    if (!existingUnselectedBid || existingUnselectedBid.user_id !== freelancer_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Tidak ada bidder yang tersedia atau bidder tidak valid",
+        error_code: 400,
+      });
+    }
+
+    await models.Project_User_Bid.update(
+      { is_selected: true },
+      { where: { project_id: id, user_id: freelancer_id } }
+    );
+
+    await models.Project.update(
+      { status_project: 'CLOSE' },
+      { where: { id } }
+    );
 
     return res.status(200).json({
       success: true,
-      data: projectBid,
       message: "Freelancer berhasil dipilih",
       error_code: 0,
     });
@@ -401,6 +428,7 @@ const ownerSelectBidder = async (req, res) => {
     });
   }
 };
+
 
 
 const getUserSelectedProjectBids = async (req, res) => {
@@ -573,6 +601,22 @@ const postBid = async (req, res) => {
     const { project_id, budget_bid } = req.body;
     const project = await models.Project.findByPk(project_id);
 
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    if (project.status_project !== 'OPEN') {
+      return res.status(400).json({
+        success: false,
+        message: "Proyek tidak dalam status OPEN",
+        error_code: 400,
+      });
+    }
+
     if (project.owner_id === user_id) {
       return res.status(403).json({
         success: false,
@@ -629,6 +673,7 @@ const postBid = async (req, res) => {
     });
   }
 };
+
 
 
 
@@ -973,7 +1018,7 @@ const getProjectBidders = async (req, res) => {
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
       include: [
-        { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
+        { model: models.User, as: 'users_bid', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }
       ]
     });
 
@@ -988,7 +1033,11 @@ const getProjectBidders = async (req, res) => {
 
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
-    const bidders = bids.map(bid => bid.users_bid).filter(user => user !== null);
+    const bidders = bids.map(bid => {
+      const bidder = bid.users_bid.toJSON();
+      bidder.is_selected = bid.is_selected;
+      return bidder;
+    }).filter(user => user !== null);
 
     const responseData = {
       ...formattedProject,
