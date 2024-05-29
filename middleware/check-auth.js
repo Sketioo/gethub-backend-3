@@ -28,13 +28,52 @@ const authenticateToken = async (req, res, next) => {
   next();
 };
 
-const isLoggedIn = (req, res, next) => {
-  if (req.session && req.session.isLoggedIn) {
-    return next();
-  } else {
-    return res.status(401).json({ message: "Kredensial tidak sah!" });
+
+const checkPortfolio = async (req, res, next) => {
+  try {
+
+    const user_id = getUserId(req);
+
+
+    const project_id = req.body.project_id;
+    const project = await models.Project.findByPk(project_id);
+    const project_category_id = project.category_id;
+
+    const hasMatchingProduct = await models.Product.findOne({
+      where: {
+        user_id,
+        category_id: project_category_id
+      }
+    });
+
+    const hasMatchingCertification = await models.Certification.findOne({
+      where: {
+        user_id,
+        category_id: project_category_id
+      }
+    });
+
+    if (!hasMatchingProduct && !hasMatchingCertification) {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki portofolio yang sesuai dengan kategori proyek ini",
+        error_code: 403,
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Kesalahan dalam pemeriksaan portofolio:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
   }
 };
+
+module.exports = checkPortfolio;
+
 
 const verifyUserMiddleware = async (req, res, next) => {
   try {
@@ -62,6 +101,6 @@ const verifyUserMiddleware = async (req, res, next) => {
 
 module.exports = {
   authenticateToken,
-  isLoggedIn,
-  verifyUserMiddleware
+  verifyUserMiddleware,
+  checkPortfolio
 };
