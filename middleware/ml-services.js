@@ -1,37 +1,41 @@
-const axios = require('axios')
-
-const { getUserId } = require("../helpers/utility");
-
-
 const axios = require('axios');
+const { getUserId } = require('../helpers/utility')
 
 const checkProjectFraud = async (req, res, next) => {
   try {
     const { title, description } = req.body;
+    const { token } = getUserId(req)
 
     const text = `${title} ${description}`;
 
     const payload = { text };
 
-    const response = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-job', payload);
+    const response = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-job', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
     const apiResponse = response.data;
-    const predictionResult = apiResponse.data.results[0].prediction;
 
-    if (predictionResult === 'fraud_project_job') {
+    const totalFraud = apiResponse.data.totals.total_fraud;
+    const totalRealJob = apiResponse.data.totals.total_real_job;
+
+    if (totalFraud > totalRealJob) {
       return res.status(400).json({
         success: false,
-        message: "Project is detected as fraud",
+        message: "Proyek terdeteksi sebagai penipuan",
         error_code: 400
       });
     }
 
+    // Jika proyek bukan penipuan, lanjutkan ke middleware/route berikutnya
     next();
   } catch (error) {
-    console.log('There is an error: ', error);
+    console.log('Terjadi kesalahan: ', error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Kesalahan internal server",
       error_code: 500
     });
   }
