@@ -66,7 +66,7 @@ module.exports = {
       is_active: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true,
+        defaultValue: false,
       },
       banned_message: {
         type: Sequelize.STRING,

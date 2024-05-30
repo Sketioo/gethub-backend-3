@@ -77,27 +77,28 @@ module.exports = checkPortfolio;
 
 const verifyUserMiddleware = async (req, res, next) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const user = await models.User.findByPk(user_id);
     
     if (!user || !user.is_verify || !user.is_complete_profile) {
       return res.status(403).json({
         success: false,
-        message: "User is not verified or does not have a complete profile",
+        message: "Pengguna belum diverifikasi atau profil pengguna belum lengkap",
         error_code: 403,
       });
     }
     
     next();
   } catch (error) {
-    console.error("Error verifying user:", error);
+    console.error("Terjadi kesalahan saat memverifikasi pengguna:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to verify user",
+      message: "Gagal memverifikasi pengguna",
       error_code: 500,
     });
   }
 };
+
 
 module.exports = {
   authenticateToken,

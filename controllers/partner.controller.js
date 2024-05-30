@@ -91,21 +91,6 @@ const getPartnerById = async (req, res) => {
 const addPartner = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
-    const { email } = req.body;
-
-    const isUserExist = await models.User.findOne({
-      where: {
-        email: email
-      }
-    })
-
-    if (!isUserExist) {
-      return res.status(404).json({
-        success: false,
-        message: "User tidak ditemukan",
-        error_code: 404,
-      })
-    }
 
     const existingPartner = await models.Partner.findOne({
       where: {
@@ -250,8 +235,6 @@ const searchForPartner = async (req, res) => {
       });
     }
 
-    console.log(req.query)
-
     const criteria = {};
     if (name) {
       criteria.full_name = { [Op.like]: `%${name}%` };
@@ -260,13 +243,10 @@ const searchForPartner = async (req, res) => {
       criteria.profession = { [Op.like]: `%${profession}%` };
     }
 
-    console.log(criteria)
-
     const partners = await models.Partner.findAll({
       where: {...criteria, user_id},
       attributes: ['id', 'full_name', 'email', 'photo', 'profession', 'phone', 'address', 'website'],
     });
-    console.log(partners)
 
     if (!partners || partners.length === 0) {
       return res.status(404).json({
