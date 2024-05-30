@@ -135,7 +135,7 @@ const backgrounCards = [
   },
   {
     id: 12,
-    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/card.png',
+    bg: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/bg.png',
     icon: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/icon.png',
     card: 'https://storage.googleapis.com/gethub_bucket/CARD/card12/card12.png',
     isPremium: true
