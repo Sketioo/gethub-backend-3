@@ -1,6 +1,7 @@
 // Import modul yang diperlukan
 const { getUserId } = require("../helpers/utility");
 const models = require("../models");
+const { Op } = require('sequelize');
 
 const getAllPartners = async (req, res) => {
   try {
@@ -89,7 +90,7 @@ const getPartnerById = async (req, res) => {
 
 const addPartner = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { partner_id } = req.body;
 
     const existingPartner = await models.Partner.findOne({
@@ -209,6 +210,58 @@ const updatePartner = async (req, res) => {
   }
 };
 
+const searchForPartner = async (req, res) => {
+  try {
+    const { name, profession } = req.query;
+
+    if (!name && !profession) {
+      return res.status(400).json({
+        success: false,
+        message: "Masukan nama atau profesi untuk mencari partner",
+        error_code: 400,
+      });
+    }
+
+    const criteria = {};
+    if (name) {
+      criteria.full_name = { [Op.like]: `%${name}%` };
+    }
+    if (profession) {
+      criteria.profession = { [Op.like]: `%${profession}%` };
+    }
+
+    console.log(criteria)
+
+    const partners = await models.Partner.findAll({
+      where: criteria,
+      attributes: ['id', 'full_name', 'email', 'photo', 'profession'],
+    });
+
+    if (!partners || partners.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: { partners },
+      message: "Partner berhasil diambil",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mencari partner:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+};
+
+
 const deletePartner = async (req, res) => {
   const partnerId = req.params.id;
   try {
@@ -239,5 +292,6 @@ module.exports = {
   addPartner,
   updatePartner,
   deletePartner,
-  addPartnerByQR
+  addPartnerByQR,
+  searchForPartner
 };

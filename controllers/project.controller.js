@@ -7,7 +7,7 @@ const { getUserId } = require("../helpers/utility");
 
 const getUserJobStatsAndBids = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
 
     const jobPostedCount = await models.Project.count({
       where: { owner_id: user_id }
@@ -106,7 +106,7 @@ const getUserJobStatsAndBids = async (req, res) => {
 
 const postProject = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const checkOwner = await models.User.findByPk(user_id, {
       where: [{ include: models.Category, as: 'category', attributes: ['name'] }]
     });
@@ -261,9 +261,9 @@ const getProjectById = async (req, res) => {
 
 const getOwnerProjects = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const projects = await models.Project.findAll({
-      where: { owner_id: {user_id} },
+      where: { owner_id: { user_id } },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] }
@@ -306,7 +306,7 @@ const getOwnerProjects = async (req, res) => {
 
 const getUserProjectBids = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const userProjectBids = await models.Project_User_Bid.findAll({
       where: { user_id: user_id },
       include: [{
@@ -432,10 +432,10 @@ const ownerSelectBidder = async (req, res) => {
 
 const getUserSelectedProjectBids = async (req, res) => {
   try {
-    const {userIdLogin} = getUserId(req);
+    const { userIdLogin } = getUserId(req);
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
       where: {
-        user_id: {userIdLogin},
+        user_id: { userIdLogin },
         is_selected: true
       },
       include: [{
@@ -596,7 +596,7 @@ const searchProjectsByTitle = async (req, res) => {
 
 const postBid = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const { project_id, budget_bid } = req.body;
     const project = await models.Project.findByPk(project_id);
 
@@ -609,10 +609,10 @@ const postBid = async (req, res) => {
     }
 
     if (project.status_project !== 'OPEN') {
-      return res.status(400).json({
+      return res.status(402).json({
         success: false,
         message: "Proyek tidak dalam status OPEN",
-        error_code: 400,
+        error_code: 402,
       });
     }
 
@@ -632,10 +632,10 @@ const postBid = async (req, res) => {
     });
 
     if (existingBid) {
-      return res.status(400).json({
+      return res.status(406).json({
         success: false,
         message: "Anda sudah membuat tawaran untuk proyek ini",
-        error_code: 400,
+        error_code: 406,
       });
     }
 
@@ -647,10 +647,10 @@ const postBid = async (req, res) => {
       });
     }
 
-    if (budget_bid > project.max_budget * 2) {
+    if (budget_bid > project.max_budget) {
       return res.status(400).json({
         success: false,
-        message: "Budget bid tidak boleh lebih dari 2 kali maksimal budget proyek",
+        message: "Budget bid tidak boleh lebih tinggi dari maksimal budget proyek",
         error_code: 400,
       });
     }
