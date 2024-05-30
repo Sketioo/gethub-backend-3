@@ -79,6 +79,14 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      is_verif_ktp: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      is_verif_ktp_url: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       theme_hub: {
         type: Sequelize.INTEGER
       },

@@ -1,19 +1,11 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Project_Review extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // Define association here
       this.belongsTo(models.Project, { foreignKey: 'project_id' });
       this.belongsTo(models.User, { as: 'owner', foreignKey: 'owner_id' });
-      this.belongsTo(models.User, { as: 'freelancer', foreignKey: 'freelance_id' });
+      this.belongsTo(models.User, { as: 'freelancer', foreignKey: 'freelancer_id' });
     }
   }
 
@@ -38,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
     },
-    freelance_id: {
+    freelancer_id: {
       type: DataTypes.UUID,
       allowNull: false,
       references: { model: 'User', key: 'id' },

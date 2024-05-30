@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('project_reviews', {
       id: {
-        allowNull: false,
-        primaryKey: true,
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
+        primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false
       },
       project_id: {
         type: Sequelize.UUID,
@@ -16,8 +16,8 @@ module.exports = {
           model: 'projects',
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       owner_id: {
         type: Sequelize.UUID,
@@ -26,18 +26,18 @@ module.exports = {
           model: 'users',
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
-      freelance_id: {
+      freelancer_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'users',
           key: 'id'
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
       message: {
         type: Sequelize.TEXT,
@@ -52,19 +52,19 @@ module.exports = {
         allowNull: false
       },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('project_reviews');
   }
 };

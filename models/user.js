@@ -65,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: true
       },
+      is_verif_ktp: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+      },
+      is_verif_ktp_url: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
       role_id: {
         type: DataTypes.UUID,
         allowNull: true,

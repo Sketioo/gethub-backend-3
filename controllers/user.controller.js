@@ -50,6 +50,8 @@ const register = async (req, res) => {
       role_id: null,
       is_verify: false,
       is_premium: false,
+      is_verif_ktp: false,
+      is_verif_ktp_url: null,
       theme_hub: getThemehub(),
       is_complete_profile: false,
     };

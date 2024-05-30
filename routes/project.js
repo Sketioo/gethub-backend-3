@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const projectController = require("../controllers/project.controller");
+const projectReviewController = require("../controllers/project-review.controller");
 const { authenticateToken, verifyUserMiddleware, checkPortfolio } = require("../middleware/check-auth");
 const {
   validateProject, validateProjectReview, validateProjectReviewFreelance,
@@ -24,16 +25,17 @@ router.get("/projects/my/selected-bids", authenticateToken, projectController.ge
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
 
-// Routes for project owner review
-router.post("/project-owner-reviews", authenticateToken, validateProjectReview, projectController.createProjectReview);
-router.get("/project-owner-reviews/:id", authenticateToken, projectController.getProjectReviewById);
-router.put("/project-owner-reviews/:id", authenticateToken, validateProjectReview, projectController.updateProjectReview);
-router.delete("/project-owner-reviews/:id", authenticateToken, projectController.deleteProjectReview);
+// // Routes for project owner review
+// router.post("/project-owner-reviews", authenticateToken, validateProjectReview, projectReviewController.createProjectReview);
+// router.get("/project-owner-reviews/:id", authenticateToken, projectReviewController.getProjectReviewById);
+// router.put("/project-owner-reviews/:id", authenticateToken, validateProjectReview, projectReviewController.updateProjectReview);
+// router.delete("/project-owner-reviews/:id", authenticateToken, projectReviewController.deleteProjectReview);
 
-// Routes for freelancer review
-router.post("/freelancer-reviews", authenticateToken, validateProjectReviewFreelance, projectController.createFreelancerReview);
-router.get("/freelancer-reviews/:id", authenticateToken, projectController.getProjectReviewFreelanceById);
-router.put("/freelancer-reviews/:id", authenticateToken, validateProjectReviewFreelance, projectController.updateProjectReviewFreelance);
-router.delete("/freelancer-reviews/:id", authenticateToken, projectController.deleteProjectReviewFreelance);
+// // Routes for freelancer review
+// router.post("/freelancer-reviews", authenticateToken, validateProjectReviewFreelance, projectReviewController.createFreelancerReview);
+// router.get("/freelancer-reviews/:id", authenticateToken, projectReviewController.getProjectReviewFreelanceById);
+// router.put("/freelancer-reviews/:id", authenticateToken, validateProjectReviewFreelance, projectReviewController.updateProjectReviewFreelance);
+// router.delete("/freelancer-reviews/:id", authenticateToken, projectReviewController.deleteProjectReviewFreelance);
+
 
 module.exports = router;

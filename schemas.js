@@ -44,6 +44,8 @@ exports.userRegisterSchema = Joi.object({
   is_verify: Joi.boolean().optional(),
   is_complete_profile: Joi.boolean().optional(),
   is_premium: Joi.boolean().optional(),
+  is_verify_ktp: Joi.boolean().optional(),
+  is_verify_ktp_url: Joi.string().allow("").optional(),
   theme_hub: Joi.number().integer().optional(),
   role_id: Joi.string().guid({ version: "uuidv4" }).optional(),
   sentiment_owner_analisis: Joi.string().allow("").optional(),
