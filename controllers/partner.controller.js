@@ -31,7 +31,7 @@ const getAllPartners = async (req, res) => {
 
 const getUserPartners = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const partners = await models.Partner.findAll({
       where: {
         user_id: user_id,
@@ -90,13 +90,27 @@ const getPartnerById = async (req, res) => {
 
 const addPartner = async (req, res) => {
   try {
-    const {user_id} = getUserId(req);
-    const { partner_id } = req.body;
+    const { user_id } = getUserId(req);
+    const { email } = req.body;
+
+    const isUserExist = await models.User.findOne({
+      where: {
+        email: email
+      }
+    })
+
+    if (!isUserExist) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+        error_code: 404,
+      })
+    }
 
     const existingPartner = await models.Partner.findOne({
       where: {
         user_id,
-        partner_id,
+        email,
       }
     });
 
@@ -225,6 +239,7 @@ const updatePartner = async (req, res) => {
 
 const searchForPartner = async (req, res) => {
   try {
+    const {user_id} = getUserId(req)
     const { name, profession } = req.query;
 
     if (!name && !profession) {
@@ -234,6 +249,8 @@ const searchForPartner = async (req, res) => {
         error_code: 400,
       });
     }
+
+    console.log(req.query)
 
     const criteria = {};
     if (name) {
@@ -246,9 +263,10 @@ const searchForPartner = async (req, res) => {
     console.log(criteria)
 
     const partners = await models.Partner.findAll({
-      where: criteria,
+      where: {...criteria, user_id},
       attributes: ['id', 'full_name', 'email', 'photo', 'profession', 'phone', 'address', 'website'],
     });
+    console.log(partners)
 
     if (!partners || partners.length === 0) {
       return res.status(404).json({
@@ -306,5 +324,5 @@ module.exports = {
   updatePartner,
   deletePartner,
   addPartnerByQR,
-  searchForPartner
+  searchForPartner,
 };
