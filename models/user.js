@@ -128,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
     // Asosiasi dengan model HistoryUpload
     User.hasMany(models.HistoryUpload, { foreignKey: "user_id" });
     // Asosiasi dengan model Certification
-    User.hasMany(models.Certification, { foreignKey: "user_id" });
+    User.hasMany(models.Certification, { as: 'certifications',foreignKey: "user_id" });
     // Asosiasi dengan model Project
     User.hasMany(models.Project, { as: 'owner_project',foreignKey: "owner_id" });
 

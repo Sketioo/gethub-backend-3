@@ -298,6 +298,7 @@ const getPublicUser = async (req, res) => {
       include: [
         { model: models.Link, as: "links" },
         { model: models.Product, as: "products" },
+        { model: models.Certification, as: "certifications"}
       ],
     });
 
