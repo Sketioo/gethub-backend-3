@@ -29,12 +29,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
 
-// Menggunakan CORS middleware
-app.use(cors({
-  origin: '*'
-}));
-
-
 app.use("/api", userRoute);
 app.use("/api", productRoute);
 app.use("/api", linkRoute);
