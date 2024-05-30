@@ -130,7 +130,7 @@ const addPartner = async (req, res) => {
 const addPartnerByQR = async (req, res) => {
   try {
     const { qr_code } = req.body;
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
 
     const refUser = await models.User.findOne({ where: { qr_code } });
 
@@ -147,6 +147,16 @@ const addPartnerByQR = async (req, res) => {
         success: false,
         message: 'Anda tidak bisa menambahkan diri sendiri sebagai partner',
         error_code: 403,
+      });
+    }
+
+    const existingPartner = await models.Partner.findOne({ where: { user_id: user_id, ref_user_id: refUser.id } });
+
+    if (existingPartner) {
+      return res.status(409).json({
+        success: false,
+        message: 'Pengguna yang direferensikan sudah menjadi partner',
+        error_code: 409,
       });
     }
 
@@ -178,6 +188,9 @@ const addPartnerByQR = async (req, res) => {
     });
   }
 };
+
+module.exports = addPartnerByQR;
+
 
 const updatePartner = async (req, res) => {
   try {
@@ -234,7 +247,7 @@ const searchForPartner = async (req, res) => {
 
     const partners = await models.Partner.findAll({
       where: criteria,
-      attributes: ['id', 'full_name', 'email', 'photo', 'profession'],
+      attributes: ['id', 'full_name', 'email', 'photo', 'profession', 'phone', 'address', 'website'],
     });
 
     if (!partners || partners.length === 0) {
