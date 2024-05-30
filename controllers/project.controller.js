@@ -478,10 +478,6 @@ const getProjectList = async (req, res) => {
       searchConditions.title = { [Op.like]: `%${title}%` };
     }
 
-    if (category) {
-      searchConditions.category_id = category;
-    }
-
     if (min_budget) {
       if (!searchConditions.min_budget) searchConditions.min_budget = {};
       searchConditions.min_budget[Op.gte] = parseFloat(min_budget);
@@ -503,9 +499,16 @@ const getProjectList = async (req, res) => {
         {
           model: models.Category,
           as: 'category',
-          attributes: ['name']
+          attributes: ['name'],
+          where: category ? { name: { [Op.like]: `%${category}%` } } : {}, // Adding the condition for category name
         }
       ]
+    });
+
+    const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
+
+    const formattedProjects = projects.map(project => {
+      return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
     });
 
     if (projects.length === 0) {
@@ -519,7 +522,10 @@ const getProjectList = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: projects,
+      data: {
+        projects: formattedProjects,
+        total_projects: projects.length
+      },
       message: "Daftar proyek berhasil diambil",
       error_code: 0
     });
