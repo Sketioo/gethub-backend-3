@@ -120,6 +120,9 @@ const postProject = async (req, res) => {
     }
 
     const project = await models.Project.create({ ...req.body, owner_id: user_id });
+    project.is_active = true;
+
+    await project.save();
 
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
@@ -169,6 +172,9 @@ const postTask = async (req, res) => {
 const getAllProjects = async (req, res) => {
   try {
     const projects = await models.Project.findAll({
+      where: {
+        is_active: true
+      },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] }
@@ -211,7 +217,6 @@ const getProjectById = async (req, res) => {
         { model: models.Category, as: 'category', attributes: ['name'] },
       ]
     });
-    // console.log(project)
 
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
@@ -219,8 +224,6 @@ const getProjectById = async (req, res) => {
         { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
       ]
     });
-
-    console.log(bids)
 
     if (!project || !bids) {
       return res.status(404).json({
@@ -262,8 +265,9 @@ const getProjectById = async (req, res) => {
 const getOwnerProjects = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
+    console.log('user id ', user_id)
     const projects = await models.Project.findAll({
-      where: { owner_id: { user_id } },
+      where: { owner_id: user_id },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] }
@@ -489,7 +493,7 @@ const getProjectList = async (req, res) => {
     }
 
     const projects = await models.Project.findAll({
-      where: searchConditions,
+      where: {...searchConditions, is_active: true},
       include: [
         {
           model: models.User,
@@ -500,7 +504,7 @@ const getProjectList = async (req, res) => {
           model: models.Category,
           as: 'category',
           attributes: ['name'],
-          where: category ? { name: { [Op.like]: `%${category}%` } } : {}, // Adding the condition for category name
+          where: category ? { name: { [Op.like]: `%${category}%` } } : {},
         }
       ]
     });
@@ -606,7 +610,7 @@ const postBid = async (req, res) => {
     const { project_id, budget_bid } = req.body;
     const project = await models.Project.findByPk(project_id);
 
-    if (!project) {
+    if (!project || project.is_active === false) {
       return res.status(404).json({
         success: false,
         message: "Proyek tidak ditemukan",
