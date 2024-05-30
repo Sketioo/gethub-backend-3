@@ -4,14 +4,16 @@ const router = express.Router();
 const projectController = require("../controllers/project.controller");
 const projectReviewController = require("../controllers/project-review.controller");
 const { authenticateToken, verifyUserMiddleware, checkPortfolio } = require("../middleware/check-auth");
+const { checkProjectFraud } = require("../middleware/ml-services");
 const {
   validateProject, validateProjectReview, validateProjectReviewFreelance,
   validateProjectUserBid, validateProjectTask
 } = require("../middleware/input-validator");
 
 // Routes for projects
-router.post("/projects", authenticateToken, verifyUserMiddleware, projectController.postProject);
-router.post("/projects/bid", authenticateToken, verifyUserMiddleware, validateProjectUserBid, checkPortfolio, projectController.postBid);
+router.post("/projects", authenticateToken, verifyUserMiddleware, checkProjectFraud, projectController.postProject);
+// router.post("/projects/bid", authenticateToken, verifyUserMiddleware, validateProjectUserBid, checkPortfolio, projectController.postBid);
+router.post("/projects/bid", authenticateToken, verifyUserMiddleware, validateProjectUserBid, projectController.postBid);
 router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddleware, projectController.ownerSelectBidder);
 router.post('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, validateProjectTask, projectController.postTask);
 router.get("/projects", authenticateToken, projectController.getAllProjects);
