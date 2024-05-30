@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const cors = require('cors');
 
 const { upload, imageUploader } = require("./helpers/image-uploader");
+const { scanKTP } = require("./helpers/ktp-scanner");
 const { authenticateToken } = require("./middleware/check-auth");
 
 const userRoute = require("./routes/user");
@@ -48,6 +49,7 @@ app.use("/api", projectRoute);
 
 //* Helper
 app.post("/api/upload-file", authenticateToken, upload.single("file"), imageUploader);
+app.post("/api/scan-ktp", authenticateToken, upload.single("file"), scanKTP)
 
 app.use('*', (req, res) => {
   res.status(404).render('404')
