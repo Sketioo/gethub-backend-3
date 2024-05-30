@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // Each task belongs to one project
       Project_Task.belongsTo(models.Project, { foreignKey: 'project_id' });
       // Each task can be assigned to one freelance user
-      Project_Task.belongsTo(models.User, { foreignKey: 'task_freelance_id' });
+      Project_Task.belongsTo(models.User, { as: 'freelancer', foreignKey: 'freelancer_id' });
     }
   }
   Project_Task.init({
@@ -31,6 +31,16 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     },
+    freelancer_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
     task_number: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -40,13 +50,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     task_status: {
-      type: DataTypes.ENUM('ON-PROGRESS','REVIEW', 'REVISION', 'DONE'),
+      type: DataTypes.ENUM('ON-PROGRESS', 'REVIEW', 'REVISION', 'DONE'),
       allowNull: false
     },
     task_feedback: {
       type: DataTypes.TEXT,
       allowNull: true
-    }
+    }   
   }, {
     sequelize,
     modelName: 'Project_Task',

@@ -4,7 +4,7 @@ const { getUserId } = require("../helpers/utility");
 // Membuat produk baru
 const createProduct = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const checkUser = await models.User.findByPk(user_id);
     if (!checkUser) {
       return res.status(404).json({
@@ -34,7 +34,7 @@ const createProduct = async (req, res) => {
 // Mendapatkan semua produk pengguna
 const getUserProducts = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const products = await models.Product.findAll({
       where: { user_id },
       include: {
@@ -163,7 +163,7 @@ const getProductById = async (req, res) => {
 // Memperbarui produk berdasarkan ID
 const updateProduct = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({
@@ -199,7 +199,7 @@ const updateProduct = async (req, res) => {
 // Menghapus produk berdasarkan ID
 const deleteProduct = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const product = await models.Product.findByPk(req.params.id);
     if (!product) {
       return res.status(404).json({

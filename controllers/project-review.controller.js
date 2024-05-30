@@ -4,7 +4,7 @@ const { getUserId } = require("../helpers/utility");
 // Create a review for a freelancer
 const createFreelancerReview = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { freelancer_id, message, sentiment, sentiment_score } = req.body;
     
     const freelancer = await models.User.findByPk(freelancer_id);
@@ -57,7 +57,6 @@ const createFreelancerReview = async (req, res) => {
       totalSentimentResult = totalNetral;
     }
 
-    // Update sentiment analysis for owner
     await models.User.update({
       sentiment_owner_analisis: sentimentResult,
       sentiment_owner_score: totalSentimentResult
@@ -115,7 +114,7 @@ const getProjectReviewFreelanceById = async (req, res) => {
 // Update a freelancer review
 const updateProjectReviewFreelance = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { id } = req.params;
     const { message, sentiment, sentiment_score } = req.body;
 
@@ -202,7 +201,7 @@ const updateProjectReviewFreelance = async (req, res) => {
 // Delete a freelancer review
 const deleteProjectReviewFreelance = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { id } = req.params;
 
     const review = await models.Project_Review_Freelance.findByPk(id);

@@ -19,7 +19,10 @@ const generateAccessToken = (user) => {
 const getUserId = (req) => {
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-  return decodedToken.userId;
+  return {
+    token: token,
+    user_id: decodedToken.userId
+  }
 }
 
 const verifyAccessToken = async (token) => {

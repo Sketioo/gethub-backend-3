@@ -1,11 +1,10 @@
-const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
-
-const { getUserId } = require("../helpers/utility")
 const models = require("../models");
+const {getUserId} = require('./utility')
+
+const multer = require("multer");
 
 const imageExtensions = ['jpg', 'jpeg', 'png'];
-// const keyFilename = process.env.KEY_FILENAME;
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -14,6 +13,32 @@ const upload = multer({
 const storage = new Storage({
   keyFilename: process.env.KEY_FILENAME
 });
+
+const uploadImageToBucket = async (file) => {
+  return new Promise((resolve, reject) => {
+    const bucketName = process.env.BUCKET;
+    const bucket = storage.bucket(bucketName);
+
+    const fileNameWithoutSpaces = file.originalname.replace(/\s+/g, "-");
+    const fileName = `${Date.now()}${fileNameWithoutSpaces}`;
+    const blob = bucket.file(fileName);
+    const blobStream = blob.createWriteStream({
+      metadata: { contentType: file.mimetype },
+    });
+
+    blobStream.on("error", (err) => {
+      console.error(`Terjadi kesalahan: ${err}`);
+      reject(err);
+    });
+
+    blobStream.on("finish", () => {
+      const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+      resolve(publicUrl);
+    });
+
+    blobStream.end(file.buffer);
+  });
+};
 
 const imageUploader = async (req, res) => {
   const file = req.file;
@@ -34,56 +59,33 @@ const imageUploader = async (req, res) => {
     });
   }
 
-  const fileNameWithoutSpaces = file.originalname.replace(/\s+/g, "-");
-  const fileName = `${Date.now()}${fileNameWithoutSpaces}`;
-
-  const bucketName = process.env.BUCKET;
-  const bucket = storage.bucket(bucketName);
-
-  const blob = bucket.file(fileName);
-  const blobStream = blob.createWriteStream({
-    metadata: { contentType: file.mimetype },
-  });
-
-  blobStream.on("error", (err) => {
-    console.error(`Terjadi kesalahan: ${err}`);
-    res.status(500).json({
-      success: false,
-      message: "Gagal mengunggah file",
-      error_code: 500,
-    });
-  });
-
-  blobStream.on("finish", async () => {
-    const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-
-    const user_id = getUserId(req)
+  try {
+    const publicUrl = await uploadImageToBucket(file);
+    const {user_id} = getUserId(req);
     const uploadedFile = await models.HistoryUpload.create({
       user_id: user_id,
       link: publicUrl,
       extension: fileExtension,
     });
     console.dir(uploadedFile)
-    if (!uploadedFile) {
-      return res.status(500).json({
-        success: false,
-        message: "Gagal mengunggah file",
-        error_code: 500,
-      });
-    }
     res.status(201).json({
       success: true,
       data: publicUrl,
       message: "File berhasil diunggah",
       error_code: 0,
     });
-  });
-
-  blobStream.end(file.buffer);
+  } catch (error) {
+    console.error("Gagal mengunggah file:", error);
+    res.status(500).json({
+      success: false,
+      message: "Gagal mengunggah file",
+      error_code: 500,
+    });
+  }
 };
 
-
 module.exports = {
-  upload,
   imageUploader,
+  uploadImageToBucket,
+  upload
 };

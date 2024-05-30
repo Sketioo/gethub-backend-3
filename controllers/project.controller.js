@@ -7,26 +7,26 @@ const { getUserId } = require("../helpers/utility");
 
 const getUserJobStatsAndBids = async (req, res) => {
   try {
-    const userId = getUserId(req);
+    const {user_id} = getUserId(req);
 
     const jobPostedCount = await models.Project.count({
-      where: { owner_id: userId }
+      where: { owner_id: user_id }
     });
 
     const bidsMadeCount = await models.Project_User_Bid.count({
-      where: { user_id: userId }
+      where: { user_id: user_id }
     });
 
     const bidsAcceptedCount = await models.Project_User_Bid.count({
       where: {
-        user_id: userId,
+        user_id: user_id,
         is_selected: true
       }
     });
 
     const bids = await models.Project_User_Bid.findAll({
       where: {
-        user_id: userId,
+        user_id: user_id,
         is_selected: false
       },
       include: [
@@ -106,7 +106,7 @@ const getUserJobStatsAndBids = async (req, res) => {
 
 const postProject = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const checkOwner = await models.User.findByPk(user_id, {
       where: [{ include: models.Category, as: 'category', attributes: ['name'] }]
     });
@@ -205,7 +205,6 @@ const getAllProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id)
     const project = await models.Project.findByPk(id, {
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
@@ -262,9 +261,9 @@ const getProjectById = async (req, res) => {
 
 const getOwnerProjects = async (req, res) => {
   try {
-    const owner_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const projects = await models.Project.findAll({
-      where: { owner_id: owner_id },
+      where: { owner_id: {user_id} },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] }
@@ -307,9 +306,9 @@ const getOwnerProjects = async (req, res) => {
 
 const getUserProjectBids = async (req, res) => {
   try {
-    const userIdLogin = getUserId(req);
+    const {user_id} = getUserId(req);
     const userProjectBids = await models.Project_User_Bid.findAll({
-      where: { user_id: userIdLogin },
+      where: { user_id: user_id },
       include: [{
         model: models.Project,
         as: 'project',
@@ -433,10 +432,10 @@ const ownerSelectBidder = async (req, res) => {
 
 const getUserSelectedProjectBids = async (req, res) => {
   try {
-    const userIdLogin = getUserId(req);
+    const {userIdLogin} = getUserId(req);
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
       where: {
-        user_id: userIdLogin,
+        user_id: {userIdLogin},
         is_selected: true
       },
       include: [{
@@ -597,7 +596,7 @@ const searchProjectsByTitle = async (req, res) => {
 
 const postBid = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { project_id, budget_bid } = req.body;
     const project = await models.Project.findByPk(project_id);
 

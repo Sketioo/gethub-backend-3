@@ -138,7 +138,7 @@ const login = async (req, res) => {
 
 const getProfileById = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const {user_id} = getUserId(req)
     const user = await models.User.findByPk(user_id);
     if (!user) {
       return res.status(404).json({
@@ -218,7 +218,7 @@ const getAllProfiles = async (req, res) => {
 // Perbarui profil
 const updateProfile = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { email, ...userData } = req.body;
 
     userData.is_complete_profile = true;
@@ -253,7 +253,7 @@ const updateProfile = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
   try {
-    const user_id = getUserId(req)
+    const {user_id} = getUserId(req)
     const deletedUser = await models.User.destroy({
       where: { id: user_id },
     });

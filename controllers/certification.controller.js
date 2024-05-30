@@ -4,7 +4,7 @@ const { getUserId } = require("../helpers/utility");
 // Membuat sebuah certification
 const createCertification = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { category_id, title, image } = req.body;
     const newCertification = await Certification.create({ category_id, title, image, user_id });
     return res.status(201).json({
@@ -26,9 +26,10 @@ const createCertification = async (req, res) => {
 // Mendapatkan semua certification pengguna
 const getUserCertifications = async (req, res) => {
   try {
+    const {user_id} = getUserId(req);
     const certifications = await Certification.findAll({
       where: {
-        user_id: getUserId(req)
+        user_id: user_id
       }
     });
     if (!certifications || certifications.length === 0) {
@@ -114,7 +115,7 @@ const getCertificationById = async (req, res) => {
 // Memperbarui sebuah certification
 const updateCertification = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
       return res.status(404).json({
@@ -150,7 +151,7 @@ const updateCertification = async (req, res) => {
 // Menghapus sebuah certification
 const deleteCertification = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const certification = await Certification.findByPk(req.params.id);
     if (!certification) {
       return res.status(404).json({

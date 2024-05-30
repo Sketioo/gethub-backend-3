@@ -1,12 +1,12 @@
 
 const models = require("../models")
 
-const {getUserId} = require("../helpers/utility")
+const { getUserId } = require("../helpers/utility")
 
 exports.isPremium = (req, res, next) => {
   try {
-    const user_id = getUserId(req)
-    const user = models.User.findOne({where: {id: user_id}})
+    const { user_id } = getUserId(req)
+    const user = models.User.findOne({ where: { id: user_id } })
     if (!user) {
       return res.status(404).json({
         success: false,

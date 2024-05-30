@@ -101,7 +101,7 @@ const verifyTokenEmail = async (req, res, next) => {
 
 const regenerateVerificationToken = async (req, res) => {
   try {
-    const userId = getUserId(req);
+    const {user_id} = getUserId(req);
 
     const user = await models.User.findOne({ where: { id: userId } });
     if (!user) {
@@ -113,11 +113,11 @@ const regenerateVerificationToken = async (req, res) => {
       });
     }
 
-    console.log(`User ID: ${userId}`);
+    console.log(`User ID: ${user_id}`);
 
-    await models.EmailVerification.destroy({ where: { user_id: userId } });
+    await models.EmailVerification.destroy({ where: { user_id: user_id } });
 
-    const token = await createVerificationToken(userId);
+    const token = await createVerificationToken(user_id);
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
     await models.EmailVerification.create({

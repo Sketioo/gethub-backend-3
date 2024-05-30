@@ -30,7 +30,7 @@ const getAllPartners = async (req, res) => {
 
 const getUserPartners = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const partners = await models.Partner.findAll({
       where: {
         user_id: user_id,
@@ -90,8 +90,25 @@ const getPartnerById = async (req, res) => {
 const addPartner = async (req, res) => {
   try {
     const user_id = getUserId(req);
-    const partnerData = req.body;
-    const partner = await models.Partner.create({ ...partnerData, ref_user_id: null, user_id });
+    const { partner_id } = req.body;
+
+    const existingPartner = await models.Partner.findOne({
+      where: {
+        user_id,
+        partner_id,
+      }
+    });
+
+    if (existingPartner) {
+      return res.status(400).json({
+        success: false,
+        message: "Partner sudah ditambahkan sebelumnya",
+        error_code: 400,
+      });
+    }
+
+    const partner = await models.Partner.create({ ...req.body, ref_user_id: null, user_id });
+
     return res.status(201).json({
       success: true,
       data: partner,
@@ -99,6 +116,7 @@ const addPartner = async (req, res) => {
       message: "Partner berhasil dibuat",
     });
   } catch (error) {
+    console.error("Kesalahan saat menambah partner:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan Internal Server",
@@ -107,10 +125,11 @@ const addPartner = async (req, res) => {
   }
 };
 
+
 const addPartnerByQR = async (req, res) => {
   try {
     const { qr_code } = req.body;
-    const userId = getUserId(req);
+    const {user_id} = getUserId(req);
 
     const refUser = await models.User.findOne({ where: { qr_code } });
 
@@ -122,7 +141,7 @@ const addPartnerByQR = async (req, res) => {
       });
     }
 
-    if (refUser.id == userId) {
+    if (refUser.id == user_id) {
       return res.status(403).json({
         success: false,
         message: 'Anda tidak bisa menambahkan diri sendiri sebagai partner',
@@ -131,7 +150,7 @@ const addPartnerByQR = async (req, res) => {
     }
 
     const partner = await models.Partner.create({
-      user_id: userId,
+      user_id: user_id,
       ref_user_id: refUser.id,
       full_name: refUser.full_name,
       profession: refUser.profession,

@@ -32,7 +32,7 @@ const authenticateToken = async (req, res, next) => {
 const checkPortfolio = async (req, res, next) => {
   try {
 
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
 
 
     const project_id = req.body.project_id;
@@ -77,7 +77,7 @@ module.exports = checkPortfolio;
 
 const verifyUserMiddleware = async (req, res, next) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const user = await models.User.findByPk(user_id);
     
     if (!user || !user.is_verify || !user.is_complete_profile) {

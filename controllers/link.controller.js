@@ -4,7 +4,7 @@ const { getUserId } = require("../helpers/utility");
 // Membuat sebuah link
 const createLink = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const { category, link } = req.body;
     const customCategory = category.toLowerCase();
     const newLink = await Link.create({ category: customCategory, link, user_id });
@@ -28,9 +28,10 @@ const createLink = async (req, res) => {
 // Mendapatkan semua link pengguna
 const getUserLinks = async (req, res) => {
   try {
+    const {user_id} = getUserId(req);
     const links = await Link.findAll({
       where: {
-        user_id: getUserId(req)
+        user_id: user_id
       }
     });
     if (!links || links.length === 0) {
@@ -117,7 +118,7 @@ const getLinkById = async (req, res) => {
 // Memperbarui sebuah link
 const updateLink = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
       return res.status(404).json({
@@ -155,7 +156,7 @@ const updateLink = async (req, res) => {
 // Menghapus sebuah link
 const deleteLink = async (req, res) => {
   try {
-    const user_id = getUserId(req);
+    const {user_id} = getUserId(req);
     const link = await Link.findByPk(req.params.id);
     if (!link) {
       return res.status(404).json({
