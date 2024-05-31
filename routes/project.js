@@ -22,7 +22,7 @@ router.get("/projects/my", authenticateToken, projectController.getOwnerProjects
 router.get("/projects/list", authenticateToken, projectController.getProjectList);
 router.get("/projects/search", projectController.searchProjectsByTitle);
 router.get("/projects/:id", authenticateToken, projectController.getProjectById);
-router.get('/projects/dashboard/my', authenticateToken, verifyUserMiddleware, projectController.getUserJobStatsAndBids);
+router.get('/projects/dashboard/my', authenticateToken, projectController.getUserJobStatsAndBids);
 //* Perhatikan penggunaan params
 router.get("/projects/my/selected-bids", authenticateToken, projectController.getUserSelectedProjectBids);
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
