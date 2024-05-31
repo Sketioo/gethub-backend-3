@@ -6,7 +6,6 @@ const createReview = async (req, res) => {
     const { user_id } = getUserId(req);
     const { project_id, message, sentiment, sentiment_score, review_type } = req.body;
     const sentimentReview = sentiment.toLowerCase();
-    console.log(sentimentReview)
 
     if (!['positif', 'netral', 'negatif'].includes(sentimentReview)) {
       return res.status(400).json({
@@ -121,11 +120,11 @@ const createReview = async (req, res) => {
     let totalNetral = 0;
 
     listOfProjectReview.forEach(row => {
-      if (row.sentiment === 'Positif') {
+      if (row.sentiment === 'positif') {
         totalPositif += 1;
-      } else if (row.sentiment === 'Negatif') {
+      } else if (row.sentiment === 'negatif') {
         totalNegatif += 1;
-      } else if (row.sentiment === 'Netral') {
+      } else if (row.sentiment === 'netral') {
         totalNetral += 1;
       }
     });
@@ -134,13 +133,13 @@ const createReview = async (req, res) => {
     let totalSentimentResult = 0;
 
     if (totalPositif > totalNegatif) {
-      sentimentResult = 'Positif';
+      sentimentResult = 'positif';
       totalSentimentResult = totalPositif;
     } else if (totalNegatif > totalPositif) {
-      sentimentResult = 'Negatif';
+      sentimentResult = 'negatif';
       totalSentimentResult = totalNegatif;
     } else {
-      sentimentResult = 'Netral';
+      sentimentResult = 'netral';
       totalSentimentResult = totalNetral;
     }
 

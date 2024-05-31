@@ -49,7 +49,7 @@ const getUserJobStatsAndBids = async (req, res) => {
       ]
     });
 
-    if (!bids || bids.length === 0) {
+    if (!bids) {
       return res.status(404).json({
         success: false,
         message: "Informasi job bidding dan daftar proyek yang dibid tidak ditemukan",
