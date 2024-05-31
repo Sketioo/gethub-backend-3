@@ -5,6 +5,15 @@ const createReview = async (req, res) => {
   const { user_id } = getUserId(req);
   const { project_id, message, sentiment, sentiment_score, review_type } = req.body;
 
+  const sentimentReview = sentiment.toLowerCase();
+
+  if (!['positive', 'neutral', 'negative'].includes(sentimentReview)) {
+    return res.status(400).json({
+      success: false,
+      message: "Nilai sentimen tidak valid. Nilai yang boleh: 'positif', 'netral', 'negatif'",
+    });
+  }
+
   try {
     const project = await Project.findByPk(project_id);
     if (!project) {

@@ -7,8 +7,8 @@ const checkProjectFraud = async (req, res, next) => {
     const { title, description } = req.body;
     const { token, user_id } = getUserId(req);
 
-    const text = `${title}, ${description}`;
-    const payload = { text };
+    const textResume = `${title}, ${description}`;
+    const payload = { text: textResume };
 
     const response = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-job', payload, {
       headers: {
@@ -33,7 +33,7 @@ const checkProjectFraud = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.response) {
-      console.log('Respons Kesalahan Data:', error.response.data);
+      console.log('Respons Kesalahan Data:', error.response);
       console.log('Respons Kesalahan Status:', error.response.status);
       console.log('Respons Kesalahan Headers:', error.response.headers);
     } else if (error.request) {
@@ -45,7 +45,7 @@ const checkProjectFraud = async (req, res, next) => {
 
     return res.status(500).json({
       success: false,
-      message: "Kesalahan internal server",
+      message: "Kesalahan internal server ya",
       error_code: 500
     });
   }

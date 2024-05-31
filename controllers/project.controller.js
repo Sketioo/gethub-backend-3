@@ -360,7 +360,7 @@ const getUserProjectBids = async (req, res) => {
         project: formatDates(bid.project.toJSON(), ['min_deadline', 'max_deadline'], 'd-MMM-yyyy'),
       };
     });
-    
+
     const totalBids = await models.Project_User_Bid.count({
       where: { user_id }
     });
@@ -387,13 +387,14 @@ const getUserProjectBids = async (req, res) => {
 const ownerSelectBidder = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = getUserId(req);
+    const { user_id } = getUserId(req);
     const { freelancer_id } = req.body;
 
     const project = await models.Project.findOne({
       where: {
         id: id,
-        owner_id: userId
+        owner_id: user_id,
+        is_active: true
       }
     });
 
@@ -445,10 +446,11 @@ const ownerSelectBidder = async (req, res) => {
       { where: { id } }
     );
 
-    await models.Project_Task.udate(
+    const addTask = await models.Project_Task.update(
       { freelancer_id: freelancer_id },
       { where: { project_id: id } }
     )
+    console.log(addTask)
 
     return res.status(200).json({
       success: true,
@@ -468,13 +470,13 @@ const ownerSelectBidder = async (req, res) => {
 const deleteBidder = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = getUserId(req);
+    const { user_id } = getUserId(req);
     const { bidder_id } = req.body;
 
     const project = await models.Project.findOne({
       where: {
         id: id,
-        owner_id: userId
+        owner_id: user_id
       }
     });
 
@@ -522,10 +524,10 @@ const deleteBidder = async (req, res) => {
 
 const getUserSelectedProjectBids = async (req, res) => {
   try {
-    const { userIdLogin } = getUserId(req);
+    const { user_id } = getUserId(req);
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
       where: {
-        user_id: { userIdLogin },
+        user_id: { user_id },
         is_selected: true
       },
       include: [{

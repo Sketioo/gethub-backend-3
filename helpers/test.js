@@ -24,10 +24,6 @@ async function fetchProfileData(token) {
     throw error; // Rethrow the error to be handled by the caller
   }
 }
-
-// Token obtained after login
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkNmMxYTBiOC02MzdkLTRiOTUtYTgyMS05YTk3OTQzOTE2YmYiLCJpYXQiOjE3MTY5NzkwNDYsImV4cCI6MTc0ODUxNTA0Nn0.ZawVrIm_NdG9ZblD2aMeHn0vFLV5RNYu_TrK0lrHCj0';
-
 // Call the function to fetch profile data
 const data = fetchProfileData(accessToken)
   .then(profileData => {

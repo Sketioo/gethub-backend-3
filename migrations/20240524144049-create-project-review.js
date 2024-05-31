@@ -44,7 +44,7 @@ module.exports = {
         allowNull: false
       },
       sentiment: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM('positive', 'neutral', 'negative'),
         allowNull: false
       },
       sentiment_score: {
