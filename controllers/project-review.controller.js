@@ -1,21 +1,20 @@
-const { Project_Review, User, Project } = require('../models');
+const models = require('../models');
 const { getUserId } = require('../helpers/utility');
 
 const createReview = async (req, res) => {
-  const { user_id } = getUserId(req);
-  const { project_id, message, sentiment, sentiment_score, review_type } = req.body;
-
-  const sentimentReview = sentiment.toLowerCase();
-
-  if (!['positive', 'neutral', 'negative'].includes(sentimentReview)) {
-    return res.status(400).json({
-      success: false,
-      message: "Nilai sentimen tidak valid. Nilai yang boleh: 'positif', 'netral', 'negatif'",
-    });
-  }
-
   try {
-    const project = await Project.findByPk(project_id);
+    const { user_id } = getUserId(req);
+    const { project_id, message, sentiment, sentiment_score, review_type } = req.body;
+    const sentimentReview = sentiment.toLowerCase();
+    console.log(sentimentReview)
+
+    if (!['positif', 'netral', 'negatif'].includes(sentimentReview)) {
+      return res.status(400).json({
+        success: false,
+        message: "Nilai sentimen tidak valid. Nilai yang boleh: 'positif', 'netral', 'negatif'",
+      });
+    }
+    const project = await models.Project.findByPk(project_id);
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -24,12 +23,20 @@ const createReview = async (req, res) => {
       });
     }
 
+    if (project.status_project !== 'FINISHED') {
+      return res.status(400).json({
+        success: false,
+        message: 'Project ini belum selesai. Tidak ada ulasan yang dapat diberikan',
+        error_code: 400
+      })
+    }
+
     let isInvolved = false;
     if (user_id === project.owner_id && review_type === 'owner') {
       isInvolved = true;
     }
 
-    const projectBids = await Project_User_Bid.findAll({
+    const projectBids = await models.Project_User_Bid.findAll({
       where: {
         project_id: project.id,
         user_id: user_id
@@ -64,12 +71,27 @@ const createReview = async (req, res) => {
       });
     }
 
-    const newReview = await Project_Review.create({
+    const existingReview = await models.Project_Review.findOne({
+      where: {
+        project_id,
+        [review_type === 'owner' ? 'freelancer_id' : 'owner_id']: user_id
+      }
+    });
+
+    if (existingReview) {
+      return res.status(400).json({
+        success: false,
+        message: 'Anda sudah memberikan ulasan kepada pengguna ini sebelumnya',
+        error_code: 400
+      });
+    }
+
+    const newReview = await models.Project_Review.create({
       project_id,
       owner_id,
       freelancer_id,
       message,
-      sentiment,
+      sentiment: sentimentReview,
       sentiment_score
     });
 
@@ -79,14 +101,14 @@ const createReview = async (req, res) => {
     let scoreField;
 
     if (review_type === 'owner') {
-      listOfProjectReview = await Project_Review.findAll({
+      listOfProjectReview = await models.Project_Review.findAll({
         where: { owner_id }
       });
       userId = owner_id;
       sentimentField = 'sentiment_owner_analisis';
       scoreField = 'sentiment_owner_score';
     } else if (review_type === 'freelancer') {
-      listOfProjectReview = await Project_Review.findAll({
+      listOfProjectReview = await models.Project_Review.findAll({
         where: { freelancer_id }
       });
       userId = freelancer_id;
@@ -125,7 +147,7 @@ const createReview = async (req, res) => {
     const totalScore = listOfProjectReview.reduce((acc, row) => acc + row.sentiment_score, 0);
     const sentimentScore = totalScore / listOfProjectReview.length;
 
-    await User.update({
+    await models.User.update({
       [sentimentField]: sentimentResult,
       [scoreField]: sentimentScore
     }, {
@@ -150,7 +172,7 @@ const createReview = async (req, res) => {
 
 const getAllReview = async (req, res) => {
   try {
-    const reviews = await Project_Review.findAll();
+    const reviews = await models.models.Project_Review.findAll();
     if (!reviews || reviews.length === 0) {
       return res.status(404).json({
         success: false,
@@ -178,7 +200,7 @@ const getAllReview = async (req, res) => {
 const getReviewById = async (req, res) => {
   const { id } = req.params;
   try {
-    const review = await Project_Review.findByPk(id);
+    const review = await models.Project_Review.findByPk(id);
     if (!review) {
       return res.status(404).json({
         success: false,

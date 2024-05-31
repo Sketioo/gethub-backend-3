@@ -12,7 +12,7 @@ const {
 const { check } = require("express-validator");
 
 // Routes for projects
-router.post("/projects", authenticateToken, verifyUserMiddleware, projectController.postProject);
+router.post("/projects", authenticateToken, verifyUserMiddleware, checkPortfolio, projectController.postProject);
 router.post("/projects/bid", authenticateToken, verifyUserMiddleware, validateProjectUserBid, checkPortfolio, projectController.postBid);
 router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddleware, projectController.ownerSelectBidder);
 router.delete('/projects/:id/delete-bidder', authenticateToken, verifyUserMiddleware, projectController.deleteBidder);
@@ -28,6 +28,11 @@ router.get("/projects/my/selected-bids", authenticateToken, projectController.ge
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
 
+
+//* Routes for project reviews
+router.get("/project-reviews", projectReviewController.getAllReview);
+router.get("/project-reviews/:id", authenticateToken, projectReviewController.getReviewById);
+router.post("/project-reviews", authenticateToken, verifyUserMiddleware, projectReviewController.createReview);
 
 
 

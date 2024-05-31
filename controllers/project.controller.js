@@ -527,7 +527,7 @@ const getUserSelectedProjectBids = async (req, res) => {
     const { user_id } = getUserId(req);
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
       where: {
-        user_id: { user_id },
+        user_id:  user_id,
         is_selected: true
       },
       include: [{
