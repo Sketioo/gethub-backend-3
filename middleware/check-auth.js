@@ -33,10 +33,9 @@ const checkPortfolio = async (req, res, next) => {
   try {
 
     const {user_id} = getUserId(req);
-
     const project_id = req.body.project_id;
     const project = await models.Project.findByPk(project_id);
-    console.log(project.category_id)
+
     const project_category_id = project.category_id;
 
     const hasMatchingProduct = await models.Product.findOne({

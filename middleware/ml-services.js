@@ -6,6 +6,7 @@ const checkProjectFraud = async (req, res, next) => {
   try {
     const { title, description } = req.body;
     const { token, user_id } = getUserId(req);
+    console.log(token)
 
     const textResume = `${title}, ${description}`;
     const baseURL = 'https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-project';
