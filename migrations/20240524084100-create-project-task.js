@@ -21,7 +21,7 @@ module.exports = {
       },
       freelancer_id: {
         type: Sequelize.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'users',
           key: 'id'

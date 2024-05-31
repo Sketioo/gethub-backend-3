@@ -1,6 +1,6 @@
 const { Storage } = require("@google-cloud/storage");
 const models = require("../models");
-const {getUserId} = require('./utility')
+const { getUserId } = require('./utility')
 
 const multer = require("multer");
 
@@ -8,6 +8,9 @@ const imageExtensions = ['jpg', 'jpeg', 'png'];
 
 const upload = multer({
   storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 1024 * 1024 * 1.5,
+  },
 });
 
 const storage = new Storage({
@@ -50,6 +53,15 @@ const imageUploader = async (req, res) => {
     });
   }
 
+  // Check file size
+  if (file.size > 1024 * 1024 * 1.5) {
+    return res.status(400).send({
+      success: false,
+      message: "Ukuran file melebihi batas maksimal (1.5 MB)",
+      error_code: 400,
+    });
+  }
+
   const fileExtension = file.originalname.split(".").pop().toLowerCase();
   if (!imageExtensions.includes(fileExtension)) {
     return res.status(400).send({
@@ -61,13 +73,13 @@ const imageUploader = async (req, res) => {
 
   try {
     const publicUrl = await uploadImageToBucket(file);
-    const {user_id} = getUserId(req);
+    const { user_id } = getUserId(req);
     const uploadedFile = await models.HistoryUpload.create({
       user_id: user_id,
       link: publicUrl,
       extension: fileExtension,
     });
-    console.dir(uploadedFile)
+    console.dir(uploadedFile);
     res.status(201).json({
       success: true,
       data: publicUrl,

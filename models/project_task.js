@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Each task belongs to one project
-      Project_Task.belongsTo(models.Project, { foreignKey: 'project_id' });
+      Project_Task.belongsTo(models.Project, { as:'project_tasks', foreignKey: 'project_id' });
       // Each task can be assigned to one freelance user
       Project_Task.belongsTo(models.User, { as: 'freelancer', foreignKey: 'freelancer_id' });
     }
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     freelancer_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'Users',
         key: 'id'
@@ -51,7 +51,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     task_status: {
       type: DataTypes.ENUM('ON-PROGRESS', 'REVIEW', 'REVISION', 'DONE'),
-      allowNull: false
+      allowNull: false,
+      defaultValue: 'ON-PROGRESS'
     },
     task_feedback: {
       type: DataTypes.TEXT,

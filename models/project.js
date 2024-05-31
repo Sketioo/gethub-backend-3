@@ -13,10 +13,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Define association here
-      this.belongsTo(models.User, { as: 'owner_project',foreignKey: 'owner_id' });
-      this.hasMany(models.Project_User_Bid, {as:'users_bid', foreignKey: 'project_id' });
-      this.hasMany(models.Project_Task, { foreignKey: 'project_id' });
-      this.belongsTo(models.Category, {as:'category', foreignKey: 'category_id'});
+      this.belongsTo(models.User, { as: 'owner_project', foreignKey: 'owner_id' });
+      this.hasMany(models.Project_User_Bid, { as: 'users_bid', foreignKey: 'project_id' });
+      this.hasMany(models.Project_Task, { as: "project_tasks", foreignKey: 'project_id' });
+      this.belongsTo(models.Category, { as: 'category', foreignKey: 'category_id' });
       this.hasMany(models.Project_Review, { foreignKey: 'project_id' });
     }
   }

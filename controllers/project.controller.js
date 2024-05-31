@@ -143,31 +143,50 @@ const postProject = async (req, res) => {
 };
 
 const postTask = async (req, res) => {
+  const { project_id, task_number, task_description, task_status, task_feedback } = req.body;
+  const { user_id } = getUserId(req);
+
   try {
-    const { id } = req.params;
-    const task = await models.Project_Task.create({ ...req.body, project_id: id });
-    if (!task) {
+    const project = await models.Project.findByPk(project_id);
+    if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Tugas tidak dapat dibuat",
+        message: 'Proyek tidak ditemukan',
         error_code: 404
-      })
+      });
     }
-    return res.status(201).json({
+
+    if (project.owner_id !== user_id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Anda tidak diizinkan membuat tugas untuk proyek ini',
+        error_code: 403
+      });
+    }
+
+    const newTask = await models.Project_Task.create({
+      project_id,
+      task_number,
+      task_description,
+      task_status,
+      task_feedback
+    });
+
+    res.status(201).json({
       success: true,
-      data: task,
-      message: "Tugas berhasil diposting",
-      error_code: 0,
+      message: 'Tugas proyek berhasil dibuat',
+      data: newTask,
+      error_code: 0
     });
   } catch (error) {
-    console.error("Kesalahan saat memposting tugas:", error);
-    return res.status(500).json({
+    console.error(error);
+    res.status(500).json({
       success: false,
-      message: "Kesalahan internal server",
-      error_code: 500,
+      message: 'Internal server error',
+      error_code: 500
     });
   }
-}
+};
 
 const getAllProjects = async (req, res) => {
   try {
@@ -177,7 +196,8 @@ const getAllProjects = async (req, res) => {
       },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: ['name'] }
+        { model: models.Category, as: 'category', attributes: ['name'] },
+        { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] }
       ]
     });
     if (!projects || projects.length === 0) {
@@ -215,6 +235,8 @@ const getProjectById = async (req, res) => {
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
+        { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
+
       ]
     });
 
@@ -270,7 +292,8 @@ const getOwnerProjects = async (req, res) => {
       where: { owner_id: user_id },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: ['name'] }
+        { model: models.Category, as: 'category', attributes: ['name'] },
+        { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
       ]
     });
 
@@ -314,13 +337,11 @@ const getUserProjectBids = async (req, res) => {
     const userProjectBids = await models.Project_User_Bid.findAll({
       where: { user_id: user_id },
       include: [{
-        model: models.Project,
-        as: 'project',
-        include: [{
-          model: models.User,
-          as: 'owner_project',
-          attributes: ['full_name', 'username', 'email', 'photo']
-        }]
+        model: models.Project, as: 'project',
+        include: [
+          { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo'] },
+          { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
+        ],
       }]
     });
 
@@ -333,14 +354,21 @@ const getUserProjectBids = async (req, res) => {
       });
     }
 
+    const formattedProjectBids = userProjectBids.map(bid => {
+      return {
+        ...bid.toJSON(),
+        project: formatDates(bid.project.toJSON(), ['min_deadline', 'max_deadline'], 'd-MMM-yyyy'),
+      };
+    });
+    
     const totalBids = await models.Project_User_Bid.count({
-      where: { user_id: userIdLogin }
+      where: { user_id }
     });
 
     return res.status(200).json({
       success: true,
       data: {
-        users_bid: userProjectBids,
+        users_bid: formattedProjectBids,
         total_bids: totalBids,
       },
       message: "Tawaran proyek pengguna berhasil diambil",
@@ -417,6 +445,11 @@ const ownerSelectBidder = async (req, res) => {
       { where: { id } }
     );
 
+    await models.Project_Task.udate(
+      { freelancer_id: freelancer_id },
+      { where: { project_id: id } }
+    )
+
     return res.status(200).json({
       success: true,
       message: "Freelancer berhasil dipilih",
@@ -424,6 +457,59 @@ const ownerSelectBidder = async (req, res) => {
     });
   } catch (error) {
     console.error("Kesalahan saat memilih freelancer:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+};
+
+const deleteBidder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = getUserId(req);
+    const { bidder_id } = req.body;
+
+    const project = await models.Project.findOne({
+      where: {
+        id: id,
+        owner_id: userId
+      }
+    });
+
+    if (!project) {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki izin untuk menghapus bidder dari proyek ini",
+        error_code: 403,
+      });
+    }
+
+    const existingBid = await models.Project_User_Bid.findOne({
+      where: {
+        project_id: id,
+        user_id: bidder_id
+      }
+    });
+
+    if (!existingBid) {
+      return res.status(400).json({
+        success: false,
+        message: "Bidder tidak ditemukan atau tidak valid untuk proyek ini",
+        error_code: 400,
+      });
+    }
+
+    await existingBid.destroy();
+
+    return res.status(200).json({
+      success: true,
+      message: "Bidder berhasil dihapus dari proyek",
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Kesalahan saat menghapus bidder:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
@@ -444,7 +530,8 @@ const getUserSelectedProjectBids = async (req, res) => {
       },
       include: [{
         model: models.Project,
-        as: 'project'
+        as: 'project',
+        include: [{ model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] }]
       }]
     });
 
@@ -493,7 +580,7 @@ const getProjectList = async (req, res) => {
     }
 
     const projects = await models.Project.findAll({
-      where: {...searchConditions, is_active: true},
+      where: { ...searchConditions, is_active: true },
       include: [
         {
           model: models.User,
@@ -756,6 +843,7 @@ module.exports = {
   getUserProjectBids,
   getUserSelectedProjectBids,
   postBid,
+  deleteBidder,
   getProjectById,
   ownerSelectBidder,
   getAllProjects,

@@ -1,287 +1,200 @@
-const models = require('../models');
-const { getUserId } = require("../helpers/utility");
+const { Project_Review, User, Project } = require('../models');
+const { getUserId } = require('../helpers/utility');
 
-// Create a review for a freelancer
-const createFreelancerReview = async (req, res) => {
+const createReview = async (req, res) => {
+  const { user_id } = getUserId(req);
+  const { project_id, message, sentiment, sentiment_score, review_type } = req.body;
+
   try {
-    const {user_id} = getUserId(req);
-    const { freelancer_id, message, sentiment, sentiment_score } = req.body;
-    
-    const freelancer = await models.User.findByPk(freelancer_id);
-
-    if (!freelancer) {
+    const project = await Project.findByPk(project_id);
+    if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Freelancer not found",
-        error_code: 404,
+        message: 'Project tidak ditemukan',
+        error_code: 404
       });
     }
 
-    const review = await models.Project_Review_Freelance.create({
+    let isInvolved = false;
+    if (user_id === project.owner_id && review_type === 'owner') {
+      isInvolved = true;
+    }
+
+    const projectBids = await Project_User_Bid.findAll({
+      where: {
+        project_id: project.id,
+        user_id: user_id
+      }
+    });
+
+    if (projectBids.length > 0 && review_type === 'freelancer') {
+      isInvolved = true;
+    }
+
+    if (!isInvolved) {
+      return res.status(403).json({
+        success: false,
+        message: 'Anda tidak diizinkan memberikan ulasan untuk proyek ini',
+        error_code: 403
+      });
+    }
+
+    let owner_id, freelancer_id;
+
+    if (review_type === 'owner') {
+      freelancer_id = user_id;
+      owner_id = project.owner_id;
+    } else if (review_type === 'freelancer') {
+      owner_id = user_id;
+      freelancer_id = project.freelancer_id;
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Tipe review tidak valid',
+        error_code: 400
+      });
+    }
+
+    const newReview = await Project_Review.create({
+      project_id,
+      owner_id,
       freelancer_id,
-      owner_id: user_id,
       message,
       sentiment,
-      sentiment_score,
+      sentiment_score
     });
 
-    const ownerReviews = await models.Project_Review_Freelance.findAll({
-      where: { owner_id: user_id }
-    });
+    let listOfProjectReview;
+    let userId;
+    let sentimentField;
+    let scoreField;
+
+    if (review_type === 'owner') {
+      listOfProjectReview = await Project_Review.findAll({
+        where: { owner_id }
+      });
+      userId = owner_id;
+      sentimentField = 'sentiment_owner_analisis';
+      scoreField = 'sentiment_owner_score';
+    } else if (review_type === 'freelancer') {
+      listOfProjectReview = await Project_Review.findAll({
+        where: { freelancer_id }
+      });
+      userId = freelancer_id;
+      sentimentField = 'sentiment_freelance_analisis';
+      scoreField = 'sentiment_freelance_score';
+    }
 
     let totalPositif = 0;
     let totalNegatif = 0;
     let totalNetral = 0;
 
-    ownerReviews.forEach(review => {
-      if (review.sentiment === "Positif") {
-        totalPositif++;
-      } else if (review.sentiment === "Negatif") {
-        totalNegatif++;
-      } else if (review.sentiment === "Netral") {
-        totalNetral++;
+    listOfProjectReview.forEach(row => {
+      if (row.sentiment === 'Positif') {
+        totalPositif += 1;
+      } else if (row.sentiment === 'Negatif') {
+        totalNegatif += 1;
+      } else if (row.sentiment === 'Netral') {
+        totalNetral += 1;
       }
     });
 
-    let sentimentResult = "";
+    let sentimentResult = '';
     let totalSentimentResult = 0;
 
     if (totalPositif > totalNegatif) {
-      sentimentResult = "Positif";
+      sentimentResult = 'Positif';
       totalSentimentResult = totalPositif;
     } else if (totalNegatif > totalPositif) {
-      sentimentResult = "Negatif";
+      sentimentResult = 'Negatif';
       totalSentimentResult = totalNegatif;
     } else {
-      sentimentResult = "Netral";
+      sentimentResult = 'Netral';
       totalSentimentResult = totalNetral;
     }
 
-    await models.User.update({
-      sentiment_owner_analisis: sentimentResult,
-      sentiment_owner_score: totalSentimentResult
+    const totalScore = listOfProjectReview.reduce((acc, row) => acc + row.sentiment_score, 0);
+    const sentimentScore = totalScore / listOfProjectReview.length;
+
+    await User.update({
+      [sentimentField]: sentimentResult,
+      [scoreField]: sentimentScore
     }, {
-      where: { id: user_id }
+      where: { id: userId }
     });
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      data: review,
-      message: "Review created successfully",
-      error_code: 0,
+      message: 'Ulasan berhasil dibuat',
+      data: newReview,
+      error_code: 0
     });
   } catch (error) {
-    console.error("Error creating freelancer review:", error);
-    return res.status(500).json({
+    console.error(error);
+    res.status(500).json({
       success: false,
-      message: "Internal server error",
-      error_code: 500,
+      message: 'Internal server error',
+      error_code: 500
     });
   }
 };
 
-// Get a freelancer review by ID
-const getProjectReviewFreelanceById = async (req, res) => {
+const getAllReview = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const review = await models.Project_Review_Freelance.findByPk(id);
-
-    if (!review) {
+    const reviews = await Project_Review.findAll();
+    if (!reviews || reviews.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Review not found",
-        error_code: 404,
-      });
+        data: [],
+        message: 'Tidak ada review yang ditemukan',
+        error_code: 404
+      })
     }
-
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      data: review,
-      message: "Review retrieved successfully",
-      error_code: 0,
+      data: reviews,
+      message: 'Semua review berhasil diambil',
+      error_code: 0
     });
   } catch (error) {
-    console.error("Error getting freelancer review:", error);
-    return res.status(500).json({
+    console.error(error);
+    res.status(500).json({
       success: false,
-      message: "Internal server error",
-      error_code: 500,
+      message: 'Internal server error',
+      error_code: 500
     });
   }
 };
 
-// Update a freelancer review
-const updateProjectReviewFreelance = async (req, res) => {
+const getReviewById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const {user_id} = getUserId(req);
-    const { id } = req.params;
-    const { message, sentiment, sentiment_score } = req.body;
-
-    const review = await models.Project_Review_Freelance.findByPk(id);
-
+    const review = await Project_Review.findByPk(id);
     if (!review) {
       return res.status(404).json({
         success: false,
-        message: "Review not found",
-        error_code: 404,
+        message: 'Review tidak ditemukan',
+        error_code: 404
       });
     }
-
-    if (review.owner_id !== user_id) {
-      return res.status(403).json({
-        success: false,
-        message: "You do not have permission to update this review",
-        error_code: 403,
-      });
-    }
-
-    review.message = message;
-    review.sentiment = sentiment;
-    review.sentiment_score = sentiment_score;
-
-    await review.save();
-
-    const ownerReviews = await models.Project_Review_Freelance.findAll({
-      where: { owner_id: user_id }
-    });
-
-    let totalPositif = 0;
-    let totalNegatif = 0;
-    let totalNetral = 0;
-
-    ownerReviews.forEach(review => {
-      if (review.sentiment === "Positif") {
-        totalPositif++;
-      } else if (review.sentiment === "Negatif") {
-        totalNegatif++;
-      } else if (review.sentiment === "Netral") {
-        totalNetral++;
-      }
-    });
-
-    let sentimentResult = "";
-    let totalSentimentResult = 0;
-
-    if (totalPositif > totalNegatif) {
-      sentimentResult = "Positif";
-      totalSentimentResult = totalPositif;
-    } else if (totalNegatif > totalPositif) {
-      sentimentResult = "Negatif";
-      totalSentimentResult = totalNegatif;
-    } else {
-      sentimentResult = "Netral";
-      totalSentimentResult = totalNetral;
-    }
-
-    // Update sentiment analysis for owner
-    await models.User.update({
-      sentiment_owner_analisis: sentimentResult,
-      sentiment_owner_score: totalSentimentResult
-    }, {
-      where: { id: user_id }
-    });
-
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       data: review,
-      message: "Review updated successfully",
-      error_code: 0,
+      message: 'Review berhasil diambil',
+      error_code: 0
     });
   } catch (error) {
-    console.error("Error updating freelancer review:", error);
-    return res.status(500).json({
+    console.error(error);
+    res.status(500).json({
       success: false,
-      message: "Internal server error",
-      error_code: 500,
-    });
-  }
-};
-
-// Delete a freelancer review
-const deleteProjectReviewFreelance = async (req, res) => {
-  try {
-    const {user_id} = getUserId(req);
-    const { id } = req.params;
-
-    const review = await models.Project_Review_Freelance.findByPk(id);
-
-    if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: "Review not found",
-        error_code: 404,
-      });
-    }
-
-    if (review.owner_id !== user_id) {
-      return res.status(403).json({
-        success: false,
-        message: "You do not have permission to delete this review",
-        error_code: 403,
-      });
-    }
-
-    await review.destroy();
-
-    const ownerReviews = await models.Project_Review_Freelance.findAll({
-      where: { owner_id: user_id }
-    });
-
-    let totalPositif = 0;
-    let totalNegatif = 0;
-    let totalNetral = 0;
-
-    ownerReviews.forEach(review => {
-      if (review.sentiment === "Positif") {
-        totalPositif++;
-      } else if (review.sentiment === "Negatif") {
-        totalNegatif++;
-      } else if (review.sentiment === "Netral") {
-        totalNetral++;
-      }
-    });
-
-    let sentimentResult = "";
-    let totalSentimentResult = 0;
-
-    if (totalPositif > totalNegatif) {
-      sentimentResult = "Positif";
-      totalSentimentResult = totalPositif;
-    } else if (totalNegatif > totalPositif) {
-      sentimentResult = "Negatif";
-      totalSentimentResult = totalNegatif;
-    } else {
-      sentimentResult = "Netral";
-      totalSentimentResult = totalNetral;
-    }
-
-    // Update sentiment analysis for owner
-    await models.User.update({
-      sentiment_owner_analisis: sentimentResult,
-      sentiment_owner_score: totalSentimentResult
-    }, {
-      where: { id: user_id }
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Review deleted successfully",
-      error_code: 0,
-    });
-  } catch (error) {
-    console.error("Error deleting freelancer review:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error_code: 500,
+      message: 'Internal server error',
+      error_code: 500
     });
   }
 };
 
 module.exports = {
-  createFreelancerReview,
-  getProjectReviewFreelanceById,
-  updateProjectReviewFreelance,
-  deleteProjectReviewFreelance,
+  createReview,
+  getAllReview,
+  getReviewById
 };
