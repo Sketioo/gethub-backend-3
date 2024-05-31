@@ -314,7 +314,7 @@ const getPublicUser = async (req, res) => {
 
     const userData = {
       ...user.toJSON(),
-      backgroundCard: backgroundCard,
+      background_card: backgroundCard,
     }
 
     return res.status(200).json({
