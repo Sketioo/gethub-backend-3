@@ -1,10 +1,29 @@
 const models = require('../models');
 const { getUserId } = require('../helpers/utility');
 
+
+const axios = require('axios');
+
 const createReview = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
-    const { project_id, message, sentiment, sentiment_score, review_type } = req.body;
+    const { project_id, message, review_type } = req.body;
+
+
+    const sentimentResponse = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/sentiment-analysis', 
+    { text: message },
+      {
+        headers: {
+          'Authorization': `Bearer ${user_id}`,
+          'Content-Type': 'application/json'
+        }
+      }
+
+    );
+    const { sentiment, accuracy: sentiment_score } = sentimentResponse.data.data;
+
+    console.log(sentimentResponse.data.data)
+
     const sentimentReview = sentiment.toLowerCase();
 
     if (!['positif', 'netral', 'negatif'].includes(sentimentReview)) {
@@ -13,6 +32,7 @@ const createReview = async (req, res) => {
         message: "Nilai sentimen tidak valid. Nilai yang boleh: 'positif', 'netral', 'negatif'",
       });
     }
+
     const project = await models.Project.findByPk(project_id);
     if (!project) {
       return res.status(404).json({
@@ -27,23 +47,37 @@ const createReview = async (req, res) => {
         success: false,
         message: 'Project ini belum selesai. Tidak ada ulasan yang dapat diberikan',
         error_code: 400
-      })
+      });
     }
 
     let isInvolved = false;
-    if (user_id === project.owner_id && review_type === 'owner') {
-      isInvolved = true;
-    }
+    let owner_id, freelancer_id;
 
-    const projectBids = await models.Project_User_Bid.findAll({
-      where: {
-        project_id: project.id,
-        user_id: user_id
+    if (review_type === 'owner') {
+      const projectBid = await models.Project_User_Bid.findOne({
+        where: {
+          project_id: project.id,
+          user_id: user_id,
+          is_selected: true // memastikan bahwa freelancer yang memberikan review adalah yang diterima
+        }
+      });
+      if (projectBid) {
+        isInvolved = true;
+        freelancer_id = user_id;
+        owner_id = project.owner_id;
       }
-    });
-
-    if (projectBids.length > 0 && review_type === 'freelancer') {
-      isInvolved = true;
+    } else if (review_type === 'freelancer') {
+      if (user_id === project.owner_id) {
+        isInvolved = true;
+        owner_id = user_id;
+        freelancer_id = project.freelancer_id;
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Tipe review tidak valid',
+        error_code: 400
+      });
     }
 
     if (!isInvolved) {
@@ -51,22 +85,6 @@ const createReview = async (req, res) => {
         success: false,
         message: 'Anda tidak diizinkan memberikan ulasan untuk proyek ini',
         error_code: 403
-      });
-    }
-
-    let owner_id, freelancer_id;
-
-    if (review_type === 'owner') {
-      freelancer_id = user_id;
-      owner_id = project.owner_id;
-    } else if (review_type === 'freelancer') {
-      owner_id = user_id;
-      freelancer_id = project.freelancer_id;
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Tipe review tidak valid',
-        error_code: 400
       });
     }
 
@@ -168,6 +186,9 @@ const createReview = async (req, res) => {
     });
   }
 };
+
+
+
 
 const getAllReview = async (req, res) => {
   try {
