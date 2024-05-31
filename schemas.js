@@ -207,7 +207,7 @@ exports.projectSchema = Joi.object({
 //* Project Task
 exports.projectTaskSchema = Joi.object({
   id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
-  project_id: Joi.string().uuid({ version: 'uuidv4' }).required(),
+  project_id: Joi.string().uuid({ version: 'uuidv4' }).optional(),
   task_number: Joi.number().integer().required(),
   task_description: Joi.string().required(),
   task_status: Joi.string().valid('ON-PROGRESS', 'REVIEW', 'REVISION', 'DONE').optional(),
