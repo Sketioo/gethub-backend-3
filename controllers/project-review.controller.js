@@ -10,7 +10,6 @@ async function createReview(req, res) {
     const { user_id, token } = getUserId(req);
     const { project_id, target_user_id, message, review_type } = req.body;
 
-    // Tentukan owner_id dan freelancer_id berdasarkan review_type
     let owner_id, freelancer_id;
     if (review_type === 'owner') {
       owner_id = target_user_id;
@@ -19,7 +18,28 @@ async function createReview(req, res) {
       owner_id = user_id;
       freelancer_id = target_user_id;
     } else {
-      return res.status(400).json({ error: 'Invalid review_type' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid review_type',
+        error_code: 400 
+      });
+    }
+
+    // Validasi: Periksa apakah ulasan sudah ada untuk project_id dan target_user_id
+    const existingReview = await Project_Review.findOne({
+      where: {
+        project_id,
+        owner_id,
+        freelancer_id
+      }
+    });
+
+    if (existingReview) {
+      return res.status(400).json({
+        success: false,
+        message: 'User sudah diulas untuk proyek ini',
+        error_code: 400
+      });
     }
 
     // Ambil sentiment analysis
@@ -27,7 +47,6 @@ async function createReview(req, res) {
     const { sentiment, accuracy } = sentimentData;
     const sentiment_score = accuracy;
 
-    // Simpan review ke database
     const review = await Project_Review.create({
       project_id,
       owner_id,
@@ -40,6 +59,13 @@ async function createReview(req, res) {
     // Ambil semua review untuk owner atau freelancer
     const whereCondition = review_type === 'owner' ? { owner_id: target_user_id } : { freelancer_id: target_user_id };
     const reviews = await Project_Review.findAll({ where: whereCondition });
+    if (!reviews) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ulasan tidak ditemukan',
+        error_code: 404
+      });
+    }
 
     // Hitung jumlah sentiment
     let totalPositif = 0;
@@ -80,12 +106,21 @@ async function createReview(req, res) {
       { where: { id: userIdToUpdate } }
     );
 
-    res.status(201).json(review);
+    res.status(201).json({
+      success: true,
+      data: review,
+      message: 'Review berhasil ditambahkan',
+    });
   } catch (error) {
     console.error('Error creating project review:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal Server Error',
+      error_code: 500
+    });
   }
 }
+
 
 
 const getAllReview = async (req, res) => {
