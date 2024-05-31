@@ -53,10 +53,10 @@ const checkPortfolio = async (req, res, next) => {
     });
 
     if (!hasMatchingProduct && !hasMatchingCertification) {
-      return res.status(403).json({
+      return res.status(405).json({
         success: false,
         message: "Anda tidak memiliki portofolio yang sesuai dengan kategori proyek ini",
-        error_code: 403,
+        error_code: 405,
       });
     }
 
