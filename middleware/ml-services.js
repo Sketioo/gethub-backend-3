@@ -8,14 +8,16 @@ const checkProjectFraud = async (req, res, next) => {
     const { token, user_id } = getUserId(req);
 
     const textResume = `${title}, ${description}`;
+    const baseURL = 'https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-project';
     const payload = { text: textResume };
-
-    const response = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-project', payload, {
+    const axiosConfig = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
-    });
+    };
+
+    const response = await axios.post(baseURL, payload, axiosConfig);
 
     const apiResponse = response.data;
     const totalFraud = apiResponse.data.totals.total_fraud;
