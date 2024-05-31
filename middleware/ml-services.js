@@ -10,7 +10,7 @@ const checkProjectFraud = async (req, res, next) => {
     const textResume = `${title}, ${description}`;
     const payload = { text: textResume };
 
-    const response = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-job', payload, {
+    const response = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/predict-fraud-project', payload, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
