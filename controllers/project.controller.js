@@ -842,24 +842,18 @@ const getProjectBidders = async (req, res) => {
       ]
     });
 
-    if (!bids || bids.length === 0) {
-      return res.status(200).json({
-        success: false,
-        data: [],
-        message: "Tidak ada penawar untuk proyek ini",
-        error_code: 200,
-      })
-    }
-
     const formattedProject = formatDates(project.toJSON(), ['min_deadline', 'max_deadline', 'created_date']);
 
-    const bidders = bids.map(bid => {
-      const bidder = bid.users_bid.toJSON();
-      bidder.is_selected = bid.is_selected;
-      bidder.budget_bid = bid.budget_bid;
-      bidder.message = bid.message
-      return bidder;
-    }).filter(user => user !== null);
+    let bidders = [];
+    if (bids && bids.length > 0) {
+      bidders = bids.map(bid => {
+        const bidder = bid.users_bid.toJSON();
+        bidder.is_selected = bid.is_selected;
+        bidder.budget_bid = bid.budget_bid;
+        bidder.message = bid.message;
+        return bidder;
+      }).filter(user => user !== null);
+    }
 
     const responseData = {
       ...formattedProject,
@@ -882,6 +876,7 @@ const getProjectBidders = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports = {
