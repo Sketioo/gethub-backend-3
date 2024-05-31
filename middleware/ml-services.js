@@ -25,7 +25,11 @@ const checkProjectFraud = async (req, res, next) => {
     const totalRealJob = apiResponse.data.totals.total_real_job;
 
     if (totalFraud > totalRealJob) {
-      await models.Project.create({ ...req.body, owner_id: user_id });
+      const project = await models.Project.create({ ...req.body, owner_id: user_id });
+      project.is_active = false;
+
+      await project.save()
+      
       return res.status(400).json({
         success: false,
         message: "Proyek terdeteksi sebagai penipuan",
