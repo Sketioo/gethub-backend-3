@@ -1,193 +1,91 @@
 const models = require('../models');
 const { getUserId } = require('../helpers/utility');
 
+const { getSentimentAnalysis } = require('../middleware/ml-services')
 
-const axios = require('axios');
+const { Project_Review, User } = require('../models');
 
-const createReview = async (req, res) => {
+async function createReview(req, res) {
   try {
-    const { user_id } = getUserId(req);
-    const { project_id, message, review_type } = req.body;
+    const { user_id, token } = getUserId(req);
+    const { project_id, target_user_id, message, review_type } = req.body;
 
-
-    const sentimentResponse = await axios.post('https://machinelearning-api-kot54pmj3q-et.a.run.app/api/sentiment-analysis', 
-    { text: message },
-      {
-        headers: {
-          'Authorization': `Bearer ${user_id}`,
-          'Content-Type': 'application/json'
-        }
-      }
-
-    );
-    const { sentiment, accuracy: sentiment_score } = sentimentResponse.data.data;
-
-    console.log(sentimentResponse.data.data)
-
-    const sentimentReview = sentiment.toLowerCase();
-
-    if (!['positif', 'netral', 'negatif'].includes(sentimentReview)) {
-      return res.status(400).json({
-        success: false,
-        message: "Nilai sentimen tidak valid. Nilai yang boleh: 'positif', 'netral', 'negatif'",
-      });
-    }
-
-    const project = await models.Project.findByPk(project_id);
-    if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: 'Project tidak ditemukan',
-        error_code: 404
-      });
-    }
-
-    if (project.status_project !== 'FINISHED') {
-      return res.status(400).json({
-        success: false,
-        message: 'Project ini belum selesai. Tidak ada ulasan yang dapat diberikan',
-        error_code: 400
-      });
-    }
-
-    let isInvolved = false;
+    // Tentukan owner_id dan freelancer_id berdasarkan review_type
     let owner_id, freelancer_id;
-
     if (review_type === 'owner') {
-      const projectBid = await models.Project_User_Bid.findOne({
-        where: {
-          project_id: project.id,
-          user_id: user_id,
-          is_selected: true // memastikan bahwa freelancer yang memberikan review adalah yang diterima
-        }
-      });
-      if (projectBid) {
-        isInvolved = true;
-        freelancer_id = user_id;
-        owner_id = project.owner_id;
-      }
+      owner_id = target_user_id;
+      freelancer_id = user_id;
     } else if (review_type === 'freelancer') {
-      if (user_id === project.owner_id) {
-        isInvolved = true;
-        owner_id = user_id;
-        freelancer_id = project.freelancer_id;
-      }
+      owner_id = user_id;
+      freelancer_id = target_user_id;
     } else {
-      return res.status(400).json({
-        success: false,
-        message: 'Tipe review tidak valid',
-        error_code: 400
-      });
+      return res.status(400).json({ error: 'Invalid review_type' });
     }
 
-    if (!isInvolved) {
-      return res.status(403).json({
-        success: false,
-        message: 'Anda tidak diizinkan memberikan ulasan untuk proyek ini',
-        error_code: 403
-      });
-    }
+    // Ambil sentiment analysis
+    const sentimentData = await getSentimentAnalysis(message, token);
+    const { sentiment, accuracy } = sentimentData;
+    const sentiment_score = accuracy;
 
-    const existingReview = await models.Project_Review.findOne({
-      where: {
-        project_id,
-        [review_type === 'owner' ? 'freelancer_id' : 'owner_id']: user_id
-      }
-    });
-
-    if (existingReview) {
-      return res.status(400).json({
-        success: false,
-        message: 'Anda sudah memberikan ulasan kepada pengguna ini sebelumnya',
-        error_code: 400
-      });
-    }
-
-    const newReview = await models.Project_Review.create({
+    // Simpan review ke database
+    const review = await Project_Review.create({
       project_id,
       owner_id,
       freelancer_id,
       message,
-      sentiment: sentimentReview,
+      sentiment,
       sentiment_score
     });
 
-    let listOfProjectReview;
-    let userId;
-    let sentimentField;
-    let scoreField;
+    // Ambil semua review untuk owner atau freelancer
+    const whereCondition = review_type === 'owner' ? { owner_id: target_user_id } : { freelancer_id: target_user_id };
+    const reviews = await Project_Review.findAll({ where: whereCondition });
 
-    if (review_type === 'owner') {
-      listOfProjectReview = await models.Project_Review.findAll({
-        where: { owner_id }
-      });
-      userId = owner_id;
-      sentimentField = 'sentiment_owner_analisis';
-      scoreField = 'sentiment_owner_score';
-    } else if (review_type === 'freelancer') {
-      listOfProjectReview = await models.Project_Review.findAll({
-        where: { freelancer_id }
-      });
-      userId = freelancer_id;
-      sentimentField = 'sentiment_freelance_analisis';
-      scoreField = 'sentiment_freelance_score';
-    }
-
+    // Hitung jumlah sentiment
     let totalPositif = 0;
     let totalNegatif = 0;
     let totalNetral = 0;
 
-    listOfProjectReview.forEach(row => {
-      if (row.sentiment === 'positif') {
+    reviews.forEach(row => {
+      if (row.sentiment === 'Positif') {
         totalPositif += 1;
-      } else if (row.sentiment === 'negatif') {
+      } else if (row.sentiment === 'Negatif') {
         totalNegatif += 1;
-      } else if (row.sentiment === 'netral') {
+      } else if (row.sentiment === 'Netral') {
         totalNetral += 1;
       }
     });
 
+    // Tentukan hasil sentiment
     let sentimentResult = '';
     let totalSentimentResult = 0;
-
     if (totalPositif > totalNegatif) {
-      sentimentResult = 'positif';
+      sentimentResult = 'Positif';
       totalSentimentResult = totalPositif;
     } else if (totalNegatif > totalPositif) {
-      sentimentResult = 'negatif';
+      sentimentResult = 'Negatif';
       totalSentimentResult = totalNegatif;
     } else {
-      sentimentResult = 'netral';
+      sentimentResult = 'Netral';
       totalSentimentResult = totalNetral;
     }
 
-    const totalScore = listOfProjectReview.reduce((acc, row) => acc + row.sentiment_score, 0);
-    const sentimentScore = totalScore / listOfProjectReview.length;
+    // Update field sentiment analysis pada tabel user
+    const updateField = review_type === 'owner' ? 'sentiment_owner_analisis' : 'sentiment_freelance_analisis';
+    const updateScoreField = review_type === 'owner' ? 'sentiment_owner_score' : 'sentiment_freelance_score';
 
-    await models.User.update({
-      [sentimentField]: sentimentResult,
-      [scoreField]: sentimentScore
-    }, {
-      where: { id: userId }
-    });
+    const userIdToUpdate = target_user_id;
+    await User.update(
+      { [updateField]: sentimentResult, [updateScoreField]: totalSentimentResult },
+      { where: { id: userIdToUpdate } }
+    );
 
-    res.status(201).json({
-      success: true,
-      message: 'Ulasan berhasil dibuat',
-      data: newReview,
-      error_code: 0
-    });
+    res.status(201).json(review);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error',
-      error_code: 500
-    });
+    console.error('Error creating project review:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-};
-
-
+}
 
 
 const getAllReview = async (req, res) => {

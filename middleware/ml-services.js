@@ -29,7 +29,7 @@ const checkProjectFraud = async (req, res, next) => {
       project.is_active = false;
 
       await project.save()
-      
+
       return res.status(400).json({
         success: false,
         message: "Proyek terdeteksi sebagai penipuan",
@@ -58,4 +58,30 @@ const checkProjectFraud = async (req, res, next) => {
   }
 }
 
-module.exports = { checkProjectFraud };
+async function getSentimentAnalysis(message, token) {
+  try {
+    const response = await axios.post(
+      'https://machinelearning-api-kot54pmj3q-et.a.run.app/api/sentiment-analysis',
+      { text: message },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (response.data.error_code === 0) {
+      return response.data.data;
+    } else {
+      throw new Error('Error in sentiment analysis response');
+    }
+  } catch (error) {
+    console.error('Error fetching sentiment analysis:', error);
+    throw error;
+  }
+}
+
+module.exports = { 
+  checkProjectFraud, 
+  getSentimentAnalysis 
+};
