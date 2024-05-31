@@ -856,6 +856,8 @@ const getProjectBidders = async (req, res) => {
     const bidders = bids.map(bid => {
       const bidder = bid.users_bid.toJSON();
       bidder.is_selected = bid.is_selected;
+      bidder.budget_bid = bid.budget_bid;
+      bidder.message = bid.message
       return bidder;
     }).filter(user => user !== null);
 
