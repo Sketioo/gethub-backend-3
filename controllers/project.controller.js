@@ -144,11 +144,13 @@ const postProject = async (req, res) => {
 };
 
 const postTask = async (req, res) => {
-  const { project_id, task_number, task_description, task_status, task_feedback } = req.body;
+  const { task_number, task_description, task_status, task_feedback } = req.body;
+  const { id } = req.params;
+
   const { user_id } = getUserId(req);
 
   try {
-    const project = await models.Project.findByPk(project_id);
+    const project = await models.Project.findByPk(id);
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -166,7 +168,7 @@ const postTask = async (req, res) => {
     }
 
     const newTask = await models.Project_Task.create({
-      project_id,
+      project_id: id,
       task_number,
       task_description,
       task_status,
@@ -528,7 +530,7 @@ const getUserSelectedProjectBids = async (req, res) => {
     const { user_id } = getUserId(req);
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
       where: {
-        user_id:  user_id,
+        user_id: user_id,
         is_selected: true
       },
       include: [{
