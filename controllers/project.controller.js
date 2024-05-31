@@ -267,7 +267,7 @@ const getProjectById = async (req, res) => {
     const { id } = req.params;
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo', 'sentiment_owner_score', 'sentiment_owner_analisis', 'sentiment_freelance_analisis', 'sentiment_freelance_score'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
         { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
 
