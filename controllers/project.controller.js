@@ -33,12 +33,16 @@ const getUserJobStatsAndBids = async (req, res) => {
         {
           model: models.Project,
           as: 'project',
-
           include: [
             {
               model: models.User,
               as: 'owner_project',
               attributes: ['id', 'full_name', 'username', 'email', 'photo', 'profession']
+            },
+            {
+              model: models.Project_User_Bid,
+              as: 'users_bid',
+              attributes: ['id']
             }
           ]
         }
@@ -72,7 +76,8 @@ const getUserJobStatsAndBids = async (req, res) => {
         min_deadline: bid.project.min_deadline,
         max_deadline: bid.project.max_deadline,
         created_date: bid.project.created_date,
-        is_selected: bid.is_selected
+        is_selected: bid.is_selected,
+        total_bids: bid.project.users_bid.length
       };
 
       const formattedProjectData = formatDates(projectData, ['min_deadline', 'max_deadline', 'created_date']);
@@ -88,8 +93,7 @@ const getUserJobStatsAndBids = async (req, res) => {
         job_posted: jobPostedCount,
         bids_made: bidsMadeCount,
         bids_accepted: bidsAcceptedCount,
-        bid_projects: bidProjects,
-        total_bidders: bidProjects.length
+        bid_projects: bidProjects
       },
       message: "Informasi job bidding dan daftar proyek yang dibid berhasil diambil",
       error_code: 0
@@ -103,6 +107,7 @@ const getUserJobStatsAndBids = async (req, res) => {
     });
   }
 };
+
 
 
 const postProject = async (req, res) => {
@@ -198,11 +203,29 @@ const getAllProjects = async (req, res) => {
         is_active: true
       },
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
-        { model: models.Category, as: 'category', attributes: ['name'] },
-        { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] }
+        { 
+          model: models.User, 
+          as: 'owner_project', 
+          attributes: ['full_name', 'username', 'profession', 'photo'] 
+        },
+        { 
+          model: models.Category, 
+          as: 'category', 
+          attributes: ['name'] 
+        },
+        { 
+          model: models.Project_Task, 
+          as: 'project_tasks', 
+          attributes: ['task_number', 'task_description', 'task_status'] 
+        },
+        { 
+          model: models.Project_User_Bid, 
+          as: 'users_bid',
+          attributes: ['id']
+        }
       ]
     });
+
     if (!projects || projects.length === 0) {
       return res.status(404).json({
         success: false,
@@ -211,11 +234,18 @@ const getAllProjects = async (req, res) => {
       });
     }
 
+    const projectsWithBidsCount = projects.map(project => {
+      const projectData = project.toJSON();
+      console.log(projectData)
+      projectData.total_bids = project.users_bid.length;
+      return projectData;
+    });
+
     return res.status(200).json({
       success: true,
       data: {
-        projects,
-        total_projects: projects.length
+        projects: projectsWithBidsCount,
+        total_projects: projectsWithBidsCount.length
       },
       message: "Proyek berhasil diambil",
       error_code: 0
@@ -229,6 +259,7 @@ const getAllProjects = async (req, res) => {
     });
   }
 };
+
 
 
 const getProjectById = async (req, res) => {
@@ -642,7 +673,7 @@ const searchProjectsByTitle = async (req, res) => {
     if (!title) {
       return res.status(400).json({
         success: false,
-        message: "Masukan title project",
+        message: "Masukkan title project",
         error_code: 400,
       });
     }
@@ -663,10 +694,14 @@ const searchProjectsByTitle = async (req, res) => {
           model: models.Category,
           as: 'category',
           attributes: ['name']
+        },
+        {
+          model: models.Project_User_Bid,
+          as: 'users_bid',
+          attributes: ['id']
         }
       ]
     });
-
 
     if (!projects || projects.length === 0) {
       return res.status(404).json({
@@ -676,13 +711,17 @@ const searchProjectsByTitle = async (req, res) => {
       });
     }
 
-    const formattedProjects = projects.map(project =>
-      formatDates(project.toJSON(), ["min_deadline", "max_deadline", "created_date"])
-    );
+    const formattedProjects = projects.map(project => {
+      const projectData = project.toJSON();
+      projectData.total_bids = project.users_bid.length;
+      return formatDates(projectData, ["min_deadline", "max_deadline", "created_date"]);
+    });
 
     return res.status(200).json({
       success: true,
-      data: { projects: formattedProjects },
+      data: { 
+        projects: formattedProjects,
+      },
       message: "Proyek berhasil diambil",
       error_code: 0,
     });
@@ -695,6 +734,7 @@ const searchProjectsByTitle = async (req, res) => {
     });
   }
 };
+
 
 const postBid = async (req, res) => {
   try {
