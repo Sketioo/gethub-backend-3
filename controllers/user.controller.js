@@ -297,7 +297,13 @@ const getPublicUser = async (req, res) => {
       include: [
         { model: models.Link, as: "links" },
         { model: models.Product, as: "products" },
-        { model: models.Certification, as: "certifications"}
+        { model: models.Certification, as: "certifications",include: [
+          {
+            model: models.Category,
+            as: 'Category',
+            attributes: ['name']
+          },
+        ],}
       ],
     });
 
@@ -310,16 +316,21 @@ const getPublicUser = async (req, res) => {
       });
     }
 
+    const userData = user.toJSON();
+    userData.certifications = userData.certifications.map(certification => {
+      certification.category_name = certification.Category.name;
+      delete certification.Category;
+      return certification;
+    });
+    
     const backgroundCard = await getUserProfileCard(username);
-
-    const userData = {
-      ...user.toJSON(),
-      background_card: backgroundCard,
-    }
 
     return res.status(200).json({
       success: true,
-      data: userData,
+      data: {
+        ...userData,
+        background_card : backgroundCard
+      },
       message: "Data publik pengguna berhasil diambil",
       error_code: 0,
     });
