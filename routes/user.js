@@ -25,26 +25,14 @@ router.delete("/profile", authenticateToken, userController.deleteProfile);
 router.get("/verify/:token", verifyTokenEmail);
 router.get("/regenerate-verification", authenticateToken, regenerateVerificationToken);
 
+//* Admin
+
+router.get('/admin/users', authenticateToken, userController.getAllUsersAdmin);
+router.put('/admin/users/:id', authenticateToken, userController.updateUserVerificationStatus)
+
+
 router.post('/role', authenticateToken, userController.createRole)
 router.get('/roles', authenticateToken, userController.getAllRoles)
 
 
 module.exports = router;
-
-
-
-
-// router.get(
-//   "/auth/linkedin",
-//   passport.authenticate("linkedin", {
-//     scope: ["email", "profile"],
-//   })
-// );
-
-// router.get(
-//   "/auth/linkedin/redirect",
-//   passport.authenticate("linkedin", {
-//     successRedirect: "/profile",
-//     failureRedirect: "/login",
-//   })
-// );

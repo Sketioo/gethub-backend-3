@@ -260,6 +260,107 @@ const getAllProjects = async (req, res) => {
   }
 };
 
+const getAllProjectsAdmin = async (req, res) => {
+  try {
+    const { status_project } = req.query;
+
+    let filter = {
+      is_active: true
+    };
+    if (status_project !== undefined) {
+      filter.status_project = status_project;
+    }
+
+    const projects = await models.Project.findAll({
+      where: filter,
+      include: [
+        {
+          model: models.User,
+          as: 'owner_project',
+          attributes: ['full_name', 'username', 'profession', 'photo']
+        },
+        {
+          model: models.Category,
+          as: 'category',
+          attributes: ['name']
+        },
+        {
+          model: models.Project_Task,
+          as: 'project_tasks',
+          attributes: ['task_number', 'task_description', 'task_status']
+        },
+        {
+          model: models.Project_User_Bid,
+          as: 'users_bid',
+          attributes: ['id']
+        }
+      ]
+    });
+
+    if (!projects || projects.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan!",
+        error_code: 404
+      });
+    }
+
+    const projectsWithBidsCount = projects.map(project => {
+      const projectData = project.toJSON();
+      projectData.total_bids = project.users_bid.length;
+      return projectData;
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        projects: projectsWithBidsCount,
+        total_projects: projectsWithBidsCount.length
+      },
+      message: "Proyek berhasil diambil",
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil semua proyek:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+};
+
+const updateProjectActiveStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_active } = req.body;
+
+    const project = await models.Project.findByPk(id);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    await project.update({ is_active });
+
+    return res.status(200).json({
+      success: true,
+      message: `Status aktif proyek berhasil diperbarui menjadi ${is_active}`,
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat memperbarui status aktif proyek:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    });
+  }
+};
+
 
 
 const getProjectById = async (req, res) => {
@@ -889,6 +990,8 @@ module.exports = {
   getProjectById,
   ownerSelectBidder,
   getAllProjects,
+  getAllProjectsAdmin,
+  updateProjectActiveStatus,
   postTask,
   getProjectList,
   getProjectBidders,

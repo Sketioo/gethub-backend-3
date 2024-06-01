@@ -34,6 +34,11 @@ router.get("/project-reviews", projectReviewController.getAllReview);
 router.get("/project-reviews/:id", authenticateToken, projectReviewController.getReviewById);
 router.post("/project-reviews", authenticateToken, verifyUserMiddleware, projectReviewController.createReview);
 
+//*Admin
+
+router.get('/admin/projects', authenticateToken, projectController.getAllProjectsAdmin)
+router.put('/admin/projects/:id', authenticateToken, projectController.updateProjectActiveStatus)
+
 
 
 module.exports = router;

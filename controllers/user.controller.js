@@ -170,6 +170,87 @@ const getProfileById = async (req, res) => {
   }
 };
 
+const getAllUsersAdmin = async (req, res) => {
+  try {
+    const { is_verif_ktp } = req.query;
+    
+    let filter = {};
+    if (is_verif_ktp !== undefined) {
+      filter = { is_verif_ktp: is_verif_ktp === 'true' };
+    }
+
+    const users = await models.User.findAll({ where: filter });
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        data: [],
+        message: `Tidak ada profil yang ${is_verif_ktp === 'true' ? 'terverifikasi' : 'belum diverifikasi'} KTP`,
+        error_code: 404,
+      });
+    }
+
+    const customizedUsers = users.map((user) => {
+      const {
+        password,
+        username,
+        qr_code,
+        is_verify,
+        is_premium,
+        theme_hub,
+        // role_id,
+        is_complete_profile,
+        ...customizedUser
+      } = user.dataValues;
+      return customizedUser;
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: customizedUsers,
+      message: `Semua profil ${is_verif_ktp === 'true' ? 'terverifikasi' : 'belum diverifikasi'} KTP berhasil diambil`,
+      error_code: 0,
+    });
+  } catch (error) {
+    console.error("Error mengambil data semua profil:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  } 
+};
+
+const updateUserVerificationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_verified_ktp } = req.body;
+
+    const user = await models.User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Pengguna tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    await user.update({ is_verif_ktp: is_verified_ktp });
+
+    return res.status(200).json({
+      success: true,
+      message: `Status verifikasi KTP pengguna berhasil diperbarui menjadi ${is_verified_ktp}`,
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat memperbarui status verifikasi KTP pengguna:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    });
+  }
+};
+
 
 const getAllProfiles = async (req, res) => {
   try {
@@ -409,5 +490,7 @@ module.exports = {
   deleteProfile,
   getPublicUser,
   getAllRoles,
-  createRole
+  createRole,
+  getAllUsersAdmin,
+  updateUserVerificationStatus
 };
