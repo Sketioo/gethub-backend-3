@@ -122,7 +122,6 @@ async function createReview(req, res) {
 }
 
 
-
 const getAllReview = async (req, res) => {
   try {
     const reviews = await models.models.Project_Review.findAll();

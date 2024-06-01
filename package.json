@@ -29,6 +29,7 @@
     "express-session": "^1.18.0",
     "express-validator": "^7.0.1",
     "fastest-validator": "^1.8.0",
+    "form-data": "^4.0.0",
     "helmet": "^7.1.0",
     "jest": "^26.6.3",
     "joi": "^17.13.1",

@@ -13,6 +13,8 @@ const upload = multer({
   },
 });
 
+
+
 const storage = new Storage({
   keyFilename: process.env.KEY_FILENAME
 });
@@ -96,8 +98,4 @@ const imageUploader = async (req, res) => {
   }
 };
 
-module.exports = {
-  imageUploader,
-  uploadImageToBucket,
-  upload
-};
+module.exports = { imageUploader, upload, uploadImageToBucket  }
