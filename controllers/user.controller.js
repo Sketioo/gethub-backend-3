@@ -406,11 +406,19 @@ const getPublicUser = async (req, res) => {
     
     const backgroundCard = await getUserProfileCard(username);
 
+    const dummyProject = [
+      {
+        "title": "UI UX Designer",
+        "sentiment": "POSITIVE"
+      }
+    ];
+
     return res.status(200).json({
       success: true,
       data: {
         ...userData,
-        background_card : backgroundCard
+        background_card : backgroundCard,
+        projects : dummyProject
       },
       message: "Data publik pengguna berhasil diambil",
       error_code: 0,
@@ -480,6 +488,111 @@ const createRole = async (req, res) => {
   }
 }
 
+const updateVisibility = async (req, res) => {
+  try{
+    const {user_id} = getUserId(req);
+    const { is_visibility } = req.body;
+
+    if (typeof is_visibility !== 'boolean') {
+      return res.status(400).json({ error: 'is_visibility harus berupa boolean' });
+    }
+
+    const [updatedRows] = await models.User.update(
+      { is_visibility },
+      { where: { id: user_id } }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Pengguna tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Visibilitas berhasil diperbarui",
+      error_code: 0,
+    });
+    
+
+  } catch (error) {
+    console.error("Error mengubah visibility:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
+  }
+}
+
+const updateThemeHub = async (req, res) => {
+  try{
+    const {user_id} = getUserId(req);
+    const { theme_hub } = req.body;
+
+    const user = await models.User.findByPk(user_id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Pengguna tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    if (user.is_premium === false && (theme_hub >= 6 && theme_hub <= 12)) {
+      return res.status(403).json({
+        success: false,
+        message: "Pengguna tidak dapat memilih theme_hub 6-12 karena bukan premium",
+        error_code: 403,
+      });
+    }
+
+    if (user.is_premium === true || (theme_hub >= 1 && theme_hub <= 12)) {
+      const [updatedRows] = await models.User.update(
+        { theme_hub },
+        { where: { id: user_id } }
+      );
+
+    if (typeof theme_hub !== 'number') {
+      return res.status(400).json({ 
+        success: false,
+        error: 'theme_hub harus berupa number',
+        error_code: 400});
+    }
+
+
+    if (updatedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Pengguna tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Theme hub berhasil diperbarui",
+      error_code: 0,
+    });
+  }
+    return res.status(400).json({
+      success: false,
+      message: "Theme_hub tidak valid",
+      error_code: 400,
+    });
+
+  } catch (error) {
+    console.error("Error mengubah theme hub:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    })
+  }
+}
 
 module.exports = {
   register,
@@ -492,5 +605,7 @@ module.exports = {
   getAllRoles,
   createRole,
   getAllUsersAdmin,
-  updateUserVerificationStatus
+  updateUserVerificationStatus,
+  updateVisibility,
+  updateThemeHub
 };

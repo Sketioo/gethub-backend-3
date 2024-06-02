@@ -108,6 +108,11 @@ module.exports = {
         allowNull: true,
         defaultValue: 0
       },
+      is_visibility:{
+        type: Sequelize.BOOLEAN,
+        allowNull : true,
+        defaultValue: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

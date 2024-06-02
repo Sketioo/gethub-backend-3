@@ -25,6 +25,9 @@ router.delete("/profile", authenticateToken, userController.deleteProfile);
 router.get("/verify/:token", verifyTokenEmail);
 router.get("/regenerate-verification", authenticateToken, regenerateVerificationToken);
 
+router.post("/update/visibility", authenticateToken, userController.updateVisibility);
+router.post("/update/theme_hub", authenticateToken, userController.updateThemeHub);
+
 //* Admin
 
 router.get('/admin/users', authenticateToken, userController.getAllUsersAdmin);
