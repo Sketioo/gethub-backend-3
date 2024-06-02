@@ -203,25 +203,25 @@ const getAllProjects = async (req, res) => {
         is_active: true
       },
       include: [
-        { 
-          model: models.User, 
-          as: 'owner_project', 
-          attributes: ['full_name', 'username', 'profession', 'photo'] 
+        {
+          model: models.User,
+          as: 'owner_project',
+          attributes: ['full_name', 'username', 'profession', 'photo']
         },
-        { 
-          model: models.Category, 
-          as: 'category', 
-          attributes: ['name'] 
+        {
+          model: models.Category,
+          as: 'category',
+          attributes: ['name']
         },
-        { 
-          model: models.Project_Task, 
-          as: 'project_tasks', 
-          attributes: ['task_number', 'task_description', 'task_status'] 
+        {
+          model: models.Project_Task,
+          as: 'project_tasks',
+          attributes: ['task_number', 'task_description', 'task_status']
         },
-        { 
-          model: models.Project_User_Bid, 
+        {
+          model: models.Project_User_Bid,
           as: 'users_bid',
-          attributes: ['id']
+          attributes: ['id', 'project_id', 'user_id', 'budget_bid', 'message', 'is_selected']
         }
       ]
     });
@@ -421,13 +421,14 @@ const getProjectById = async (req, res) => {
 const getOwnerProjects = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
-    console.log('user id ', user_id)
+    console.log('user id ', user_id);
     const projects = await models.Project.findAll({
       where: { owner_id: user_id },
       include: [
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
         { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
+        { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
       ]
     });
 
@@ -443,7 +444,9 @@ const getOwnerProjects = async (req, res) => {
     const dateFields = ['min_deadline', 'max_deadline', 'created_date'];
 
     const formattedProjects = projects.map(project => {
-      return formatDates(project.toJSON(), dateFields, 'd-MMM-yyyy');
+      const projectData = project.toJSON();
+      projectData.total_bidders = projectData.users_bid.length;
+      return formatDates(projectData, dateFields, 'd-MMM-yyyy');
     });
 
     return res.status(200).json({
@@ -465,6 +468,7 @@ const getOwnerProjects = async (req, res) => {
   }
 };
 
+
 const getUserProjectBids = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
@@ -475,6 +479,7 @@ const getUserProjectBids = async (req, res) => {
         include: [
           { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo'] },
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
+          { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
         ],
       }]
     });
@@ -489,9 +494,11 @@ const getUserProjectBids = async (req, res) => {
     }
 
     const formattedProjectBids = userProjectBids.map(bid => {
+      const projectData = bid.project.toJSON();
+      projectData.total_bidders = projectData.users_bid.length;
       return {
         ...bid.toJSON(),
-        project: formatDates(bid.project.toJSON(), ['min_deadline', 'max_deadline'], 'd-MMM-yyyy'),
+        project: formatDates(projectData, ['min_deadline', 'max_deadline'], 'd-MMM-yyyy'),
       };
     });
 
@@ -503,7 +510,7 @@ const getUserProjectBids = async (req, res) => {
       success: true,
       data: {
         users_bid: formattedProjectBids,
-        total_bids: totalBids,
+        total_users_bids: totalBids,
       },
       message: "Tawaran proyek pengguna berhasil diambil",
       error_code: 0,
@@ -517,6 +524,7 @@ const getUserProjectBids = async (req, res) => {
     });
   }
 };
+
 
 const ownerSelectBidder = async (req, res) => {
   try {
@@ -662,12 +670,15 @@ const getUserSelectedProjectBids = async (req, res) => {
     const userSelectedProjectBids = await models.Project_User_Bid.findAll({
       where: {
         user_id: user_id,
-        is_selected: true
+        is_selected: true,
       },
       include: [{
         model: models.Project,
         as: 'project',
-        include: [{ model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] }]
+        include: [
+          { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
+          { model: models.User, as: 'owner_project', attributes: ['full_name', 'photo', 'profession', 'username'] }
+        ]
       }]
     });
 
@@ -819,7 +830,7 @@ const searchProjectsByTitle = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: { 
+      data: {
         projects: formattedProjects,
       },
       message: "Proyek berhasil diambil",
