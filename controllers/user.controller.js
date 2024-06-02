@@ -406,11 +406,19 @@ const getPublicUser = async (req, res) => {
     
     const backgroundCard = await getUserProfileCard(username);
 
+    const dummyProject = [
+      {
+        "title": "UI UX Designer",
+        "sentiment": "POSITIVE"
+      }
+    ];
+
     return res.status(200).json({
       success: true,
       data: {
         ...userData,
-        background_card : backgroundCard
+        background_card : backgroundCard,
+        projects : dummyProject
       },
       message: "Data publik pengguna berhasil diambil",
       error_code: 0,
