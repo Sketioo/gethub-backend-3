@@ -262,13 +262,11 @@ const getAllProjects = async (req, res) => {
 
 const getAllProjectsAdmin = async (req, res) => {
   try {
-    const { status_project } = req.query;
+    const { is_active } = req.query;
 
-    let filter = {
-      is_active: true
-    };
-    if (status_project !== undefined) {
-      filter.status_project = status_project;
+    let filter = {};
+    if (is_active !== undefined) {
+      filter.is_active = is_active === 'true';
     }
 
     const projects = await models.Project.findAll({
@@ -329,6 +327,7 @@ const getAllProjectsAdmin = async (req, res) => {
     });
   }
 };
+
 
 const updateProjectActiveStatus = async (req, res) => {
   try {
