@@ -29,6 +29,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(helmet());
 
+app.use(cors({
+  origin: ['*'],
+}));
+
 app.use("/api", userRoute);
 app.use("/api", productRoute);
 app.use("/api", linkRoute);
