@@ -1,14 +1,14 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Analytic_Screen extends Model {
+  class Card_Viewers extends Model {
     static associate(models) {
       this.belongsTo(models.User, { as: 'profileUser', foreignKey: 'profile_user_id'});
       this.belongsTo(models.User, { as: 'viewUser', foreignKey: 'view_user_id'});
     }
   };
 
-  Analytic_Screen.init({
+  Card_Viewers.init({
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -41,8 +41,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Analytic_Screen',
-    tableName: 'analytic_screen'
+    modelName: 'Card_Viewers',
+    tableName: 'card_viewers'
   });
-  return Analytic_Screen;
+  return Card_Viewers;
 };

@@ -1,6 +1,6 @@
 
 const express = require("express");
-const userController = require("../controllers/analytic-screen.controller");
+const viewerController = require("../controllers/viewers.controller");
 
 const { authenticateToken } = require("../middleware/check-auth");
 
@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 
-router.post("/post/card_viewers", authenticateToken, userController.createCardView);
+router.post("/post/card_viewers", authenticateToken, viewerController.createCardView);
 
 
 module.exports = router;

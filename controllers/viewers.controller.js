@@ -10,7 +10,7 @@ const createCardView = async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const existingView = await models.Analytic_Screen.findOne({
+        const existingView = await models.Card_Viewers.findOne({
             where: {
                 profile_user_id,
                 view_user_id,
@@ -27,7 +27,7 @@ const createCardView = async (req, res) => {
             });
         }
         
-        const cardViewers = await models.Analytic_Screen.create({
+        const cardViewers = await models.Card_Viewers.create({
             profile_user_id,
             view_user_id,
             date: today
