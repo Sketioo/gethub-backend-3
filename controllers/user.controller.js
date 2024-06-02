@@ -223,7 +223,7 @@ const getAllUsersAdmin = async (req, res) => {
 const updateUserVerificationStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { is_verified_ktp } = req.body;
+    const { is_verif_ktp } = req.body;
 
     const user = await models.User.findByPk(id);
     if (!user) {
@@ -234,11 +234,11 @@ const updateUserVerificationStatus = async (req, res) => {
       });
     }
 
-    await user.update({ is_verif_ktp: is_verified_ktp });
+    await user.update({ is_verif_ktp: is_verif_ktp });
 
     return res.status(200).json({
       success: true,
-      message: `Status verifikasi KTP pengguna berhasil diperbarui menjadi ${is_verified_ktp}`,
+      message: `Status verifikasi KTP pengguna berhasil diperbarui menjadi ${is_verif_ktp}`,
       error_code: 0
     });
   } catch (error) {
