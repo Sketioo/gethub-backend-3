@@ -333,7 +333,7 @@ const getAllProjectsAdmin = async (req, res) => {
 const updateProjectActiveStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status_project } = req.body;
+    const { is_active } = req.body;
 
     const project = await models.Project.findByPk(id);
     if (!project) {
@@ -344,11 +344,11 @@ const updateProjectActiveStatus = async (req, res) => {
       });
     }
 
-    await project.update({ status_project });
+    await project.update({ is_active });
 
     return res.status(200).json({
       success: true,
-      message: `Status aktif proyek berhasil diperbarui menjadi ${status_project}`,
+      message: `Status aktif proyek berhasil diperbarui menjadi ${is_active}`,
       error_code: 0
     });
   } catch (error) {
