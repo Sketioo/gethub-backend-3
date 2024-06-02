@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('card_viewers', {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('web_viewers', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -19,15 +19,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      view_user_id: {
-        type: Sequelize.UUID,
+      ip: {
+        type: Sequelize.STRING,
         allowNull: false,
-        references: {
-          model: 'users',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
       },
       date: {
         type: Sequelize.DATE,
@@ -43,7 +37,7 @@ module.exports = {
       }
     });
   },
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('card_viewers');
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('web_viewers');
   }
 };

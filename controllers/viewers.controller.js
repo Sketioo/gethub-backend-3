@@ -50,4 +50,59 @@ const createCardView = async (req, res) => {
     }
 } 
 
-module.exports = { createCardView };
+const createWebView = async (req, res) => {
+    try {
+        const { profile_user_id } = req.body;
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const existingView = await models.Web_Viewers.findOne({
+            where: {
+                profile_user_id,
+                ip,
+                date: today
+            }
+        });
+
+        if (!profile_user_id) {
+            return res.status(400).json({
+              success: false,
+              message: 'profile_user_id diperlukan',
+              error_code: 400
+            });
+          }
+
+        if (existingView) {
+            return res.status(200).json({
+                success: true,
+                data: existingView,
+                message: 'Web viewers sudah melihat hari ini',
+                error_code: 0
+            });
+        }
+        
+        const webViewers = await models.Web_Viewers.create({
+            profile_user_id,
+            ip,
+            date: today
+        });
+
+        return res.status(201).json({
+            success: true,
+            data: webViewers,
+            message: 'Data web viewers berhasil disimpan',
+            error_code: 0
+        });
+
+    } catch(error){
+        console.error('Error membuat web view:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Kesalahan internal server',
+            error_code: 500
+        });
+    }
+}
+
+module.exports = { createCardView, createWebView };
