@@ -105,4 +105,64 @@ const createWebView = async (req, res) => {
     }
 }
 
-module.exports = { createCardView, createWebView };
+
+const getTotalAnalytics = async (req, res) => {
+    try {
+        const { user_id } = getUserId(req);
+        const total_card_viewers = 0;
+        const total_web_viewers = 10;
+        const total_partner = 1;
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                total_card_viewers,
+                total_web_viewers,
+                total_partner
+            },
+            message: 'Berhasil mengambil total analytics',
+            error_code: 0
+        });
+
+
+    } catch(error){
+        console.error('Error mengambil total analytics:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Kesalahan internal server',
+            error_code: 500
+        });
+    }
+}
+
+const getCardViewers = async (req,res) => {
+    try{
+        const { user_id } = getUserId(req);
+        const cardViewers = await models.Card_Viewers.findAll({
+            where: { profile_user_id: user_id },
+            include: [{ model : models.User, as:'profileUser'}] // Melakukan join dengan tabel User
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: cardViewers,
+            message: 'Berhasil mengambil card viewers',
+            error_code: 0
+        });
+
+    } catch (error){
+        console.error('Error mengambil card viewers:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Kesalahan internal server',
+            error_code: 500
+        });
+    }
+}
+
+
+module.exports = { 
+    createCardView, 
+    createWebView, 
+    getTotalAnalytics,
+    getCardViewers };

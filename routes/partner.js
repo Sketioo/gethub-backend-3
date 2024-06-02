@@ -13,5 +13,6 @@ router.post("/partner", authenticateToken, validatePartner, partnerController.ad
 router.post("/partner-qr", authenticateToken, validatePartner, partnerController.addPartnerByQR);
 router.put("/partner/:id", authenticateToken, partnerController.updatePartner);
 router.delete("/partner/:id", authenticateToken, partnerController.deletePartner);
+router.get("/new_partner", authenticateToken, partnerController.getPartnerNew);
 
 module.exports = router;
