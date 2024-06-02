@@ -18,7 +18,9 @@ const partnerRoute = require("./routes/partner");
 const informationRoute = require("./routes/information");
 const certificateRoute = require("./routes/certification");
 const projectRoute = require("./routes/project");
-const categoryRoute = require("./routes/category")
+const categoryRoute = require("./routes/category");
+const analyticRoute = require("./routes/analytic");
+
 
 const app = express();
 
@@ -39,6 +41,7 @@ app.use("/api", informationRoute);
 app.use("/api", certificateRoute);
 app.use("/api", categoryRoute);
 app.use("/api", projectRoute);
+app.use("/api", analyticRoute);
 
 
 //* Helper
