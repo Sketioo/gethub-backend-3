@@ -227,6 +227,52 @@ const postTask = async (req, res) => {
   }
 };
 
+const deleteTask = async (req, res) => {
+  try {
+    const { taskId, projectId } = req.params;
+    const { user_id } = getUserId(req);
+    const project = await models.Project.findByPk(projectId);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Proyek tidak ditemukan',
+        error_code: 404
+      })
+    }
+
+    if (project.owner_id !== user_id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Anda tidak diizinkan menghapus tugas proyek ini',
+        error_code: 403
+      })
+    }
+
+    const task = await models.Project_Task.findByPk(taskId);
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: 'Tugas proyek tidak ditemukan',
+        error_code: 404
+      })
+    }
+
+    await task.destroy();
+    return res.status(200).json({
+      success: true,
+      message: 'Tugas proyek berhasil dihapus',
+      error_code: 0
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error_code: 500
+    })
+  }
+}
+
 const getAllProjects = async (req, res) => {
   try {
     const projects = await models.Project.findAll({
@@ -342,10 +388,8 @@ const getAllProjectsAdmin = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {
-        projects: projectsWithBidsCount,
-        total_projects: projectsWithBidsCount.length
-      },
+      data: projectsWithBidsCount,
+      total_projects: projectsWithBidsCount.length,
       message: "Proyek berhasil diambil",
       error_code: 0
     });
@@ -1034,6 +1078,7 @@ module.exports = {
   getAllProjectsAdmin,
   updateProjectActiveStatus,
   postTask,
+  deleteTask,
   getAllTask,
   getProjectList,
   getProjectBidders,

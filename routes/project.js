@@ -18,6 +18,7 @@ router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddlewa
 router.delete('/projects/:id/delete-bidder', authenticateToken, verifyUserMiddleware, projectController.deleteBidder);
 router.post('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, validateProjectTask, projectController.postTask);
 router.get('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, projectController.getAllTask);
+router.delete('/projects/:projectId/tasks/:taskId', authenticateToken, verifyUserMiddleware, projectController.getAllTask);
 router.get("/projects", authenticateToken, projectController.getAllProjects);
 router.get("/projects/my", authenticateToken, projectController.getOwnerProjects);
 router.get("/projects/list", authenticateToken, projectController.getProjectList);
