@@ -296,6 +296,42 @@ const deletePartner = async (req, res) => {
   }
 };
 
+const getPartnerNew = async(req, res) => {
+  try{
+    const { user_id} = getUserId(req);
+
+    const newPartners = await models.Partner.findAll({
+      where: { user_id: user_id },
+      order: [['createdAt', 'DESC']],
+      limit: 5
+    });
+
+    if(!newPartners || newPartners.length === 0){
+      return res.status(404).json({
+        success: false,
+        data: [],
+        message: 'Partner baru tidak ditemukan',
+        error_code: 404
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: newPartners,
+      message: 'Berhasil mengambil partner baru',
+      error_code: 0
+    });
+
+  } catch(error){
+    console.error('Error mengambil partner baru:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Kesalahan internal server',
+      error_code: 500
+    });
+  }
+}
+
 module.exports = {
   getUserPartners,
   getAllPartners,
@@ -305,4 +341,5 @@ module.exports = {
   deletePartner,
   addPartnerByQR,
   searchForPartner,
+  getPartnerNew,  
 };

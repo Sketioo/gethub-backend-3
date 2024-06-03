@@ -22,11 +22,13 @@ router.get("/profile", authenticateToken, userController.getProfileById);
 router.put("/profile", authenticateToken, validateUpdateUser, userController.updateProfile);
 router.delete("/profile", authenticateToken, userController.deleteProfile);
 
-router.get("/verify/:token", verifyTokenEmail);
+router.get("/verify/:token", verifyTokenEmail); 
 router.get("/regenerate-verification", authenticateToken, regenerateVerificationToken);
 
 router.post("/update/visibility", authenticateToken, userController.updateVisibility);
 router.post("/update/theme_hub", authenticateToken, userController.updateThemeHub);
+
+router.get("/getTopTalent", authenticateToken, userController.getTopTalent);
 
 //* Admin
 

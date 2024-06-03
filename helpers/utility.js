@@ -174,6 +174,11 @@ const formatDates = (obj, dateFields, dateFormat = 'd-MMM-yyyy') => {
   return formattedObj;
 };
 
+const getUserIdByUsername = async (username) => {
+  const user = await models.User.findOne({ where: { username: username } });
+  return user.id;
+};
+
 module.exports = {
   generateRandomString,
   verifyAccessToken,
@@ -181,5 +186,6 @@ module.exports = {
   getUserId,
   getThemehub,
   getUserProfileCard,
-  formatDates
+  formatDates,
+  getUserIdByUsername
 };
