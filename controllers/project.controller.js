@@ -389,7 +389,7 @@ const getAllProjectsAdmin = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: projectsWithBidsCount,
-      total_projects: projectsWithBidsCount.length,
+      total_data: projectsWithBidsCount.length,
       message: "Proyek berhasil diambil",
       error_code: 0
     });
