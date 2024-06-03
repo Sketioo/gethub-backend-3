@@ -171,6 +171,14 @@ const getCardViewers = async (req,res) => {
             };
         });
         
+        if (formattedData.length === 0) {
+            return res.status(200).json({
+                success: true,
+                data: formattedData,
+                message: 'Tidak ada card viewers',
+                error_code: 0
+            });
+        }
 
         return res.status(200).json({
             success: true,
