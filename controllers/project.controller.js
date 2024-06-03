@@ -373,10 +373,11 @@ const getAllProjectsAdmin = async (req, res) => {
     });
 
     if (!projects || projects.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
+        data: [],
         message: "Proyek tidak ditemukan!",
-        error_code: 404
+        error_code: 200
       });
     }
 

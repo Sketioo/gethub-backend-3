@@ -126,11 +126,11 @@ const getAllReview = async (req, res) => {
   try {
     const reviews = await models.models.Project_Review.findAll();
     if (!reviews || reviews.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         data: [],
         message: 'Tidak ada review yang ditemukan',
-        error_code: 404
+        error_code: 200
       })
     }
     res.status(200).json({
@@ -154,10 +154,10 @@ const getReviewById = async (req, res) => {
   try {
     const review = await models.Project_Review.findByPk(id);
     if (!review) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: 'Review tidak ditemukan',
-        error_code: 404
+        error_code: 200
       });
     }
     res.status(200).json({
