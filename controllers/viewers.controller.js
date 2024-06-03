@@ -138,14 +138,43 @@ const getTotalAnalytics = async (req, res) => {
 const getCardViewers = async (req,res) => {
     try{
         const { user_id } = getUserId(req);
+
+        if (!user_id) {
+            return res.status(400).json({
+              success: false,
+              message: 'Kredential tidak valid',
+              error_code: 400
+            });
+        }
+
         const cardViewers = await models.Card_Viewers.findAll({
             where: { profile_user_id: user_id },
-            include: [{ model : models.User, as:'profileUser'}] // Melakukan join dengan tabel User
+            include: [
+                { 
+                    model : models.User, 
+                    as:'viewUser', 
+                    foreignKey: 'viewers_user_id', // Join dengan tabel User berdasarkan 'viewers_user_id'
+                    attributes: ['full_name', 'photo', 'profession', 'username','email'] // Hanya menampilkan kolom ini di tabel User
+                }
+            ],
+            attributes: ['view_user_id'] // Hanya menampilkan kolom ini di tabel Card_Viewers
         });
+
+        const formattedData = cardViewers.map(viewer => {
+            return {
+                viewUserId: viewer.view_user_id,
+                fullName: viewer.viewUser.full_name,
+                photo: viewer.viewUser.photo,
+                profession: viewer.viewUser.profession,
+                username: viewer.viewUser.username,
+                email: viewer.viewUser.email
+            };
+        });
+        
 
         return res.status(200).json({
             success: true,
-            data: cardViewers,
+            data: formattedData,
             message: 'Berhasil mengambil card viewers',
             error_code: 0
         });
