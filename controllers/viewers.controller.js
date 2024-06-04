@@ -202,7 +202,6 @@ const getTotalAnalytics = async (req, res) => {
         const total_partner = await models.Partner.count({
             where: { user_id : user_id },
             distinct: true,
-            col: 'ref_user_id'
         });
 
         return res.status(200).json({
