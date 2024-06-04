@@ -101,7 +101,7 @@ module.exports = {
       sentiment_freelance_analisis: { 
         type: Sequelize.STRING,
         allowNull: true ,
-        defaultValue: "netral"
+        defaultValue: "Netral"
       },
       sentiment_freelance_score: { 
         type: Sequelize.INTEGER,

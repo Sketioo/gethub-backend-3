@@ -27,6 +27,7 @@ router.get("/projects/:id", authenticateToken, projectController.getProjectById)
 router.get('/projects/dashboard/my', authenticateToken, projectController.getUserJobStatsAndBids);
 //* Perhatikan penggunaan params
 router.get("/projects/my/selected-bids", authenticateToken, projectController.getUserSelectedProjectBids);
+router.post('/projects/my/:id/settlements', authenticateToken, verifyUserMiddleware, )
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
 

@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       // User.hasMany(models.Project_Review, { as: 'freelancer', foreignKey: 'freelancer_id' });
       User.hasMany(models.Project_Task, { as: 'freelancer', foreignKey: 'freelancer_id' });
       User.hasMany(models.Card_Viewers, { as: 'profileUser', foreignKey: 'profile_user_id' });
+      User.hasMany(models.Transaction, {as: 'user', foreignKey: 'user_id'})
     }
 
     static async setDefaultRole(user) {

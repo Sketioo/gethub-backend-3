@@ -93,18 +93,22 @@ module.exports = {
       fee_owner_transaction_persen: {
         type: Sequelize.FLOAT,
         allowNull: true,
+        defaultValue: 2.0
       },
       fee_owner_transaction_value: {
         type: Sequelize.FLOAT,
         allowNull: true,
+        defaultValue: 0
       },
       fee_freelance_transaction_persen: {
         type: Sequelize.FLOAT,
         allowNull: true,
+        defaultValue: 8.0
       },
       fee_freelance_transaction_value: {
         type: Sequelize.FLOAT,
         allowNull: true,
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,

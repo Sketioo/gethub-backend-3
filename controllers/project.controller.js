@@ -203,6 +203,15 @@ const postTask = async (req, res) => {
       });
     }
 
+    await models.Project.update(
+      {
+        status_freelance_task: 'CLOSED'
+      },
+      {
+        where: { id: id }
+      }
+    )
+
     const newTask = await models.Project_Task.create({
       project_id: id,
       task_number,
@@ -644,14 +653,22 @@ const ownerSelectBidder = async (req, res) => {
         project_id: id,
         is_selected: false
       }
-    });
+    })
 
-    if (!existingUnselectedBid || existingUnselectedBid.user_id !== freelancer_id) {
+    if (!existingUnselectedBid) {
       return res.status(400).json({
         success: false,
-        message: "Tidak ada bidder yang tersedia atau bidder tidak valid",
+        message: "Tidak ada bidder yang tersedia",
         error_code: 400,
-      });
+      })
+    }
+
+    if (existingUnselectedBid.user_id === freelancer_id && existingUnselectedBid.is_selected === true) {
+      return res.status(400).json({
+        success: false,
+        message: "Bidder ini telah dipilih",
+        error_code: 400,
+      })
     }
 
     await models.Project_User_Bid.update(
@@ -660,15 +677,18 @@ const ownerSelectBidder = async (req, res) => {
     );
 
     await models.Project.update(
-      { status_project: 'CLOSE' },
+      {
+        status_project: 'CLOSE',
+        fee_owner_transaction_value: existingUnselectedBid.budget_bid,
+        fee_freelancer_transaction_value: existingUnselectedBid.budget_bid,
+      },
       { where: { id } }
     );
 
-    const addTask = await models.Project_Task.update(
+    await models.Project_Task.update(
       { freelancer_id: freelancer_id },
       { where: { project_id: id } }
-    )
-    console.log(addTask)
+    );
 
     return res.status(200).json({
       success: true,
@@ -721,6 +741,13 @@ const deleteBidder = async (req, res) => {
       });
     }
 
+    await models.Project.update({
+      status_project: 'OPEN'
+    },
+      { where: { id } }
+    )
+
+    //* Bisa destroy atau kita is selected kita hilangkan
     await existingBid.destroy();
 
     return res.status(200).json({
@@ -984,7 +1011,11 @@ const postBid = async (req, res) => {
       });
     }
 
-    const projectBid = await models.Project_User_Bid.create({ ...req.body, user_id });
+
+    const projectBid = await models.Project_User_Bid.create({
+      ...req.body,
+      user_id
+    });
 
     return res.status(201).json({
       success: true,

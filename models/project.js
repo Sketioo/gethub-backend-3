@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Project_Task, { as: "project_tasks", foreignKey: 'project_id' });
       this.belongsTo(models.Category, { as: 'category', foreignKey: 'category_id' });
       this.hasMany(models.Project_Review, { foreignKey: 'project_id' });
+      this.hasMany(models.Transaction, { as: 'project', foreignKey: 'project_id' });
     }
   }
 

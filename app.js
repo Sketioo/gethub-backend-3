@@ -8,6 +8,9 @@ const cors = require('cors');
 const { upload, imageUploader } = require("./helpers/image-uploader");
 const { ktpScannerController } = require("./helpers/ktp-scanner");
 const { authenticateToken } = require("./middleware/check-auth");
+const {
+  processOwnerTransaction
+} = require('./payment/payment.controller')
 
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");
@@ -20,6 +23,7 @@ const certificateRoute = require("./routes/certification");
 const projectRoute = require("./routes/project");
 const categoryRoute = require("./routes/category");
 const viewersRoute = require("./routes/viewers");
+const paymentRoute = require("./routes/transaction");
 
 
 const app = express();
@@ -44,6 +48,7 @@ app.use("/api", certificateRoute);
 app.use("/api", categoryRoute);
 app.use("/api", projectRoute);
 app.use("/api", viewersRoute);
+app.use('/api', paymentRoute)
 
 
 //* Helper
