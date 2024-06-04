@@ -122,7 +122,11 @@ const deleteEnumeration = async (req, res) => {
       });
     }
     await deletedEnumeration.destroy();
-    return res.status(200).send();
+    return res.status(200).json({
+      success: true,
+      message: "Enumerasi berhasil dihapus",
+      error_code: 0,
+    });
   } catch (error) {
     console.error("Error deleting enumeration:", error);
     return res.status(500).json({
