@@ -17,7 +17,7 @@ router.post("/projects/bid", authenticateToken, verifyUserMiddleware, validatePr
 router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddleware, projectController.ownerSelectBidder);
 router.delete('/projects/:id/delete-bidder', authenticateToken, verifyUserMiddleware, projectController.deleteBidder);
 router.post('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, validateProjectTask, projectController.postTask);
-router.get('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, projectController.getAllTask);
+router.get('/projects/:id/tasks', authenticateToken, projectController.getAllTask);
 router.delete('/projects/:projectId/tasks/:taskId', authenticateToken, verifyUserMiddleware, projectController.getAllTask);
 router.get("/projects", authenticateToken, projectController.getAllProjects);
 router.get("/projects/my", authenticateToken, projectController.getOwnerProjects);
@@ -27,7 +27,7 @@ router.get("/projects/:id", authenticateToken, projectController.getProjectById)
 router.get('/projects/dashboard/my', authenticateToken, projectController.getUserJobStatsAndBids);
 //* Perhatikan penggunaan params
 router.get("/projects/my/selected-bids", authenticateToken, projectController.getUserSelectedProjectBids);
-router.post('/projects/my/:id/settlements', authenticateToken, verifyUserMiddleware, )
+router.post('/projects/my/:id/settlements', authenticateToken, verifyUserMiddleware,)
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
 
