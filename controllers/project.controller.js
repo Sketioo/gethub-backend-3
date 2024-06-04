@@ -205,7 +205,7 @@ const postTask = async (req, res) => {
 
     await models.Project.update(
       {
-        status_freelance_task: 'CLOSED'
+        status_freelance_task: 'CLOSE'
       },
       {
         where: { id: id }

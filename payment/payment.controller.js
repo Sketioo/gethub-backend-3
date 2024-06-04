@@ -57,7 +57,7 @@ async function getDetailSettlement(req, res) {
 }
 
 //* router.get('/projects/:id/payments')
-async function processOwnerTransaction(req, res, next) {
+async function processOwnerTransaction(req, res) {
   try {
     const { user_id } = getUserId(req);
     const { id } = req.params;
@@ -143,6 +143,8 @@ async function processOwnerTransaction(req, res, next) {
       transaction_type: 'DEPOSIT',
       status: 'COMPLETED',
       payment_method: 'BCA',
+      snap_token: json.token,
+      snap_redirect: json.redirect_url
     });
 
     return res.status(200).json({
@@ -161,6 +163,8 @@ async function processOwnerTransaction(req, res, next) {
     });
   }
 }
+
+
 async function getOwnerTransactions(req, res) {
   try {
     const { user_id } = getUserId(req);
@@ -201,8 +205,108 @@ async function getOwnerTransactions(req, res) {
   }
 }
 
+async function createPremiumPayment(req, res) {
+  try {
+    const { user_id } = getUserId(req);
+    const user = await models.User.findByPk(user_id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User tidak ditemukan',
+        error_code: 404
+      });
+    }
+
+    const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
+
+    const premiumMembershipPrice = 25000;
+    const feePercentage = 0.08;
+    const grossAmount = premiumMembershipPrice;
+    const totalAmount = grossAmount * (1 + feePercentage);
+
+    const generateOrderId = () => {
+      const timestamp = Date.now();
+      const randomNumber = Math.floor(Math.random() * 1000000);
+      return `PREMIUM-${timestamp}-${randomNumber}`;
+    };
+
+    const payload = {
+      transaction_details: {
+        order_id: generateOrderId(),
+        gross_amount: totalAmount
+      },
+      item_details: [
+        {
+          id: 'premium_membership',
+          price: totalAmount,
+          quantity: 1,
+          name: 'Premium Membership'
+        }
+      ],
+      credit_card: {
+        secure: true
+      },
+      customer_details: {
+        first_name: user.full_name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address
+      }
+    };
+
+    const response = await fetch('https://app.sandbox.midtrans.com/snap/v1/transactions', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'authorization': `Basic ${authString}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const json = await response.json();
+
+    if (!json || !json.token) {
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error_code: 500
+      });
+    }
+
+    await models.Transaction.create({
+      project_id: null, 
+      user_id: user_id,
+      amount: grossAmount,
+      transaction_type: 'PAYMENT',
+      status: 'COMPLETED', 
+      payment_method: 'CREDIT_CARD',
+      snap_token: json.token,
+      snap_redirect: json.redirect_url
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Premium payment initiated successfully',
+      token: json.token,
+      redirect_url: json.redirect_url,
+      error_code: 0
+    });
+
+  } catch (error) {
+    console.error('Ada sebuah error: ', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error_code: 500
+    });
+  }
+}
+
 module.exports = {
   getDetailSettlement,
   processOwnerTransaction,
-  getOwnerTransactions
+  getOwnerTransactions,
+  createPremiumPayment
 };
