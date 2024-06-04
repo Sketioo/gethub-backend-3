@@ -92,6 +92,8 @@ const addPartner = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
 
+    const { email } = req.body;
+
     const existingPartner = await models.Partner.findOne({
       where: {
         user_id,
@@ -224,7 +226,7 @@ const updatePartner = async (req, res) => {
 
 const searchForPartner = async (req, res) => {
   try {
-    const {user_id} = getUserId(req)
+    const { user_id } = getUserId(req)
     const { name, profession } = req.query;
 
     if (!name && !profession) {
@@ -244,7 +246,7 @@ const searchForPartner = async (req, res) => {
     }
 
     const partners = await models.Partner.findAll({
-      where: {...criteria, user_id},
+      where: { ...criteria, user_id },
       attributes: ['id', 'full_name', 'email', 'photo', 'profession', 'phone', 'address', 'website'],
     });
 
@@ -300,9 +302,9 @@ const deletePartner = async (req, res) => {
   }
 };
 
-const getPartnerNew = async(req, res) => {
-  try{
-    const { user_id} = getUserId(req);
+const getPartnerNew = async (req, res) => {
+  try {
+    const { user_id } = getUserId(req);
 
     const newPartners = await models.Partner.findAll({
       where: { user_id: user_id },
@@ -310,7 +312,7 @@ const getPartnerNew = async(req, res) => {
       limit: 5
     });
 
-    if(!newPartners || newPartners.length === 0){
+    if (!newPartners || newPartners.length === 0) {
       return res.status(404).json({
         success: false,
         data: [],
@@ -326,7 +328,7 @@ const getPartnerNew = async(req, res) => {
       error_code: 0
     });
 
-  } catch(error){
+  } catch (error) {
     console.error('Error mengambil partner baru:', error);
     return res.status(500).json({
       success: false,
@@ -345,5 +347,5 @@ module.exports = {
   deletePartner,
   addPartnerByQR,
   searchForPartner,
-  getPartnerNew,  
+  getPartnerNew,
 };
