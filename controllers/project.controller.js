@@ -562,7 +562,9 @@ const getUserProjectBids = async (req, res) => {
       include: [{
         model: models.Project, as: 'project',
         include: [
-          { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo', 'profession'] },
+          { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo', 'profession',
+            'sentiment_owner_analisis', 'sentiment_freelance_analisis'
+          ] },
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
           { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
         ],
@@ -780,7 +782,9 @@ const getUserSelectedProjectBids = async (req, res) => {
         as: 'project',
         include: [
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
-          { model: models.User, as: 'owner_project', attributes: ['full_name', 'photo', 'profession', 'username'] }
+          { model: models.User, as: 'owner_project', attributes: ['full_name', 'photo', 'profession', 'username',
+            'sentiment_owner_analisis', 'sentiment_freelance_analisis'
+          ] }
         ]
       }]
     });
@@ -1095,7 +1099,10 @@ const getProjectBidders = async (req, res) => {
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
       include: [
-        { model: models.User, as: 'users_bid', attributes: ['id', 'full_name', 'username', 'profession', 'photo'] }
+        {
+          model: models.User, as: 'users_bid', attributes: ['id', 'full_name', 'username', 'profession', 'photo',
+            'sentiment_owner_analisis', 'sentiment_freelance_analisis']
+        }
       ]
     });
 

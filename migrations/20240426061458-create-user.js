@@ -92,7 +92,8 @@ module.exports = {
       },
       sentiment_owner_analisis: {
         type: Sequelize.STRING,
-        allowNull: true 
+        allowNull: true ,
+        defaultValue: "Netral"
       },
       sentiment_owner_score: { 
         type: Sequelize.INTEGER,
