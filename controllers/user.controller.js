@@ -542,7 +542,7 @@ const updateThemeHub = async (req, res) => {
       });
     }
 
-    if (user.is_premium === false && (theme_hub >= 6 && theme_hub <= 12)) {
+    if (user.is_premium === false && (theme_hub > 6 && theme_hub <= 12)) {
       return res.status(403).json({
         success: false,
         message: "Pengguna tidak dapat memilih theme_hub 6-12 karena bukan premium",
