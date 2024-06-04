@@ -10,6 +10,14 @@ const createCardView = async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
+        if (view_user_id === profile_user_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Anda melihat profil sendiri, analitik tidak dihitung',
+                error_code: 0
+            });
+        }
+
         const existingView = await models.Card_Viewers.findOne({
             where: {
                 profile_user_id,
@@ -26,7 +34,7 @@ const createCardView = async (req, res) => {
                 error_code: 0
             });
         }
-        
+
         const cardViewers = await models.Card_Viewers.create({
             profile_user_id,
             view_user_id,
