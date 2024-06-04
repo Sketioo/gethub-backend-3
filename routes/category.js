@@ -11,5 +11,4 @@ router.get('/category/:id', authenticateToken, categoryController.getCategoryByI
 router.put('/category/:id', authenticateToken, categoryController.updateCategory);
 router.delete('/category/:id', authenticateToken, categoryController.deleteCategory);
 
-// router.get('/user/certifications', authenticateToken, certificateController.getUserCertifications);
 module.exports = router;

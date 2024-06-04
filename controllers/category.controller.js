@@ -105,6 +105,7 @@ const updateCategory = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Kategori berhasil diperbarui",
+      data: category,
       error_code: 0,
     });
   } catch (error) {
@@ -127,10 +128,12 @@ const deleteCategory = async (req, res, next) => {
         error_code: 404,
       });
     }
-    await models.Category.destroy({ where: { id: id } });
-    res.status(204).json({
+    const deletedCategory = await models.Category.destroy({ where: { id: id } });
+
+    return res.status(200).json({
       success: true,
       message: "Kategori berhasil dihapus",
+      data: deletedCategory,
       error_code: 0,
     });
   } catch (error) {
