@@ -119,7 +119,7 @@ const deleteInformation = async (req, res, next) => {
       });
     }
     await information.destroy();
-    return res.status(204).send();
+    return res.status(200).send();
   } catch (error) {
     console.error("Error deleting information:", error);
     return res.status(500).json({

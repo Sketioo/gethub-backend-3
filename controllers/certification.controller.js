@@ -162,7 +162,7 @@ const deleteCertification = async (req, res) => {
     }
     if (user_id === certification.user_id) {
       await certification.destroy();
-      return res.status(204).json({
+      return res.status(200).json({
         success: true,
         message: 'Sertifikasi berhasil dihapus',
         error_code: 0

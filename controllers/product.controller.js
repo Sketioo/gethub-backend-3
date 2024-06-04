@@ -210,7 +210,11 @@ const deleteProduct = async (req, res) => {
     }
     if (user_id === product.user_id) {
       await product.destroy();
-      return res.status(204).send();
+      return res.status(200).json({
+        success: true,
+        message: "Produk berhasil dihapus",
+        error_code: 0,
+      });
     } else {
       return res.status(403).json({
         success: false,
