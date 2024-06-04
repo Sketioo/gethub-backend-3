@@ -1033,6 +1033,45 @@ const postBid = async (req, res) => {
   }
 };
 
+const changeStatusProject = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const project = await models.Project.findByPk(id);
+
+    const projectUpdate = await project.update({
+      status_project: 'FINISHED',
+      where: {
+        id
+      }
+    })
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Proyek selesai dikerjakan",
+      error_code: 0
+    })
+
+  } catch (error) {
+    console.error('Ada sebuah error: ', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error_code: 500
+    })
+  }
+}
+
+
 const getProjectBidders = async (req, res) => {
   try {
     const { id } = req.params;
@@ -1116,4 +1155,5 @@ module.exports = {
   getProjectBidders,
   getUserJobStatsAndBids,
   searchProjectsByTitle,
+  changeStatusProject
 };

@@ -18,7 +18,7 @@ router.post('/projects/:id/select-bidder', authenticateToken, verifyUserMiddlewa
 router.delete('/projects/:id/delete-bidder', authenticateToken, verifyUserMiddleware, projectController.deleteBidder);
 router.post('/projects/:id/tasks', authenticateToken, verifyUserMiddleware, validateProjectTask, projectController.postTask);
 router.get('/projects/:id/tasks', authenticateToken, projectController.getAllTask);
-router.delete('/projects/:projectId/tasks/:taskId', authenticateToken, verifyUserMiddleware, projectController.getAllTask);
+router.delete('/projects/:projectId/tasks/:taskId', authenticateToken, verifyUserMiddleware, projectController.deleteTask);
 router.get("/projects", authenticateToken, projectController.getAllProjects);
 router.get("/projects/my", authenticateToken, projectController.getOwnerProjects);
 router.get("/projects/list", authenticateToken, projectController.getProjectList);
@@ -30,6 +30,7 @@ router.get("/projects/my/selected-bids", authenticateToken, projectController.ge
 router.post('/projects/my/:id/settlements', authenticateToken, verifyUserMiddleware,)
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
+router.post('/projects/:id/finish', authenticateToken, verifyUserMiddleware, projectController.changeStatusProject)
 
 
 //* Routes for project reviews
