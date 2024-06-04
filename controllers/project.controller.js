@@ -562,7 +562,7 @@ const getUserProjectBids = async (req, res) => {
       include: [{
         model: models.Project, as: 'project',
         include: [
-          { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo'] },
+          { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo', 'profession'] },
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
           { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
         ],
