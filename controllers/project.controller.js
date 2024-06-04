@@ -1078,7 +1078,7 @@ const getProjectBidders = async (req, res) => {
 
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo', 'sentiment_owner_analisis', 'sentiment_freelance_analisis'] },
         { model: models.Category, as: 'category', attributes: ['name'] }
       ]
     });
