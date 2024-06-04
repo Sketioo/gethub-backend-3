@@ -52,7 +52,7 @@ const createCardView = async (req, res) => {
 
 const createWebView = async (req, res) => {
     try {
-        const { profile_user_id } = req.body;
+        const profile_user_id = await getUserIdByUsername(req.body.username);
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
