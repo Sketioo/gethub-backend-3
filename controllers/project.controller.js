@@ -510,10 +510,16 @@ const getOwnerProjects = async (req, res) => {
     const projects = await models.Project.findAll({
       where: { owner_id: user_id },
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
         { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
-        { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
+        {
+          model: models.Project_User_Bid, 
+          as: 'users_bid', 
+          attributes: ['id', 'user_id', 'budget_bid', 'is_selected'],
+          include: [
+            { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
+          ]
+        },
       ]
     });
 
@@ -531,6 +537,7 @@ const getOwnerProjects = async (req, res) => {
     const formattedProjects = projects.map(project => {
       const projectData = project.toJSON();
       projectData.total_bidders = projectData.users_bid.length;
+      projectData.selected_user_bid = projectData.users_bid.find(bid => bid.is_selected) || null;
       return formatDates(projectData, dateFields, 'd-MMM-yyyy');
     });
 
@@ -552,6 +559,7 @@ const getOwnerProjects = async (req, res) => {
     });
   }
 };
+
 
 
 const getUserProjectBids = async (req, res) => {
