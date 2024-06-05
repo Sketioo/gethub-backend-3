@@ -473,7 +473,6 @@ const getProjectById = async (req, res) => {
         { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo', 'sentiment_owner_score', 'sentiment_owner_analisis', 'sentiment_freelance_analisis', 'sentiment_freelance_score'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
         { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
-
       ]
     });
 
@@ -578,6 +577,120 @@ const getOwnerProjects = async (req, res) => {
   }
 };
 
+const changeTaskStatus = async (req, res) => {
+  try {
+    const { projectId, taskId } = req.params;
+    const { user_id } = getUserId(req);
+
+    const project = await models.Project.findByPk(projectId);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    if (project.owner_id !== user_id) {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki akses untuk mengubah status tugas proyek ini",
+        error_code: 403
+      });
+    }
+
+    const task = await models.Project_Task.findByPk(taskId);
+    if (!task || task.project_id !== projectId) {
+      return res.status(404).json({
+        success: false,
+        message: "Tugas proyek tidak ditemukan atau tidak sesuai dengan proyek",
+        error_code: 404
+      });
+    }
+
+    const status = 'DONE';
+
+    await task.update({
+      task_status: status
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Status tugas proyek selesai dikerjakan",
+      error_code: 0
+    });
+
+  } catch (error) {
+    console.error("Ada sebuah error: ", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    });
+  }
+};
+
+
+const changeProjectStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user_id } = getUserId(req);
+
+    const project = await models.Project.findByPk(id);
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    if (project.owner_id !== user_id) {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki akses untuk mengubah status proyek ini",
+        error_code: 403
+      });
+    }
+
+    const project_tasks = await models.Project_Task.findAll({
+      where: {
+        project_id: id
+      }
+    });
+
+    const allTasksDone = project_tasks.every(task => task.task_status === 'DONE');
+
+    if (!allTasksDone) {
+      return res.status(400).json({
+        success: false,
+        message: "Tidak dapat mengubah status proyek karena tidak semua tugas selesai",
+        error_code: 400
+      });
+    }
+
+    const status = 'FINISHED';
+
+    await project.update({
+      status_project: status
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Status proyek selesai dikerjakan",
+      error_code: 0
+    });
+
+  } catch (error) {
+    console.error("Kesalahan saat mengubah status proyek:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500
+    });
+  }
+};
 
 
 const getUserProjectBids = async (req, res) => {
@@ -1172,9 +1285,9 @@ const getProjectBidders = async (req, res) => {
 };
 
 const projectDigitalContract = async (req, res) => {
-  try{
+  try {
 
-  }catch(error){
+  } catch (error) {
     console.error("Kesalahan saat mengambil detail proyek digital contract:", error);
     return res.status(500).json({
       success: false,
@@ -1203,5 +1316,6 @@ module.exports = {
   getProjectBidders,
   getUserJobStatsAndBids,
   searchProjectsByTitle,
-  changeStatusProject
+  changeStatusProject,
+  changeProjectStatus
 };
