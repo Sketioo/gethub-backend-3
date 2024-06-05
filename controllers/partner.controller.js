@@ -92,7 +92,7 @@ const addPartner = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
 
-    const { email } = req.body;
+    const { email, website } = req.body;
 
     const existingPartner = await models.Partner.findOne({
       where: {
@@ -109,7 +109,9 @@ const addPartner = async (req, res) => {
       });
     }
 
-    const partner = await models.Partner.create({ ...req.body, ref_user_id: null, user_id });
+    const partner = await models.Partner.create({ ...req.body, ref_user_id: user_id, user_id });
+
+  
 
     return res.status(201).json({
       success: true,

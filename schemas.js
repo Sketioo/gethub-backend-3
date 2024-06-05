@@ -159,7 +159,7 @@ exports.partnerSchema = Joi.object({
   phone: Joi.string().optional(),
   photo: Joi.string().optional(),
   address: Joi.string().optional(),
-  website: Joi.string().uri().optional(),
+  website: Joi.string().allow("").uri().optional(),
   image: Joi.string().optional(),
 });
 
