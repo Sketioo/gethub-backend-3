@@ -1,7 +1,7 @@
 const models = require('../models');
 const { formatDates } = require('../helpers/utility');
 const { differenceInDays } = require('date-fns')
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 
 
@@ -284,6 +284,20 @@ const deleteTask = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
   try {
+    const { user_id } = getUserId(req);
+
+    const user = await models.User.findByPk(user_id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan!",
+        error_code: 404
+      });
+    }
+
+    const userPreferredCategory = user.profession;
+
     const projects = await models.Project.findAll({
       where: {
         is_active: true
@@ -309,6 +323,10 @@ const getAllProjects = async (req, res) => {
           as: 'users_bid',
           attributes: ['id', 'project_id', 'user_id', 'budget_bid', 'message', 'is_selected']
         }
+      ],
+      order: [
+        [literal(`CASE WHEN "category"."name" LIKE '%${userPreferredCategory}%' THEN 0 ELSE 1 END`), 'ASC'],
+        ['created_date', 'DESC']
       ]
     });
 
@@ -322,7 +340,6 @@ const getAllProjects = async (req, res) => {
 
     const projectsWithBidsCount = projects.map(project => {
       const projectData = project.toJSON();
-      console.log(projectData)
       projectData.total_bids = project.users_bid.length;
       return projectData;
     });
@@ -344,7 +361,8 @@ const getAllProjects = async (req, res) => {
       error_code: 500,
     });
   }
-};
+}
+
 
 const getAllProjectsAdmin = async (req, res) => {
   try {
@@ -510,10 +528,16 @@ const getOwnerProjects = async (req, res) => {
     const projects = await models.Project.findAll({
       where: { owner_id: user_id },
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo'] },
         { model: models.Category, as: 'category', attributes: ['name'] },
         { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
-        { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
+        {
+          model: models.Project_User_Bid,
+          as: 'users_bid',
+          attributes: ['id', 'user_id', 'budget_bid', 'is_selected'],
+          include: [
+            { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
+          ]
+        },
       ]
     });
 
@@ -531,6 +555,7 @@ const getOwnerProjects = async (req, res) => {
     const formattedProjects = projects.map(project => {
       const projectData = project.toJSON();
       projectData.total_bidders = projectData.users_bid.length;
+      projectData.selected_user_bid = projectData.users_bid.find(bid => bid.is_selected) || null;
       return formatDates(projectData, dateFields, 'd-MMM-yyyy');
     });
 
@@ -554,6 +579,7 @@ const getOwnerProjects = async (req, res) => {
 };
 
 
+
 const getUserProjectBids = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
@@ -562,9 +588,11 @@ const getUserProjectBids = async (req, res) => {
       include: [{
         model: models.Project, as: 'project',
         include: [
-          { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo', 'profession',
-            'sentiment_owner_analisis', 'sentiment_freelance_analisis'
-          ] },
+          {
+            model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo', 'profession',
+              'sentiment_owner_analisis', 'sentiment_freelance_analisis'
+            ]
+          },
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
           { model: models.Project_User_Bid, as: 'users_bid', attributes: ['id'] },
         ],
@@ -782,9 +810,11 @@ const getUserSelectedProjectBids = async (req, res) => {
         as: 'project',
         include: [
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
-          { model: models.User, as: 'owner_project', attributes: ['full_name', 'photo', 'profession', 'username',
-            'sentiment_owner_analisis', 'sentiment_freelance_analisis'
-          ] }
+          {
+            model: models.User, as: 'owner_project', attributes: ['full_name', 'photo', 'profession', 'username',
+              'sentiment_owner_analisis', 'sentiment_freelance_analisis'
+            ]
+          }
         ]
       }]
     });
