@@ -296,7 +296,7 @@ const getAllProjects = async (req, res) => {
       });
     }
 
-    const userPreferredCategory = user.preferred_category;
+    const userPreferredCategory = user.profession;
 
     const projects = await models.Project.findAll({
       where: {
