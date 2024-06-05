@@ -86,7 +86,7 @@ async function processOwnerTransaction(req, res) {
     const totalAmount = grossAmount * (1 + feePercentage);
 
     const generateOrderId = () => {
-      const timestamp = Date.now(); 
+      const timestamp = Date.now();
       const randomNumber = Math.floor(Math.random() * 1000000);
       return `TRX-${timestamp}-${randomNumber}`;
     };
@@ -205,8 +205,9 @@ async function getOwnerTransactions(req, res) {
   }
 }
 
-async function createPremiumPayment(req, res) {
+async function processPremiumPayment(req, res) {
   try {
+    const { id } = req.params;
     const { user_id } = getUserId(req);
     const user = await models.User.findByPk(user_id);
 
@@ -218,12 +219,11 @@ async function createPremiumPayment(req, res) {
       });
     }
 
+    const project = await models.Project.findByPk(id)
+
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
 
-    const premiumMembershipPrice = 25000;
-    const feePercentage = 0.08;
-    const grossAmount = premiumMembershipPrice;
-    const totalAmount = grossAmount * (1 + feePercentage);
+    const totalAmount = 10000;
 
     const generateOrderId = () => {
       const timestamp = Date.now();
@@ -255,7 +255,7 @@ async function createPremiumPayment(req, res) {
       }
     };
 
-    const response = await fetch('https://app.sandbox.midtrans.com/snap/v1/transactions', {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'accept': 'application/json',
@@ -276,11 +276,11 @@ async function createPremiumPayment(req, res) {
     }
 
     await models.Transaction.create({
-      project_id: null, 
+      project_id: project.id,
       user_id: user_id,
       amount: grossAmount,
       transaction_type: 'PAYMENT',
-      status: 'COMPLETED', 
+      status: 'COMPLETED',
       payment_method: 'CREDIT_CARD',
       snap_token: json.token,
       snap_redirect: json.redirect_url
@@ -308,5 +308,5 @@ module.exports = {
   getDetailSettlement,
   processOwnerTransaction,
   getOwnerTransactions,
-  createPremiumPayment
+  processPremiumPayment
 };
