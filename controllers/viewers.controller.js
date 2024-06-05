@@ -226,8 +226,96 @@ const getTotalAnalytics = async (req, res) => {
     }
 }
 
+const getGraphData = async (req, res) => {
+    try {
+        const { user_id } = getUserId(req);
+
+        if (!user_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Kredential tidak valid',
+                error_code: 400
+            });
+        }
+
+        const nowDate = new Date();
+        // nowDate.setHours(0, 0, 0, 0);
+        const backDate = new Date(nowDate);
+        backDate.setDate(backDate.getDate() - 10);
+
+        const cardViewers = await models.Card_Viewers.findAll({
+            where: {
+                profile_user_id: user_id,
+                date: {
+                    [models.Sequelize.Op.between]: [backDate, nowDate]
+                }
+            },
+            attributes: [
+                [models.Sequelize.fn('DATE', models.Sequelize.col('date')), 'date'],
+                [models.Sequelize.fn('COUNT', models.Sequelize.col('view_user_id')), 'total_views']
+            ],
+            group: ['date']
+        });
+
+        const webViewers = await models.Web_Viewers.findAll({
+            where: {
+                profile_user_id: user_id,
+                date: {
+                    [models.Sequelize.Op.between]: [backDate, nowDate]
+                }
+            },
+            attributes: [
+                [models.Sequelize.fn('DATE', models.Sequelize.col('date')), 'date'],
+                [models.Sequelize.fn('COUNT', models.Sequelize.col('ip')), 'total_views']
+            ],
+            group: ['date']
+        });
+
+        const totalViewsByDate = {};
+
+        cardViewers.forEach(view => {
+            const date = view.getDataValue('date');
+            const totalViews = view.getDataValue('total_views');
+            totalViewsByDate[date] = (totalViewsByDate[date] || 0) + parseInt(totalViews);
+        });
+
+        webViewers.forEach(view => {
+            const date = view.getDataValue('date');
+            const totalViews = view.getDataValue('total_views');
+            totalViewsByDate[date] = (totalViewsByDate[date] || 0) + parseInt(totalViews);
+        });
+
+        const graphData = [];
+        for (let i = 0; i <= 10; i++) {
+            const date = new Date(backDate);
+            date.setDate(backDate.getDate() + i);
+            const formattedDate = date.toISOString().split('T')[0];
+            graphData.push({
+                date: formattedDate,
+                total_views: totalViewsByDate[formattedDate] || 0
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: graphData,
+            message: 'Berhasil mengambil data grafik',
+            error_code: 0
+        });
+    } catch (error) {
+        console.error('Error mengambil graph data:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Kesalahan internal server',
+            error_code: 500
+        });
+    }
+}
+
+
 module.exports = { 
     createCardView, 
     createWebView, 
     getTotalAnalytics,
-    getCardViewers };
+    getCardViewers,
+    getGraphData};

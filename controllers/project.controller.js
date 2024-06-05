@@ -1141,7 +1141,18 @@ const getProjectBidders = async (req, res) => {
   }
 };
 
+const projectDigitalContract = async (req, res) => {
+  try{
 
+  }catch(error){
+    console.error("Kesalahan saat mengambil detail proyek digital contract:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Kesalahan internal server",
+      error_code: 500,
+    });
+  }
+}
 
 module.exports = {
   postProject,
