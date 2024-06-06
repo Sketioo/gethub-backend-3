@@ -1314,8 +1314,8 @@ const getProjectDigitalContract = async (req, res) => {
     }
 
     const date_started = await getStartDateByChatRoomId(chatRoomId);
-    formatedDateStarted = date_started.toISOString().slice(0,10);
-    reformattedDateStarted = formatedDateStarted.split('-').reverse().join('-');
+    const formattedDateStarted = date_started.toISOString().slice(0,10);
+    const reformattedDateStarted = formattedDateStarted.split('-').reverse().join('-');
 
     const owner_id = await getOwnerIdByChatRoomId(chatRoomId);
     const project_owner = await models.User.findOne({
@@ -1360,7 +1360,7 @@ const getProjectDigitalContract = async (req, res) => {
     });
   
     const responseData = { 
-      date_started : date_started,
+      date_started : reformattedDateStarted,
       project_owner_name : project_owner.full_name,
       freelancer_name : freelancer.full_name,
       project_title : projects_detail.title,
