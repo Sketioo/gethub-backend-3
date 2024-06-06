@@ -1,8 +1,11 @@
 const models = require('../models');
 const { formatDates } = require('../helpers/utility');
-const { differenceInDays } = require('date-fns')
+const { differenceInDays, max } = require('date-fns')
 const { Op, literal } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
+const { getOwnerIdByChatRoomId, getFreelancerIdByChatRoomId, getStartDateByChatRoomId, getProjectIdByChatRoomId } = require("../helpers/digital-contract");
+const { get } = require('../routes/project');
+const { date } = require('joi');
 
 
 const getUserJobStatsAndBids = async (req, res) => {
@@ -1284,10 +1287,83 @@ const getProjectBidders = async (req, res) => {
   }
 };
 
-const projectDigitalContract = async (req, res) => {
-  try {
+const getProjectDigitalContract = async (req, res) => {
+  try{
+    const chatRoomId = req.query.chatRoomId;
 
-  } catch (error) {
+    const cekChatRoomId = await models.Project.findOne({
+      where : { chatroom_id : chatRoomId },
+    });
+    
+    if(!cekChatRoomId){
+      return res.status(404).json({
+        success: false,
+        message: "Digital Contract tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    const date_started = await getStartDateByChatRoomId(chatRoomId);
+    console.log(date_started)
+
+    const owner_id = await getOwnerIdByChatRoomId(chatRoomId);
+    const project_owner = await models.User.findOne({
+      where: { id: owner_id },
+      attributes: ['full_name']
+    })
+
+    const freelancer_id = await getFreelancerIdByChatRoomId(chatRoomId);
+    const freelancer = await models.User.findOne({
+      where: { id: freelancer_id },
+      attributes: ['full_name']
+    })
+    
+    const projects_detail = await models.Project.findOne({
+      where : { chatroom_id : chatRoomId },
+      attributes: ['title','description', 'max_deadline']
+    });
+    
+    const formattedDeadline = projects_detail.max_deadline.toISOString().slice(0,10);
+    const project_id = await getProjectIdByChatRoomId(chatRoomId);
+    const budget_bid = await models.Project_User_Bid.findOne({
+      where : { project_id : project_id, is_selected : true},
+      attributes: ['budget_bid']
+    });
+
+    if (budget_bid == null){
+      return res.status(404).json({
+        success: false,
+        message: "Budget bid tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    const milestone = await models.Project_Task.findAll({
+      where : { project_id : project_id },
+      attributes: ['task_number', 'task_description']
+    });
+  
+    const responseData = { 
+      date_started : date_started,
+      project_owner_name : project_owner.full_name,
+      freelancer_name : freelancer.full_name,
+      project_title : projects_detail.title,
+      project_description : projects_detail.description,
+      max_deadline : formattedDeadline,
+      budget : budget_bid.budget_bid,
+      milestone,
+      owner_userId : owner_id,
+      freelancer_userId : freelancer_id
+    }
+
+    return res.status(200).json({
+      data :responseData,
+      success: true,
+      message: "Berhasil mengambil detail proyek digital contract",
+      error_code: 0,
+    });
+  }
+  catch(error){
     console.error("Kesalahan saat mengambil detail proyek digital contract:", error);
     return res.status(500).json({
       success: false,
@@ -1317,6 +1393,7 @@ module.exports = {
   getUserJobStatsAndBids,
   searchProjectsByTitle,
   changeStatusProject,
+  getProjectDigitalContract,
   changeProjectStatus,
   changeTaskStatus
 };

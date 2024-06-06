@@ -40,6 +40,9 @@ router.get("/project-reviews", projectReviewController.getAllReview);
 router.get("/project-reviews/:id", authenticateToken, projectReviewController.getReviewById);
 router.post("/project-reviews", authenticateToken, verifyUserMiddleware, projectReviewController.createReview);
 
+//* Routes for project digital contract 
+router.get("/public/project", projectController.getProjectDigitalContract);
+
 //*Admin
 
 router.get('/admin/projects', authenticateToken, projectController.getAllProjectsAdmin)
