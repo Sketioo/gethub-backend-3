@@ -88,7 +88,7 @@ exports.userUpdateSchema = Joi.object({
     .pattern(/^\d{10,15}$/)
     .required(),
   email: Joi.string().email().optional(),
-  web: Joi.string().uri().optional(),
+  web: Joi.string().uri().allow("").optional(),
   address: Joi.string().allow("").required(),
   photo: Joi.string().allow("").required(),
   about: Joi.string().allow("").optional(),
