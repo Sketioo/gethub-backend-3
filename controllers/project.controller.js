@@ -594,20 +594,20 @@ const changeTaskStatus = async (req, res) => {
       });
     }
 
-    if (project.owner_id !== user_id) {
-      return res.status(403).json({
-        success: false,
-        message: "Anda tidak memiliki akses untuk mengubah status tugas proyek ini",
-        error_code: 403
-      });
-    }
-
     const task = await models.Project_Task.findByPk(taskId);
     if (!task || task.project_id !== projectId) {
       return res.status(404).json({
         success: false,
         message: "Tugas proyek tidak ditemukan atau tidak sesuai dengan proyek",
         error_code: 404
+      });
+    }
+
+    if (task.freelancer_id !== user_id) {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki akses untuk mengubah status tugas proyek ini",
+        error_code: 403
       });
     }
 
@@ -649,7 +649,14 @@ const changeProjectStatus = async (req, res) => {
       });
     }
 
-    if (project.owner_id !== user_id) {
+    const isFreelancer = await models.Project_Task.findOne({
+      where: {
+        project_id: id,
+        freelancer_id: user_id
+      }
+    });
+
+    if (!isFreelancer) {
       return res.status(403).json({
         success: false,
         message: "Anda tidak memiliki akses untuk mengubah status proyek ini",
@@ -694,6 +701,7 @@ const changeProjectStatus = async (req, res) => {
     });
   }
 };
+
 
 
 const getUserProjectBids = async (req, res) => {
