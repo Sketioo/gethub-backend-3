@@ -1317,5 +1317,6 @@ module.exports = {
   getUserJobStatsAndBids,
   searchProjectsByTitle,
   changeStatusProject,
-  changeProjectStatus
+  changeProjectStatus,
+  changeTaskStatus
 };
