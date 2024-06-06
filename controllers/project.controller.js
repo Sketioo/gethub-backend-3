@@ -1330,10 +1330,15 @@ const getProjectDigitalContract = async (req, res) => {
     
     const projects_detail = await models.Project.findOne({
       where : { chatroom_id : chatRoomId },
-      attributes: ['title','description', 'max_deadline']
+      attributes: ['title','description','min_deadline', 'max_deadline']
     });
     
-    const formattedDeadline = projects_detail.max_deadline.toISOString().slice(0,10);
+    const formattedMaxDeadline = projects_detail.max_deadline.toISOString().slice(0,10);
+    const formattedMinDeadline = projects_detail.min_deadline.toISOString().slice(0,10);
+
+    const reformattedMaxDeadline = formattedMaxDeadline.split('-').reverse().join('-');
+    const reformattedMinDeadline = formattedMinDeadline.split('-').reverse().join('-');
+
     const project_id = await getProjectIdByChatRoomId(chatRoomId);
     const budget_bid = await models.Project_User_Bid.findOne({
       where : { project_id : project_id, is_selected : true},
@@ -1359,7 +1364,8 @@ const getProjectDigitalContract = async (req, res) => {
       freelancer_name : freelancer.full_name,
       project_title : projects_detail.title,
       project_description : projects_detail.description,
-      max_deadline : formattedDeadline,
+      max_deadline : reformattedMaxDeadline,
+      min_deadline : reformattedMinDeadline,
       budget : budget_bid.budget_bid,
       milestone,
       owner_userId : owner_id,
