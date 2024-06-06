@@ -6,11 +6,14 @@ const router = express.Router();
 const { authenticateToken } = require("../middleware/check-auth")
 
 router.post('/projects/:id/payments', authenticateToken, paymentController.processOwnerTransaction);
-router.post('/projects/:id/premium', authenticateToken, paymentController.processPremiumPayment)
-router.get('/projects/:id/settlements', authenticateToken, paymentController.getDetailSettlement);
-// router.get('/user/certifications', authenticateToken, paymentController.getUserCertifications);
-// router.get('/certification/:id', authenticateToken, paymentController.getCertificationById);
-// router.put('/certification/:id', authenticateToken, paymentController.updateCertification);
-// router.delete('/certification/:id', authenticateToken, paymentController.deleteCertification);
+router.post('/user/premium', authenticateToken, paymentController.processPremiumPayment)
+router.get('/projects/:id/payments', authenticateToken, paymentController.getDetailPayment);
+router.post('/api/projects/:id/settlements', authenticateToken, paymentController.createSettlement);
+
+
+//* ADMIN
+router.get('/api/admin/projects/settlements', authenticateToken, paymentController.getAllSettlements);
+router.post('/api/admin/projects/:projectId/settlements/:settlementId', authenticateToken, paymentController.updateSettlement)
+
 
 module.exports = router;

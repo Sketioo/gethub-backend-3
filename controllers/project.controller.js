@@ -3,9 +3,10 @@ const { formatDates } = require('../helpers/utility');
 const { differenceInDays, max } = require('date-fns')
 const { Op, literal } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
-const { getOwnerIdByChatRoomId, getFreelancerIdByChatRoomId, getStartDateByChatRoomId, getProjectIdByChatRoomId } = require("../helpers/digital-contract");
-const { get } = require('../routes/project');
-const { date } = require('joi');
+const { 
+  getOwnerIdByChatRoomId, getFreelancerIdByChatRoomId, 
+  getStartDateByChatRoomId, getProjectIdByChatRoomId 
+} = require("../helpers/digital-contract");
 
 
 const getUserJobStatsAndBids = async (req, res) => {
@@ -1198,13 +1199,7 @@ const changeStatusProject = async (req, res) => {
 
     const project = await models.Project.findByPk(id);
 
-    const projectUpdate = await project.update({
-      status_project: 'FINISHED',
-      where: {
-        id
-      }
-    })
-
+    
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -1212,7 +1207,14 @@ const changeStatusProject = async (req, res) => {
         error_code: 404
       })
     }
-
+    
+    await project.update({
+      status_project: 'FINISHED',
+      where: {
+        id
+      }
+    })
+    
     return res.status(200).json({
       success: true,
       message: "Proyek selesai dikerjakan",

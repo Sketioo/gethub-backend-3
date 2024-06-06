@@ -53,6 +53,20 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      status: {
+        type: Sequelize.ENUM,
+        values: ['Waiting', 'Settle'],
+        defaultValue: 'Waiting',
+        allowNull: false
+      },
+      bukti_transfer: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      message: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

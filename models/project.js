@@ -112,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     status_project: {
-      type: DataTypes.ENUM('OPEN', 'BID', 'CLOSE', 'FINISHED'),
+      type: DataTypes.ENUM('OPEN','CLOSE', 'FINISHED'),
       allowNull: false,
       defaultValue: 'OPEN',
     },

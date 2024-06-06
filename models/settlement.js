@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Setiap settlement berhubungan dengan satu proyek
-      Settlement.belongsTo(models.Project, { as: 'project_owner', foreignKey: 'project_id' });
+      Settlement.belongsTo(models.Project, { as: 'project', foreignKey: 'project_id' });
       // Setiap settlement berhubungan dengan satu freelancer (user)
       Settlement.belongsTo(models.User, { as: 'freelancer', foreignKey: 'freelancer_id' });
     }
@@ -66,6 +66,20 @@ module.exports = (sequelize, DataTypes) => {
     rekening_number: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM,
+      values: ['Waiting', 'Settle'],
+      defaultValue: 'Waiting',
+      allowNull: false
+    },
+    bukti_transfer: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    message: {
+      type: DataTypes.STRING,
+      allowNull: true
     },
     createdAt: {
       allowNull: false,

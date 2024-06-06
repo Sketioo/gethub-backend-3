@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const midtransClient = require('midtrans-client');
+// const midtransClient = require('midtrans-client');
 const { getUserId } = require('../helpers/utility');
 const models = require('../models');
 
@@ -8,7 +8,7 @@ const url = process.env.URL_SANDBOX;
 // Create Snap API instance
 
 //* projects/:id/settlements
-async function getDetailSettlement(req, res) {
+async function getDetailPayment(req, res) {
   try {
     const { id } = req.params;
     const { user_id } = getUserId(req);
@@ -78,9 +78,7 @@ async function processOwnerTransaction(req, res) {
     }
 
     const user = await models.User.findByPk(user_id);
-
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
-
     const feePercentage = 0.02;
     const grossAmount = project.fee_owner_transaction_value;
     const totalAmount = grossAmount * (1 + feePercentage);
@@ -141,7 +139,7 @@ async function processOwnerTransaction(req, res) {
       user_id: user.id,
       amount: grossAmount,
       transaction_type: 'DEPOSIT',
-      status: 'COMPLETED',
+      status: 'PENDING',
       payment_method: 'BCA',
       snap_token: json.token,
       snap_redirect: json.redirect_url
@@ -164,6 +162,69 @@ async function processOwnerTransaction(req, res) {
   }
 }
 
+async function verifyTransactionStatus(req, res) {
+  try {
+    const { order_id } = req.params;
+    const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
+    const url = `https://api.sandbox.midtrans.com/v2/${order_id}/status`;
+
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        authorization: `Basic ${authString}`
+      }
+    };
+
+    const response = await fetch(url, options);
+    const json = await response.json();
+
+    if (!json) {
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error_code: 500
+      });
+    }
+
+    const transaction = await models.Transaction.findOne({
+      where: {
+        order_id: order_id
+      }
+    });
+
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: 'Transaksi tidak ditemukan',
+        error_code: 404
+      });
+    }
+
+    await transaction.update({
+      status: json.transaction_status === 'capture' ? 'COMPLETED' : json.transaction_status.toUpperCase(),
+      payment_type: json.payment_type,
+      transaction_time: json.transaction_time,
+      bank: json.bank,
+      gross_amount: json.gross_amount
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Status transaksi berhasil diperbarui',
+      data: json,
+      error_code: 0
+    });
+
+  } catch (error) {
+    console.log("Error in verifying transaction status: ", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error_code: 500
+    });
+  }
+}
 
 async function getOwnerTransactions(req, res) {
   try {
@@ -207,7 +268,6 @@ async function getOwnerTransactions(req, res) {
 
 async function processPremiumPayment(req, res) {
   try {
-    const { id } = req.params;
     const { user_id } = getUserId(req);
     const user = await models.User.findByPk(user_id);
 
@@ -218,8 +278,6 @@ async function processPremiumPayment(req, res) {
         error_code: 404
       });
     }
-
-    const project = await models.Project.findByPk(id)
 
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
 
@@ -304,9 +362,174 @@ async function processPremiumPayment(req, res) {
   }
 }
 
+const createSettlement = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user_id } = getUserId(req)
+    const { rekening_account, rekening_bank, rekening_number } = req.body;
+
+    const project = await models.Project.findByPk(id);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Proyek tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    if (!project.status_project === 'FINISHED') {
+      return res.status(400).json({
+        success: false,
+        message: "Proyek harus selesai dikerjakan",
+        error_code: 400
+      })
+    }
+
+    const user_bid = await models.Project_User_Bid.findOne({
+      where: {
+        project_id: id,
+        user_id: user_id,
+        is_selected: true
+      }
+    })
+
+    let total = user_bid.budget_bid;
+    const feePercentage = 0.08;
+    const total_fee_application = total * feePercentage;
+    const total_diterima = total - total_fee_application;
+
+
+    const settlement = await models.Settlement.create({
+      project_id: id,
+      freelancer_id: user_id,
+      total,
+      total_fee_application,
+      total_diterima,
+      rekening_account,
+      rekening_bank,
+      rekening_number
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Settlement berhasil disimpan',
+      data: settlement,
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat menyimpan settlement pembayaran:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Kesalahan internal server',
+      error_code: 500
+    });
+  }
+};
+
+const updateSettlement = async (req, res) => {
+  try {
+    const { user_id } = getUserId(req);
+    const { projectId, settlementId } = req.params;
+    const { status, bukti_transfer, message } = req.body;
+
+    const user = await models.User.findByPk(user_id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+        error_code: 404
+      });
+    }
+
+    const category = await models.Category.findByPk(user.category_id);
+    if (!category || category.name !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: "Anda tidak memiliki izin untuk melakukan ini",
+        error_code: 403
+      });
+    }
+
+    const settlement = await models.Settlement.findByPk(settlementId);
+    if (!settlement || settlement.project_id !== projectId) {
+      return res.status(404).json({
+        success: false,
+        message: "Settlement tidak ditemukan pada project ini",
+        error_code: 404
+      });
+    }
+
+    if (status !== undefined) {
+      settlement.status = status;
+    }
+    if (bukti_transfer !== undefined) {
+      settlement.bukti_transfer = bukti_transfer;
+    }
+    if (message !== undefined) {
+      settlement.message = message;
+    }
+
+    await settlement.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Settlement updated successfully",
+      data: settlement,
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Error updating settlement:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error_code: 500
+    });
+  }
+};
+
+const getAllSettlements = async (req, res) => {
+  try {
+    const settlements = await models.Settlement.findAll({
+      include: [
+        { model: models.Project, as: 'project' },
+        { model: models.User, as: 'freelancer' }
+      ]
+    });
+
+    if (!settlements || settlements.length === 0) {
+      return res.status(404).json({
+        success: false,
+        data: [],
+        message: 'Settlement tidak ditemukan',
+        error_code: 404
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: settlements,
+      message: 'Settlement berhasil diambil',
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil semua settlement:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Kesalahan internal server',
+      error_code: 500
+    });
+  }
+};
+
+
 module.exports = {
-  getDetailSettlement,
+  getDetailPayment,
   processOwnerTransaction,
   getOwnerTransactions,
-  processPremiumPayment
+  processPremiumPayment,
+  verifyTransactionStatus,
+  createSettlement,
+  getAllSettlements,
+  updateSettlement
 };

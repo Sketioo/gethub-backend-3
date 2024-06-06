@@ -30,9 +30,8 @@ router.get("/projects/my/selected-bids", authenticateToken, projectController.ge
 // router.post('/projects/my/:id/settlements', authenticateToken, verifyUserMiddleware, projectController.)
 router.get("/projects/my/bids", authenticateToken, projectController.getUserProjectBids);
 router.get("/projects/:id/bidders", authenticateToken, projectController.getProjectBidders);
-router.post('/projects/:id/finish', authenticateToken, verifyUserMiddleware, projectController.changeStatusProject);
-router.post('/projects/:id/status', authenticateToken, projectController.changeProjectStatus);
-router.post('/projects/:projectId/tasks/:taskId/status', authenticateToken, projectController.changeTaskStatus);
+router.put('/projects/:id/status', authenticateToken, projectController.changeProjectStatus);
+router.put('/projects/:projectId/tasks/:taskId/status', authenticateToken, projectController.changeTaskStatus);
 
 
 //* Routes for project reviews
