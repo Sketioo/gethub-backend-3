@@ -1314,7 +1314,8 @@ const getProjectDigitalContract = async (req, res) => {
     }
 
     const date_started = await getStartDateByChatRoomId(chatRoomId);
-    console.log(date_started)
+    formatedDateStarted = date_started.toISOString().slice(0,10);
+    reformattedDateStarted = formatedDateStarted.split('-').reverse().join('-');
 
     const owner_id = await getOwnerIdByChatRoomId(chatRoomId);
     const project_owner = await models.User.findOne({
