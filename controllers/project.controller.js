@@ -1291,6 +1291,18 @@ const getProjectDigitalContract = async (req, res) => {
   try{
     const chatRoomId = req.query.chatRoomId;
 
+    const cekChatRoomId = await models.Project.findOne({
+      where : { chatroom_id : chatRoomId },
+    });
+    
+    if(!cekChatRoomId){
+      return res.status(404).json({
+        success: false,
+        message: "Digital Contract tidak ditemukan",
+        error_code: 404
+      });
+    }
+
     const date_started = await getStartDateByChatRoomId(chatRoomId);
     console.log(date_started)
 
