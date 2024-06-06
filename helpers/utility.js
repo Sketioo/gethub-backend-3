@@ -187,5 +187,5 @@ module.exports = {
   getThemehub,
   getUserProfileCard,
   formatDates,
-  getUserIdByUsername
+  getUserIdByUsername,
 };
