@@ -275,8 +275,6 @@ exports.validatePartner = (req, res, next) => {
             return "Foto harus diisi.";
           case "address":
             return "Alamat harus diisi.";
-          case "website":
-            return "Website tidak valid.";
           case "image":
             return "Image tidak valid.";
           default:

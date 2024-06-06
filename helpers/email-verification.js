@@ -103,7 +103,7 @@ const regenerateVerificationToken = async (req, res) => {
   try {
     const {user_id} = getUserId(req);
 
-    const user = await models.User.findOne({ where: { id: userId } });
+    const user = await models.User.findOne({ where: { id: user_id } });
     if (!user) {
       return res.status(404).render('email-verification', {
         emailVerifSent: false,
