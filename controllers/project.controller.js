@@ -825,21 +825,6 @@ const ownerSelectBidder = async (req, res) => {
       })
     }
 
-    await models.Project_User_Bid.update(
-      { is_selected: true },
-      { where: { project_id: id, user_id: freelancer_id } }
-    );
-
-    await models.Project.update(
-      {
-        status_project: 'CLOSE',
-        status_freelance_task: 'CLOSE',
-        fee_owner_transaction_value: existingUnselectedBid.budget_bid,
-        fee_freelancer_transaction_value: existingUnselectedBid.budget_bid,
-      },
-      { where: { id } }
-    );
-
     await models.Project_Task.update(
       { freelancer_id: freelancer_id },
       { where: { project_id: id } }

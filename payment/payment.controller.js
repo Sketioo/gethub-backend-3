@@ -61,7 +61,9 @@ async function processOwnerTransaction(req, res) {
   try {
     const { user_id } = getUserId(req);
     const { id } = req.params;
+    const { freelancer_id } = req.body;
 
+    // Cari project berdasarkan id dan owner_id
     const project = await models.Project.findOne({
       where: {
         id: id,
@@ -77,18 +79,36 @@ async function processOwnerTransaction(req, res) {
       });
     }
 
+    // Verifikasi apakah freelancer_id yang diberikan benar-benar melakukan bid pada project ini
+    const bid = await models.Project_User_Bid.findOne({
+      where: {
+        project_id: id,
+        user_id: freelancer_id
+      }
+    });
+
+    if (!bid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bid dari freelancer tersebut tidak ditemukan pada project ini',
+        error_code: 400
+      });
+    }
+
     const user = await models.User.findByPk(user_id);
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
     const feePercentage = 0.02;
     const grossAmount = project.fee_owner_transaction_value;
     const totalAmount = grossAmount * (1 + feePercentage);
 
+    // Fungsi untuk membuat order_id
     const generateOrderId = () => {
       const timestamp = Date.now();
       const randomNumber = Math.floor(Math.random() * 1000000);
       return `TRX-${timestamp}-${randomNumber}`;
     };
 
+    // Payload untuk permintaan transaksi
     const payload = {
       transaction_details: {
         order_id: generateOrderId(),
@@ -113,6 +133,8 @@ async function processOwnerTransaction(req, res) {
       }
     };
 
+    // URL untuk melakukan transaksi
+    const url = 'https://api.sandbox.midtrans.com/v2/charge';
     const options = {
       method: 'POST',
       headers: {
@@ -123,6 +145,7 @@ async function processOwnerTransaction(req, res) {
       body: JSON.stringify(payload)
     };
 
+    // Melakukan permintaan transaksi
     const response = await fetch(url, options);
     const json = await response.json();
 
@@ -131,9 +154,10 @@ async function processOwnerTransaction(req, res) {
         success: false,
         message: 'Internal server error',
         error_code: 500
-      })
+      });
     }
 
+    // Membuat transaksi di database
     await models.Transaction.create({
       project_id: project.id,
       user_id: user.id,
@@ -142,8 +166,26 @@ async function processOwnerTransaction(req, res) {
       status: 'PENDING',
       payment_method: 'BCA',
       snap_token: json.token,
-      snap_redirect: json.redirect_url
+      snap_redirect: json.redirect_url,
+      order_id: payload.transaction_details.order_id
     });
+
+    await models.Project.update(
+      {
+        status_project: 'CLOSE',
+        status_freelance_task: 'CLOSE',
+        fee_owner_transaction_value: bid.budget_bid,
+        fee_freelancer_transaction_value: bid.budget_bid,
+      },
+      { where: { id } }
+    );
+
+    await models.Project_User_Bid.update(
+      { is_selected: true },
+      {
+        where: { project_id: id, user_id: freelancer_id }
+      }
+    );
 
     return res.status(200).json({
       success: true,
@@ -153,7 +195,7 @@ async function processOwnerTransaction(req, res) {
     });
 
   } catch (error) {
-    console.log("Error in payment process: ", error);
+    console.error("Error in payment process: ", error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -161,7 +203,6 @@ async function processOwnerTransaction(req, res) {
     });
   }
 }
-
 async function verifyTransactionStatus(req, res) {
   try {
     const { order_id } = req.params;
@@ -489,6 +530,14 @@ const getSettlementByProjectId = async (req, res) => {
         message: 'Proyek tidak ditemukan',
         error_code: 404
       });
+    }
+
+    if (project.status_project !== 'FINISHED') {
+      return res.status(400).json({
+        success: false,
+        message: 'Proyek harus selesai dikerjakan',
+        error_code: 400
+      })
     }
 
     const offerReceived = project.fee_freelance_transaction_value;
