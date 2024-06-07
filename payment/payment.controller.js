@@ -423,6 +423,7 @@ const getBanks = async (req, res) => {
 };
 
 
+//* Freelancer
 const createSettlement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -508,18 +509,6 @@ const createSettlement = async (req, res) => {
 const getSettlementByProjectId = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // const settlement = await models.Settlement.findOne({
-    //   where: { project_id: id }
-    // });
-
-    // if (!settlement) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: 'Settlement tidak ditemukan',
-    //     error_code: 404
-    //   });
-    // }
 
     const project = await models.Project.findByPk(id);
     if (!project) {
