@@ -681,21 +681,21 @@ const changeProjectStatus = async (req, res) => {
       });
     }
 
-    const project_tasks = await models.Project_Task.findAll({
-      where: {
-        project_id: id
-      }
-    });
+    // const project_tasks = await models.Project_Task.findAll({
+    //   where: {
+    //     project_id: id
+    //   }
+    // });
 
-    const allTasksDone = project_tasks.every(task => task.task_status === 'DONE');
+    // const allTasksDone = project_tasks.every(task => task.task_status === 'DONE');
 
-    if (!allTasksDone) {
-      return res.status(400).json({
-        success: false,
-        message: "Tidak dapat mengubah status proyek karena tidak semua tugas selesai",
-        error_code: 400
-      });
-    }
+    // if (!allTasksDone) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Tidak dapat mengubah status proyek karena tidak semua tugas selesai",
+    //     error_code: 400
+    //   });
+    // }
 
     const status = 'FINISHED';
 
