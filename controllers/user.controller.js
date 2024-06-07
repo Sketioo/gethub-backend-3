@@ -493,9 +493,9 @@ const updateVisibility = async (req, res) => {
     const {user_id} = getUserId(req);
     const { is_visibility } = req.body;
 
-    if (typeof is_visibility !== 'boolean') {
-      return res.status(400).json({ error: 'is_visibility harus berupa boolean' });
-    }
+    // if (typeof is_visibility !== 'boolean') {
+    //   return res.status(400).json({ error: 'is_visibility harus berupa boolean' });
+    // }
 
     const [updatedRows] = await models.User.update(
       { is_visibility },
