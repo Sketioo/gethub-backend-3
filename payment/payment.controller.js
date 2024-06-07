@@ -415,7 +415,7 @@ const createSettlement = async (req, res) => {
       }
     })
 
-    if(!user_bid) {
+    if (!user_bid) {
       return res.status(400).json({
         success: false,
         message: "Anda harus memilih bid terlebih dahulu",
@@ -470,17 +470,17 @@ const getSettlementByProjectId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const settlement = await models.Settlement.findOne({
-      where: { project_id: id }
-    });
+    // const settlement = await models.Settlement.findOne({
+    //   where: { project_id: id }
+    // });
 
-    if (!settlement) {
-      return res.status(404).json({
-        success: false,
-        message: 'Settlement tidak ditemukan',
-        error_code: 404
-      });
-    }
+    // if (!settlement) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: 'Settlement tidak ditemukan',
+    //     error_code: 404
+    //   });
+    // }
 
     const project = await models.Project.findByPk(id);
     if (!project) {
@@ -491,14 +491,20 @@ const getSettlementByProjectId = async (req, res) => {
       });
     }
 
+    const offerReceived = project.fee_freelance_transaction_value;
+    const serviceFee = project.fee_freelance_transaction_value * 0.08;
+    const totalReceived = offerReceived - serviceFee;
+
+    const responseData = {
+      job_status: project.status_project === 'FINISHED' ? 'Selesai' : 'Tidak Selesai',
+      offer_received: offerReceived,
+      service_fee: serviceFee,
+      total: totalReceived,
+    }
+
     return res.status(200).json({
       success: true,
-      data: {
-        job_status: project.status_project === 'FINISHED' ? 'Selesai' : 'Tidak Selesai',
-        offer_received: settlement.total,
-        service_fee: settlement.total_fee_application,
-        total_received: settlement.total_diterima,
-      },
+      data: responseData,
       message: 'Settlement ditemukan',
       error_code: 0
     });
