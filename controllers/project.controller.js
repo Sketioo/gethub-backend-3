@@ -911,7 +911,9 @@ const deleteBidder = async (req, res) => {
     }
 
     await models.Project.update({
-      status_project: 'OPEN'
+      status_project: 'OPEN',
+      fee_owner_transaction_value: 0,
+      fee_freelancer_transaction_value: 0,
     },
       { where: { id } }
     )
