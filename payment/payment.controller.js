@@ -116,8 +116,6 @@ async function processOwnerTransaction(req, res) {
       }
     };
 
-    // URL untuk melakukan transaksi
-    const url = 'https://api.sandbox.midtrans.com/v2/charge';
     const options = {
       method: 'POST',
       headers: {
