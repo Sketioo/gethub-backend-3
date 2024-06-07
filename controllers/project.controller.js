@@ -1,12 +1,13 @@
 const models = require('../models');
 const { formatDates } = require('../helpers/utility');
-const { differenceInDays, max } = require('date-fns')
 const { Op, literal } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
 const {
   getOwnerIdByChatRoomId, getFreelancerIdByChatRoomId,
   getStartDateByChatRoomId, getProjectIdByChatRoomId
 } = require("../helpers/digital-contract");
+const cron = require('node-cron');
+const { differenceInDays, addDays } = require('date-fns');
 
 
 const getUserJobStatsAndBids = async (req, res) => {
@@ -131,6 +132,22 @@ const postProject = async (req, res) => {
 
     const project = await models.Project.create({ ...req.body, owner_id: user_id });
     project.is_active = true;
+
+    const job = cron.schedule('0 0 * * *', async () => {
+      try {
+        const daysRemaining = differenceInDays(project.deadline, new Date());
+        if (daysRemaining > 0) {
+          const newDeadline = addDays(project.deadline, -1);
+          project.deadline = newDeadline;
+          await project.save();
+          console.log(`Updated deadline for project ${project.id}`);
+        } else {
+          job.stop();
+        }
+      } catch (error) {
+        console.error('Error updating deadline:', error);
+      }
+    });
 
     await project.save();
 

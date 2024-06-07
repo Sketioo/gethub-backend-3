@@ -54,14 +54,6 @@ module.exports = (sequelize, DataTypes) => {
     min_budget: {
       type: DataTypes.FLOAT,
       allowNull: false,
-    },
-    max_budget: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    min_budget: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
       validate: {
         budgetRange() {
           if (this.min_budget > this.max_budget) {
@@ -70,14 +62,30 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
+    max_budget: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
     max_deadline: {
       type: DataTypes.DATE,
       allowNull: false,
+      set(value) {
+        if (new Date(value) < new Date(this.min_deadline)) {
+          throw new Error('Max deadline cannot be before min deadline');
+        }
+        this.setDataValue('max_deadline', value);
+      }
     },
     min_deadline: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      set(value) {
+        if (new Date(value) > new Date(this.max_deadline)) {
+          throw new Error('Min deadline cannot be after max deadline');
+        }
+        this.setDataValue('min_deadline', value);
+      }
     },
     created_date: {
       type: DataTypes.DATE,
@@ -86,7 +94,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     deadline_duration: {
       type: DataTypes.VIRTUAL,
-      allowNull: true,
       get() {
         const minDeadline = this.getDataValue('min_deadline');
         const maxDeadline = this.getDataValue('max_deadline');
