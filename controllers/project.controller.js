@@ -3,9 +3,9 @@ const { formatDates } = require('../helpers/utility');
 const { differenceInDays, max } = require('date-fns')
 const { Op, literal } = require('sequelize');
 const { getUserId } = require("../helpers/utility");
-const { 
-  getOwnerIdByChatRoomId, getFreelancerIdByChatRoomId, 
-  getStartDateByChatRoomId, getProjectIdByChatRoomId 
+const {
+  getOwnerIdByChatRoomId, getFreelancerIdByChatRoomId,
+  getStartDateByChatRoomId, getProjectIdByChatRoomId
 } = require("../helpers/digital-contract");
 
 
@@ -199,6 +199,14 @@ const postTask = async (req, res) => {
       });
     }
 
+    if (project.status_freelance_task === 'CLOSE') {
+      return res.status(403).json({
+        success: false,
+        message: 'Proyek ini sudah ditutup',
+        error_code: 403
+      })
+    }
+
     if (project.owner_id !== user_id) {
       return res.status(403).json({
         success: false,
@@ -206,15 +214,6 @@ const postTask = async (req, res) => {
         error_code: 403
       });
     }
-
-    await models.Project.update(
-      {
-        status_freelance_task: 'CLOSE'
-      },
-      {
-        where: { id: id }
-      }
-    )
 
     const newTask = await models.Project_Task.create({
       project_id: id,
@@ -536,7 +535,7 @@ const getOwnerProjects = async (req, res) => {
         {
           model: models.Project_User_Bid,
           as: 'users_bid',
-          attributes: ['id', 'user_id', 'budget_bid', 'is_selected'],
+          attributes: ['user_id', 'budget_bid', 'is_selected'],
           include: [
             { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
           ]
@@ -834,6 +833,7 @@ const ownerSelectBidder = async (req, res) => {
     await models.Project.update(
       {
         status_project: 'CLOSE',
+        status_freelance_task: 'CLOSE',
         fee_owner_transaction_value: existingUnselectedBid.budget_bid,
         fee_freelancer_transaction_value: existingUnselectedBid.budget_bid,
       },
@@ -1199,7 +1199,7 @@ const changeStatusProject = async (req, res) => {
 
     const project = await models.Project.findByPk(id);
 
-    
+
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -1207,14 +1207,14 @@ const changeStatusProject = async (req, res) => {
         error_code: 404
       })
     }
-    
+
     await project.update({
       status_project: 'FINISHED',
       where: {
         id
       }
     })
-    
+
     return res.status(200).json({
       success: true,
       message: "Proyek selesai dikerjakan",
@@ -1298,14 +1298,14 @@ const getProjectBidders = async (req, res) => {
 };
 
 const getProjectDigitalContract = async (req, res) => {
-  try{
+  try {
     const chatRoomId = req.query.chatRoomId;
 
     const cekChatRoomId = await models.Project.findOne({
-      where : { chatroom_id : chatRoomId },
+      where: { chatroom_id: chatRoomId },
     });
-    
-    if(!cekChatRoomId){
+
+    if (!cekChatRoomId) {
       return res.status(404).json({
         success: false,
         message: "Digital Contract tidak ditemukan",
@@ -1327,25 +1327,25 @@ const getProjectDigitalContract = async (req, res) => {
       where: { id: freelancer_id },
       attributes: ['full_name']
     })
-    
+
     const projects_detail = await models.Project.findOne({
-      where : { chatroom_id : chatRoomId },
-      attributes: ['title','description','min_deadline', 'max_deadline']
+      where: { chatroom_id: chatRoomId },
+      attributes: ['title', 'description', 'min_deadline', 'max_deadline']
     });
-    
-    const formattedMaxDeadline = projects_detail.max_deadline.toISOString().slice(0,10);
-    const formattedMinDeadline = projects_detail.min_deadline.toISOString().slice(0,10);
+
+    const formattedMaxDeadline = projects_detail.max_deadline.toISOString().slice(0, 10);
+    const formattedMinDeadline = projects_detail.min_deadline.toISOString().slice(0, 10);
 
     const reformattedMaxDeadline = formattedMaxDeadline.split('-').reverse().join('-');
     const reformattedMinDeadline = formattedMinDeadline.split('-').reverse().join('-');
 
     const project_id = await getProjectIdByChatRoomId(chatRoomId);
     const budget_bid = await models.Project_User_Bid.findOne({
-      where : { project_id : project_id, is_selected : true},
+      where: { project_id: project_id, is_selected: true },
       attributes: ['budget_bid']
     });
 
-    if (budget_bid == null){
+    if (budget_bid == null) {
       return res.status(404).json({
         success: false,
         message: "Budget bid tidak ditemukan",
@@ -1354,32 +1354,32 @@ const getProjectDigitalContract = async (req, res) => {
     }
 
     const milestone = await models.Project_Task.findAll({
-      where : { project_id : project_id },
+      where: { project_id: project_id },
       attributes: ['task_number', 'task_description']
     });
-  
-    const responseData = { 
-      date_started : reformattedDateStarted,
-      project_owner_name : project_owner.full_name,
-      freelancer_name : freelancer.full_name,
-      project_title : projects_detail.title,
-      project_description : projects_detail.description,
-      max_deadline : reformattedMaxDeadline,
-      min_deadline : reformattedMinDeadline,
-      budget : budget_bid.budget_bid,
+
+    const responseData = {
+      date_started: reformattedDateStarted,
+      project_owner_name: project_owner.full_name,
+      freelancer_name: freelancer.full_name,
+      project_title: projects_detail.title,
+      project_description: projects_detail.description,
+      max_deadline: reformattedMaxDeadline,
+      min_deadline: reformattedMinDeadline,
+      budget: budget_bid.budget_bid,
       milestone,
-      owner_userId : owner_id,
-      freelancer_userId : freelancer_id
+      owner_userId: owner_id,
+      freelancer_userId: freelancer_id
     }
 
     return res.status(200).json({
-      data :responseData,
+      data: responseData,
       success: true,
       message: "Berhasil mengambil detail proyek digital contract",
       error_code: 0,
     });
   }
-  catch(error){
+  catch (error) {
     console.error("Kesalahan saat mengambil detail proyek digital contract:", error);
     return res.status(500).json({
       success: false,

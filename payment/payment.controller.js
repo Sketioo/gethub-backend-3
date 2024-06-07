@@ -362,6 +362,28 @@ async function processPremiumPayment(req, res) {
   }
 }
 
+const getBanks = async (req, res) => {
+  try {
+    const banks = await models.Bank.findAll({
+      attributes: ['bank_name']
+    });
+
+    res.status(200).json({
+      success: true,
+      data: banks,
+      error_code: 0
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error_code: 500
+    });
+  }
+};
+
+
 const createSettlement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -393,6 +415,14 @@ const createSettlement = async (req, res) => {
       }
     })
 
+    if(!user_bid) {
+      return res.status(400).json({
+        success: false,
+        message: "Anda harus memilih bid terlebih dahulu",
+        error_code: 400
+      })
+    }
+
     let total = user_bid.budget_bid;
     const feePercentage = 0.08;
     const total_fee_application = total * feePercentage;
@@ -412,6 +442,13 @@ const createSettlement = async (req, res) => {
       bukti_transfer: null,
       message: null
     });
+
+    await models.Project.update({
+      where: {
+        id
+      },
+      status_project: 'SETTLEMENT'
+    })
 
     return res.status(201).json({
       success: true,
@@ -534,5 +571,6 @@ module.exports = {
   verifyTransactionStatus,
   createSettlement,
   getAllSettlements,
-  updateSettlement
+  updateSettlement,
+  getBanks
 };
