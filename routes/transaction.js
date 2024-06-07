@@ -9,6 +9,7 @@ router.post('/projects/:id/payments', authenticateToken, paymentController.proce
 router.post('/user/premium', authenticateToken, paymentController.processPremiumPayment)
 router.get('/projects/:id/payments', authenticateToken, paymentController.getDetailPayment);
 router.post('/api/projects/:id/settlements', authenticateToken, paymentController.createSettlement);
+router.get('/payments/banks', authenticateToken, paymentController.getBanks)
 
 
 //* ADMIN
