@@ -144,19 +144,21 @@ async function processOwnerTransaction(req, res) {
       user_id: user.id,
       amount: grossAmount,
       transaction_type: 'DEPOSIT',
-      status: 'PENDING',
-      payment_method: 'BCA',
+      status: 'COMPLETED',
+      payment_method: 'CREDIT_CARD',
       snap_token: json.token,
       snap_redirect: json.redirect_url,
       order_id: payload.transaction_details.order_id
     });
 
-    await models.Project_User_Bid.update(
+    const bid = await models.Project_User_Bid.update(
       { is_selected: true },
       {
         where: { project_id: id, user_id: freelancer_id }
       }
     );
+
+    console.log(bid, freelancer_id, id)
 
     return res.status(200).json({
       success: true,
