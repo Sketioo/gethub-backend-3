@@ -468,10 +468,10 @@ const createSettlement = async (req, res) => {
 
 const getSettlementByProjectId = async (req, res) => {
   try {
-    const { projectId } = req.params;
+    const { id } = req.params;
 
     const settlement = await models.Settlement.findOne({
-      where: { project_id: projectId }
+      where: { project_id: id }
     });
 
     if (!settlement) {
@@ -482,7 +482,7 @@ const getSettlementByProjectId = async (req, res) => {
       });
     }
 
-    const project = await models.Project.findByPk(projectId);
+    const project = await models.Project.findByPk(id);
     if (!project) {
       return res.status(404).json({
         success: false,
