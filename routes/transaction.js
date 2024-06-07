@@ -8,6 +8,7 @@ const { authenticateToken } = require("../middleware/check-auth")
 router.post('/projects/:id/payments', authenticateToken, paymentController.processOwnerTransaction);
 router.post('/user/premium', authenticateToken, paymentController.processPremiumPayment)
 router.get('/projects/:id/payments', authenticateToken, paymentController.getDetailPayment);
+router.get('/projects/:id/settlements', authenticateToken, paymentController.getSettlementByProjectId);
 router.post('/api/projects/:id/settlements', authenticateToken, paymentController.createSettlement);
 router.get('/payments/banks', authenticateToken, paymentController.getBanks)
 

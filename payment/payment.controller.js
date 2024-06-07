@@ -466,6 +466,53 @@ const createSettlement = async (req, res) => {
   }
 };
 
+const getSettlementByProjectId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const settlement = await models.Settlement.findOne({
+      where: { project_id: projectId }
+    });
+
+    if (!settlement) {
+      return res.status(404).json({
+        success: false,
+        message: 'Settlement tidak ditemukan',
+        error_code: 404
+      });
+    }
+
+    const project = await models.Project.findByPk(projectId);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Proyek tidak ditemukan',
+        error_code: 404
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        job_status: project.status_project === 'FINISHED' ? 'Selesai' : 'Tidak Selesai',
+        offer_received: settlement.total,
+        service_fee: settlement.total_fee_application,
+        total_received: settlement.total_diterima,
+      },
+      message: 'Settlement ditemukan',
+      error_code: 0
+    });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil settlement:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Kesalahan internal server',
+      error_code: 500
+    });
+  }
+};
+
+
 const updateSettlement = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
@@ -572,5 +619,6 @@ module.exports = {
   createSettlement,
   getAllSettlements,
   updateSettlement,
-  getBanks
+  getBanks,
+  getSettlementByProjectId
 };
