@@ -168,16 +168,6 @@ async function processOwnerTransaction(req, res) {
       order_id: payload.transaction_details.order_id
     });
 
-    await models.Project.update(
-      {
-        status_project: 'CLOSE',
-        status_freelance_task: 'CLOSE',
-        fee_owner_transaction_value: bid.budget_bid,
-        fee_freelancer_transaction_value: bid.budget_bid,
-      },
-      { where: { id } }
-    );
-
     await models.Project_User_Bid.update(
       { is_selected: true },
       {

@@ -844,6 +844,16 @@ const ownerSelectBidder = async (req, res) => {
       })
     }
 
+    await models.Project.update(
+      {
+        status_project: 'CLOSE',
+        status_freelance_task: 'CLOSE',
+        fee_owner_transaction_value: bid.budget_bid,
+        fee_freelancer_transaction_value: bid.budget_bid,
+      },
+      { where: { id } }
+    );
+
     await models.Project_Task.update(
       { freelancer_id: freelancer_id },
       { where: { project_id: id } }
