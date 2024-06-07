@@ -78,21 +78,6 @@ async function processOwnerTransaction(req, res) {
       });
     }
 
-    const bid = await models.Project_User_Bid.findOne({
-      where: {
-        project_id: id,
-        user_id: freelancer_id
-      }
-    });
-
-    if (!bid) {
-      return res.status(400).json({
-        success: false,
-        message: 'Bid dari freelancer tersebut tidak ditemukan pada project ini',
-        error_code: 400
-      });
-    }
-
     const user = await models.User.findByPk(user_id);
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
     const feePercentage = 0.02;
