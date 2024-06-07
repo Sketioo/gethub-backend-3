@@ -699,9 +699,11 @@ const changeProjectStatus = async (req, res) => {
 
     const status = 'FINISHED';
 
-    await project.update({
+    const updateProject = await project.update({
       status_project: status
     });
+
+    await updateProject.save()
 
     return res.status(200).json({
       success: true,

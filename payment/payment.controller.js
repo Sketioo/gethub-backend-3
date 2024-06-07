@@ -63,7 +63,6 @@ async function processOwnerTransaction(req, res) {
     const { id } = req.params;
     const { freelancer_id } = req.body;
 
-    // Cari project berdasarkan id dan owner_id
     const project = await models.Project.findOne({
       where: {
         id: id,
@@ -79,7 +78,6 @@ async function processOwnerTransaction(req, res) {
       });
     }
 
-    // Verifikasi apakah freelancer_id yang diberikan benar-benar melakukan bid pada project ini
     const bid = await models.Project_User_Bid.findOne({
       where: {
         project_id: id,
