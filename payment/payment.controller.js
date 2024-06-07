@@ -334,9 +334,9 @@ async function processPremiumPayment(req, res) {
     }
 
     await models.Transaction.create({
-      project_id: project.id,
+      project_id: null,
       user_id: user_id,
-      amount: grossAmount,
+      amount: totalAmount,
       transaction_type: 'PAYMENT',
       status: 'COMPLETED',
       payment_method: 'CREDIT_CARD',
@@ -346,7 +346,7 @@ async function processPremiumPayment(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Premium payment initiated successfully',
+      message: 'Pembayaran premium sukses!',
       token: json.token,
       redirect_url: json.redirect_url,
       error_code: 0
@@ -407,7 +407,10 @@ const createSettlement = async (req, res) => {
       total_diterima,
       rekening_account,
       rekening_bank,
-      rekening_number
+      rekening_number,
+      status: 'WAITING',
+      bukti_transfer: null,
+      message: null
     });
 
     return res.status(201).json({

@@ -13,7 +13,7 @@ router.post('/api/projects/:id/settlements', authenticateToken, paymentControlle
 
 //* ADMIN
 router.get('/api/admin/projects/settlements', authenticateToken, paymentController.getAllSettlements);
-router.post('/api/admin/projects/:projectId/settlements/:settlementId', authenticateToken, paymentController.updateSettlement)
+router.put('/api/admin/projects/:projectId/settlements/:settlementId', authenticateToken, paymentController.updateSettlement)
 
 
 module.exports = router;
