@@ -402,47 +402,47 @@ const getBanks = async (req, res) => {
 const createSettlement = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user_id } = getUserId(req)
+    const { user_id } = getUserId(req);
     const { rekening_account, rekening_bank, rekening_number } = req.body;
 
+    console.log(req.body);
     const project = await models.Project.findByPk(id);
     if (!project) {
       return res.status(404).json({
         success: false,
         message: "Proyek tidak ditemukan",
-        error_code: 404
+        error_code: 404,
       });
     }
 
-    if (!project.status_project === 'FINISHED') {
+    if (project.status_project !== 'FINISHED') { // Corrected this condition check
       return res.status(400).json({
         success: false,
         message: "Proyek harus selesai dikerjakan",
-        error_code: 400
-      })
+        error_code: 400,
+      });
     }
 
     const user_bid = await models.Project_User_Bid.findOne({
       where: {
         project_id: id,
         user_id: user_id,
-        is_selected: true
-      }
-    })
+        is_selected: true,
+      },
+    });
 
     if (!user_bid) {
       return res.status(400).json({
         success: false,
         message: "Anda harus memilih bid terlebih dahulu",
-        error_code: 400
-      })
+        error_code: 400,
+      });
     }
 
     let total = user_bid.budget_bid;
     const feePercentage = 0.08;
     const total_fee_application = total * feePercentage;
     const total_diterima = total - total_fee_application;
-
 
     const settlement = await models.Settlement.create({
       project_id: id,
@@ -455,31 +455,30 @@ const createSettlement = async (req, res) => {
       rekening_number,
       status: 'WAITING',
       bukti_transfer: null,
-      message: null
+      message: null,
     });
 
-    await models.Project.update({
-      where: {
-        id
-      },
-      status_project: 'SETTLEMENT'
-    })
+    await models.Project.update(
+      { status_payment: 'SETTLEMENT' },
+      { where: { id: id } }
+    );
 
     return res.status(201).json({
       success: true,
       message: 'Settlement berhasil disimpan',
       data: settlement,
-      error_code: 0
+      error_code: 0,
     });
   } catch (error) {
     console.error("Kesalahan saat menyimpan settlement pembayaran:", error);
     return res.status(500).json({
       success: false,
       message: 'Kesalahan internal server',
-      error_code: 500
+      error_code: 500,
     });
   }
 };
+
 
 const getSettlementByProjectId = async (req, res) => {
   try {
