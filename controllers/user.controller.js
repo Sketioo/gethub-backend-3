@@ -189,6 +189,8 @@ const getAllUsersAdmin = async (req, res) => {
       });
     }
 
+    const countUsers = await models.User.count();
+
     const customizedUsers = users.map((user) => {
       const {
         password,
@@ -209,6 +211,7 @@ const getAllUsersAdmin = async (req, res) => {
       data: customizedUsers,
       message: `Semua profil ${is_verif_ktp === 'true' ? 'terverifikasi' : 'belum diverifikasi'} KTP berhasil diambil`,
       error_code: 0,
+      total_data: countUsers
     });
   } catch (error) {
     console.error("Error mengambil data semua profil:", error);

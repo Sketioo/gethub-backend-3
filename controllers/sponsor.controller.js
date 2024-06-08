@@ -3,6 +3,7 @@ const models = require("../models");
 const getAllSponsors = async (req, res) => {
   try {
     const sponsors = await models.Sponsor.findAll();
+    const countSponsors = await models.Sponsor.count()
     if (!sponsors || sponsors.length === 0) {
       return res.status(200).json({
         success: true,
@@ -16,6 +17,7 @@ const getAllSponsors = async (req, res) => {
       data: sponsors,
       message: "Semua sponsor berhasil diambil",
       error_code: 0,
+      total_data: countSponsors
     });
   } catch (error) {
     console.error("Error mengambil semua sponsor:", error);

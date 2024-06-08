@@ -3,12 +3,14 @@ const models = require("../models");
 const getAllInformation = async (req, res, next) => {
   try {
     const information = await models.Information.findAll();
+    const countInformation = await models.Information.count();
     if (!information || information.length === 0) {
       return res.status(404).json({
         success: false,
         data: [],
         message: 'Informasi tidak ditemukan',
         error_code: 404,
+        total_data: countInformation
       });
     }
     return res.status(200).json({

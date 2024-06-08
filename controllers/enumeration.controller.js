@@ -25,6 +25,7 @@ const createEnumeration = async (req, res) => {
 const getAllEnumerations = async (req, res) => {
   try {
     const enumerations = await models.Enumeration.findAll();
+    const countEnumerations = await models.Enumeration.count()
     if (!enumerations || enumerations.length === 0) {
       return res.status(404).json({
         success: false,
@@ -38,6 +39,7 @@ const getAllEnumerations = async (req, res) => {
       data: enumerations,
       message: "Semua enumerasi berhasil diambil",
       error_code: 0,
+      total_data: countEnumerations
     });
   } catch (error) {
     console.error("Error getting all enumerations:", error);

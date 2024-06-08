@@ -393,6 +393,7 @@ const getAllProjectsAdmin = async (req, res) => {
       filter.is_active = is_active === 'true';
     }
 
+    const countProjects = await models.Project.count()
     const projects = await models.Project.findAll({
       where: filter,
       include: [
@@ -439,7 +440,8 @@ const getAllProjectsAdmin = async (req, res) => {
       data: projectsWithBidsCount,
       total_data: projectsWithBidsCount.length,
       message: "Proyek berhasil diambil",
-      error_code: 0
+      error_code: 0,
+      total_data: countProjects
     });
   } catch (error) {
     console.error("Kesalahan saat mengambil semua proyek:", error);

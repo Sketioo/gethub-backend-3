@@ -43,7 +43,6 @@ router.post("/project-reviews", authenticateToken, verifyUserMiddleware, project
 router.get("/public/project", projectController.getProjectDigitalContract);
 
 //*Admin
-
 router.get('/admin/projects', authenticateToken, projectController.getAllProjectsAdmin)
 router.put('/admin/projects/:id', authenticateToken, projectController.updateProjectActiveStatus)
 
