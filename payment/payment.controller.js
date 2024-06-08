@@ -666,7 +666,7 @@ const getInvoicePayment = async (req, res) => {
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
 
     const updateTransactionStatus = async (transaction) => {
-      const check_url = `https://api.sandbox.midtrans.com/v2/${transaction.id}/status`;
+      const check_url = `https://api.sandbox.midtrans.com/v2/${transaction.order_id}/status`;
       const statusResponse = await fetch(check_url, {
         method: 'GET',
         headers: {
@@ -704,7 +704,7 @@ const getInvoicePayment = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {...formattedTransaction},
+      data: formattedTransaction,
       message: 'Transaksi ditemukan',
       error_code: 0
     });
@@ -718,6 +718,7 @@ const getInvoicePayment = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports = {
