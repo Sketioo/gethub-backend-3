@@ -1,5 +1,6 @@
 const models = require("../models");
 const bcryptjs = require("bcryptjs");
+
 const { Sequelize } = require("sequelize");
 
 const { getUserId, getThemehub, getUserProfileCard } = require("../helpers/utility");
@@ -46,7 +47,6 @@ const register = async (req, res) => {
       photo: req.body.photo,
       about: req.body.about,
       qr_code: generateRandomString(12),
-      role_id: null,
       is_verify: false,
       is_premium: false,
       is_verif_ktp: false,

@@ -97,6 +97,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: true
     },
+    premium_expired_date: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },    
     is_verif_ktp: {
       type: DataTypes.BOOLEAN,
       allowNull: true
