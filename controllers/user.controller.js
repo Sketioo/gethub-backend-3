@@ -489,11 +489,17 @@ const createRole = async (req, res) => {
 }
 
 const updateVisibility = async (req, res) => {
-  try{
-    const {user_id} = getUserId(req);
-    const { is_visibility } = req.body;
+  try {
+    const { user_id } = getUserId(req);
+    let { is_visibility } = req.body;
 
-    if (typeof is_visibility !== 'boolean') {
+    if (is_visibility === undefined) {
+      return res.status(400).json({ error: 'is_visibility harus ada' });
+    }
+
+    if (typeof is_visibility === 'string') {
+      is_visibility = is_visibility.toLowerCase() === 'true';
+    } else if (typeof is_visibility !== 'boolean') {
       return res.status(400).json({ error: 'is_visibility harus berupa boolean' });
     }
 
@@ -515,7 +521,6 @@ const updateVisibility = async (req, res) => {
       message: "Visibilitas berhasil diperbarui",
       error_code: 0,
     });
-    
 
   } catch (error) {
     console.error("Error mengubah visibility:", error);
@@ -523,9 +528,10 @@ const updateVisibility = async (req, res) => {
       success: false,
       message: "Kesalahan internal server",
       error_code: 500,
-    })
+    });
   }
-}
+};
+
 
 const updateThemeHub = async (req, res) => {
   try{
