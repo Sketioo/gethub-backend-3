@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-// const midtransClient = require('midtrans-client');
+const { formatDates } = require('../helpers/utility');
 const { getUserId } = require('../helpers/utility');
 const models = require('../models');
 
@@ -138,7 +138,6 @@ async function processOwnerTransaction(req, res) {
       });
     }
 
-    // Membuat transaksi di database
     await models.Transaction.create({
       project_id: project.id,
       user_id: user.id,
@@ -178,9 +177,9 @@ async function processOwnerTransaction(req, res) {
 }
 async function verifyTransactionStatus(req, res) {
   try {
-    const { order_id } = req.params;
+    const { id } = req.params;
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
-    const url = `https://api.sandbox.midtrans.com/v2/${order_id}/status`;
+    const url = `https://api.sandbox.midtrans.com/v2/${id}/status`;
 
     const options = {
       method: 'GET',
@@ -192,6 +191,7 @@ async function verifyTransactionStatus(req, res) {
 
     const response = await fetch(url, options);
     const json = await response.json();
+    console.log(json)
 
     if (!json) {
       return res.status(500).json({
@@ -203,7 +203,7 @@ async function verifyTransactionStatus(req, res) {
 
     const transaction = await models.Transaction.findOne({
       where: {
-        order_id: order_id
+        id: id
       }
     });
 
@@ -285,6 +285,14 @@ async function processPremiumPayment(req, res) {
     const { user_id } = getUserId(req);
     const user = await models.User.findByPk(user_id);
 
+    if (user.is_premium === true) {
+      return res.status(400).json({
+        success: false,
+        message: 'Anda sudah menjadi premium',
+        error_code: 400
+      })
+    }
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -303,9 +311,12 @@ async function processPremiumPayment(req, res) {
       return `PREMIUM-${timestamp}-${randomNumber}`;
     };
 
+    const order_id = generateOrderId();
+    console.log(order_id)
+
     const payload = {
       transaction_details: {
-        order_id: generateOrderId(),
+        order_id,
         gross_amount: totalAmount
       },
       item_details: [
@@ -337,7 +348,9 @@ async function processPremiumPayment(req, res) {
       body: JSON.stringify(payload)
     });
 
+
     const json = await response.json();
+    console.log(json)
 
     if (!json || !json.token) {
       return res.status(500).json({
@@ -346,6 +359,19 @@ async function processPremiumPayment(req, res) {
         error_code: 500
       });
     }
+
+    const check_url = `https://api.sandbox.midtrans.com/v2/${order_id}/status`
+    const statusResponse = await fetch(check_url, {
+      method: 'GET',
+      headers: {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'authorization': `Basic ${authString}`
+      }
+    })
+
+    const statusJson = await statusResponse.json();
+    console.log(statusJson)
 
     await models.Transaction.create({
       project_id: null,
@@ -357,6 +383,8 @@ async function processPremiumPayment(req, res) {
       snap_token: json.token,
       snap_redirect: json.redirect_url
     });
+
+    await models.User.update({ is_premium: true }, { where: { id: user_id } });
 
     return res.status(200).json({
       success: true,
@@ -415,7 +443,7 @@ const createSettlement = async (req, res) => {
       });
     }
 
-    if (project.status_project !== 'FINISHED') { // Corrected this condition check
+    if (project.status_project !== 'FINISHED') {
       return res.status(400).json({
         success: false,
         message: "Proyek harus selesai dikerjakan",
@@ -625,6 +653,48 @@ const getAllSettlements = async (req, res) => {
   }
 };
 
+const getInvoicePayment = async (req, res) => {
+  try {
+    const { user_id } = getUserId(req);
+
+    const transactions = await models.Transaction.findAll({
+      where: { user_id: user_id },
+      attributes: ['amount', 'status', 'transaction_date']
+    })
+
+    console.log(transactions)
+    const formattedTransaction = transactions.map(trans => {
+      const transactionData = trans.toJSON();
+      const formattedTransDate = formatDates(transactionData, ['transaction_date'])
+      return formattedTransDate
+    })
+
+    if (!transactions || transactions.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Tidak ada transaksi yang ditemukan',
+        data: [],
+        error_code: 404
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: formattedTransaction,
+      message: 'Transaksi ditemukan',
+      error_code: 0
+    })
+
+  } catch (error) {
+    console.error("ada sebuah error: ", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error_code: 500
+    })
+  }
+}
+
 
 module.exports = {
   getDetailPayment,
@@ -636,5 +706,6 @@ module.exports = {
   getAllSettlements,
   updateSettlement,
   getBanks,
-  getSettlementByProjectId
+  getSettlementByProjectId,
+  getInvoicePayment
 };

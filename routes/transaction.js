@@ -10,7 +10,9 @@ router.post('/user/premium', authenticateToken, paymentController.processPremium
 router.get('/projects/:id/payments', authenticateToken, paymentController.getDetailPayment);
 router.get('/projects/:id/settlements', authenticateToken, paymentController.getSettlementByProjectId);
 router.post('/projects/:id/settlements', authenticateToken, paymentController.createSettlement);
-router.get('/payments/banks', authenticateToken, paymentController.getBanks)
+router.get('/payments/banks', authenticateToken, paymentController.getBanks);
+router.post('/user/verify-status-payment/:id', authenticateToken, paymentController.verifyTransactionStatus);
+router.get('/user/invoice-payments', authenticateToken, paymentController.getInvoicePayment);
 
 
 //* ADMIN
