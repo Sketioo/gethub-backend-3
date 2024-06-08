@@ -43,6 +43,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
+      review_type: {
+        type: Sequelize.ENUM('owner', 'freelancer'),
+        allowNull: false
+      },
       sentiment: {
         type: Sequelize.ENUM('positif', 'netral', 'negatif'),
         allowNull: false

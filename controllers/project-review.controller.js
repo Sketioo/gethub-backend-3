@@ -25,12 +25,12 @@ async function createReview(req, res) {
       });
     }
 
-    // Validasi: Periksa apakah ulasan sudah ada untuk project_id dan target_user_id
     const existingReview = await Project_Review.findOne({
       where: {
         project_id,
         owner_id,
-        freelancer_id
+        freelancer_id,
+        review_type
       }
     });
 
@@ -42,7 +42,6 @@ async function createReview(req, res) {
       });
     }
 
-    // Ambil sentiment analysis
     const sentimentData = await getSentimentAnalysis(message, token);
     const { sentiment, accuracy } = sentimentData;
     const sentiment_score = accuracy;
@@ -53,10 +52,10 @@ async function createReview(req, res) {
       freelancer_id,
       message,
       sentiment,
-      sentiment_score
+      sentiment_score,
+      review_type
     });
 
-    // Ambil semua review untuk owner atau freelancer
     const whereCondition = review_type === 'owner' ? { owner_id: target_user_id } : { freelancer_id: target_user_id };
     const reviews = await Project_Review.findAll({ where: whereCondition });
     if (!reviews) {
@@ -120,6 +119,7 @@ async function createReview(req, res) {
     });
   }
 }
+
 
 
 const getAllReview = async (req, res) => {

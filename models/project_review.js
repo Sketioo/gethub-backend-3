@@ -41,6 +41,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    review_type: {
+      type: DataTypes.ENUM('owner', 'freelancer'),
+      allowNull: false
+    },
     sentiment: {
       type: DataTypes.STRING,
       allowNull: false
