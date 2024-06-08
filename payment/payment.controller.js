@@ -565,14 +565,14 @@ const updateSettlement = async (req, res) => {
       });
     }
 
-    const category = await models.Category.findByPk(user.category_id);
-    if (!category || category.name !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: "Anda tidak memiliki izin untuk melakukan ini",
-        error_code: 403
-      });
-    }
+    // const category = await models.Category.findByPk(user.category_id);
+    // if (!category || category.name !== 'admin') {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Anda tidak memiliki izin untuk melakukan ini",
+    //     error_code: 403
+    //   });
+    // }
 
     const settlement = await models.Settlement.findByPk(settlementId);
     if (!settlement || settlement.project_id !== projectId) {
@@ -620,10 +620,13 @@ const getAllSettlements = async (req, res) => {
       ]
     });
 
+    const countSettlements = await models.Settlement.count()
+
     if (!settlements || settlements.length === 0) {
       return res.status(404).json({
         success: false,
         data: [],
+        total_data: countSettlements,
         message: 'Settlement tidak ditemukan',
         error_code: 404
       })
@@ -632,6 +635,7 @@ const getAllSettlements = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: settlements,
+      total_data: countSettlements,
       message: 'Settlement berhasil diambil',
       error_code: 0
     });

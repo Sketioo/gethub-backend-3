@@ -16,8 +16,8 @@ router.get('/user/invoice-payments', authenticateToken, paymentController.getInv
 
 
 //* ADMIN
-router.get('/api/admin/projects/settlements', authenticateToken, paymentController.getAllSettlements);
-router.put('/api/admin/projects/:projectId/settlements/:settlementId', authenticateToken, paymentController.updateSettlement)
+router.get('/admin/projects/settlements', authenticateToken, paymentController.getAllSettlements);
+router.put('/admin/projects/:projectId/settlements/:settlementId', authenticateToken, paymentController.updateSettlement)
 
 
 module.exports = router;
