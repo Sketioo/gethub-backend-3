@@ -129,7 +129,6 @@ async function processOwnerTransaction(req, res) {
       body: JSON.stringify(payload)
     };
 
-    // Melakukan permintaan transaksi
     const response = await fetch(url, options);
     const json = await response.json();
 
@@ -148,7 +147,7 @@ async function processOwnerTransaction(req, res) {
       amount: grossAmount,
       transaction_type: 'DEPOSIT',
       status: 'PENDING',
-      payment_method: 'CREDIT_CARD',
+      payment_method: null,
       snap_token: json.token,
       snap_redirect: json.redirect_url,
       order_id: payload.transaction_details.order_id
@@ -370,7 +369,7 @@ async function processPremiumPayment(req, res) {
       amount: totalAmount,
       transaction_type: 'PAYMENT',
       status: 'PENDING',
-      payment_method: 'CREDIT_CARD',
+      payment_method: null,
       snap_token: json.token,
       snap_redirect: json.redirect_url
     });
@@ -681,6 +680,7 @@ const getInvoicePayment = async (req, res) => {
       console.log('Response from Midtrans status:', statusJson);
 
       if (statusJson.status_code === '200') {
+        transaction.payment_method = statusJson.payment_type;
         if (statusJson.transaction_status === 'settlement') {
           transaction.status = 'completed';
         } else if (statusJson.transaction_status === 'expire') {
