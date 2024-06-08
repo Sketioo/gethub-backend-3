@@ -8,6 +8,7 @@ const getAllSponsors = async (req, res) => {
       return res.status(200).json({
         success: true,
         data: [],
+        total_data: countSponsors,
         message: "Semua sponsor berhasil diambil",
         error_code: 0,
       });

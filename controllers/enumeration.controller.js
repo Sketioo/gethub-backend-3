@@ -30,10 +30,13 @@ const getAllEnumerations = async (req, res) => {
       return res.status(404).json({
         success: false,
         data: [],
+        total_data: countEnumerations,
         message: "Semua enumerasi tidak ditemukan",
         error_code: 404,
       });
     }
+
+    console.log(countEnumerations)
     return res.status(200).json({
       success: true,
       data: enumerations,

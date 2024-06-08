@@ -178,18 +178,19 @@ const getAllUsersAdmin = async (req, res) => {
     if (is_verif_ktp !== undefined) {
       filter = { is_verif_ktp: is_verif_ktp === 'true' };
     }
+    const countUsers = await models.User.count();
 
     const users = await models.User.findAll({ where: filter });
     if (!users || users.length === 0) {
       return res.status(404).json({
         success: false,
         data: [],
+        total_data: countUsers,
         message: `Tidak ada profil yang ${is_verif_ktp === 'true' ? 'terverifikasi' : 'belum diverifikasi'} KTP`,
         error_code: 404,
       });
     }
 
-    const countUsers = await models.User.count();
 
     const customizedUsers = users.map((user) => {
       const {

@@ -651,7 +651,7 @@ const getInvoicePayment = async (req, res) => {
 
     const transactions = await models.Transaction.findAll({
       where: { user_id: user_id },
-      attributes: ['id', 'amount', 'status', 'transaction_date']
+      attributes: ['id', 'amount', 'status', 'transaction_date', 'snap_token', 'snap_redirect']
     });
 
     if (!transactions || transactions.length === 0) {
@@ -683,9 +683,9 @@ const getInvoicePayment = async (req, res) => {
       if (statusJson.status_code === '200') {
         transaction.payment_method = statusJson.payment_type;
         if (statusJson.transaction_status === 'settlement') {
-          transaction.status = 'completed';
+          transaction.status = 'COMPLETED';  
         } else if (statusJson.transaction_status === 'expire') {
-          transaction.status = 'expired';
+          transaction.status = 'FAILED';  
         }
         await transaction.save();
       } else {

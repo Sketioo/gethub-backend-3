@@ -424,6 +424,7 @@ const getAllProjectsAdmin = async (req, res) => {
       return res.status(200).json({
         success: false,
         data: [],
+        total_data: countProjects,
         message: "Proyek tidak ditemukan!",
         error_code: 200
       });
