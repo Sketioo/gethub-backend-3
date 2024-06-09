@@ -3,3 +3,4 @@
 .env
 tables.sql
 package.json
+sa-key.json

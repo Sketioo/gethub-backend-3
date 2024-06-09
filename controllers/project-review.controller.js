@@ -95,7 +95,6 @@ async function createReview(req, res) {
       totalSentimentResult = totalNetral;
     }
 
-    // Update field sentiment analysis pada tabel user
     const updateField = review_type === 'owner' ? 'sentiment_owner_analisis' : 'sentiment_freelance_analisis';
     const updateScoreField = review_type === 'owner' ? 'sentiment_owner_score' : 'sentiment_freelance_score';
 
