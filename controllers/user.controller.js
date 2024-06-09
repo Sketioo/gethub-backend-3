@@ -3,14 +3,15 @@ const bcryptjs = require("bcryptjs");
 
 const { Sequelize } = require("sequelize");
 
-const { getUserId, getThemehub, getUserProfileCard } = require("../helpers/utility");
+const { getUserId, getThemehub, getUserProfileCard, getUserIdByUsername } = require("../helpers/utility");
 
 
 const {
   generateRandomString,
   generateAccessToken,
 } = require("../helpers/utility");
-const { createMail, transporter, createVerificationToken } = require("../helpers/email-verification")
+const { createMail, transporter, createVerificationToken } = require("../helpers/email-verification");
+const { get } = require("../routes/user");
 
 
 const register = async (req, res) => {
@@ -410,19 +411,42 @@ const getPublicUser = async (req, res) => {
     
     const backgroundCard = await getUserProfileCard(username);
 
-    const dummyProject = [
-      {
-        "title": "UI UX Designer",
-        "sentiment": "POSITIVE"
-      }
-    ];
+    const user_id = await getUserIdByUsername(username);
+    if (!user_id) {
+      return res.status(404).json({
+        success: false,
+        data: {},
+        message: "Pengguna tidak ditemukan",
+        error_code: 404,
+      });
+    }
+
+    const project_done = await models.Project_Review.findOne({
+      where: {freelancer_id: user_id, review_type: 'freelancer'},
+      attributes: ['project_id','sentiment'],
+      include: [
+        { model: models.Project, as: 'project', attributes: ['title']},]
+    });
+
+    let projectsDone = [];
+
+    if (project_done) {
+      projectsDone = [
+        {
+          "title": project_done.project.title,
+          "sentiment": project_done.sentiment,
+        }
+      ];
+    } else {
+      console.log('User belum pernah mengerjakan proyek');
+    }
 
     return res.status(200).json({
       success: true,
       data: {
         ...userData,
         background_card : backgroundCard,
-        projects : dummyProject
+        projects : projectsDone
       },
       message: "Data publik pengguna berhasil diambil",
       error_code: 0,
