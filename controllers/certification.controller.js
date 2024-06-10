@@ -1,11 +1,26 @@
 const { Certification } = require('../models');
 const { getUserId } = require("../helpers/utility");
+const models = require("../models");
 
 // Membuat sebuah certification
 const createCertification = async (req, res) => {
   try {
     const {user_id} = getUserId(req);
     const { category_id, title, image } = req.body;
+
+    const isPremiumUser = await models.User.findOne({ where: { id: user_id, is_premium: true } });
+    
+    if (!isPremiumUser) {
+      const totalCertification = await models.Certification.count({ where: { user_id } });
+      if (totalCertification >= 5) {
+        return res.status(403).json({
+          success: false,
+          message: "Langganan premium diperlukan untuk membuat lebih dari 5 sertifikasi",
+          error_code: 403,
+        });
+      }
+    }
+
     const newCertification = await Certification.create({ category_id, title, image, user_id });
     return res.status(201).json({
       success: true,
@@ -13,6 +28,8 @@ const createCertification = async (req, res) => {
       message: 'Sertifikasi berhasil dibuat',
       error_code: 0
     });
+
+    
   } catch (error) {
     console.error('Error creating sertifikasi:', error);
     return res.status(500).json({

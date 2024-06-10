@@ -1,5 +1,6 @@
 const models = require("../models");
 const { getUserId } = require("../helpers/utility");
+const { isPremium } = require("../middleware/is-premium");
 
 // Membuat produk baru
 const createProduct = async (req, res) => {
@@ -12,6 +13,19 @@ const createProduct = async (req, res) => {
         message: "Pengguna tidak ditemukan",
         error_code: 404,
       });
+    }
+
+    const isPremiumUser = await models.User.findOne({ where: { id: user_id, is_premium: true } });
+    
+    if (!isPremiumUser) {
+      const totalProducts = await models.Product.count({ where: { user_id } });
+      if (totalProducts >= 5) {
+        return res.status(403).json({
+          success: false,
+          message: "Langganan premium diperlukan untuk membuat lebih dari 5 produk",
+          error_code: 403,
+        });
+      }
     }
 
     const product = await models.Product.create({ ...req.body, user_id });
