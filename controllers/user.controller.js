@@ -11,7 +11,6 @@ const {
   generateAccessToken,
 } = require("../helpers/utility");
 const { createMail, transporter, createVerificationToken } = require("../helpers/email-verification");
-const { get } = require("../routes/user");
 
 
 const register = async (req, res) => {

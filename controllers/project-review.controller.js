@@ -44,6 +44,7 @@ async function createReview(req, res) {
 
     const sentimentData = await getSentimentAnalysis(message, token);
     const { sentiment, accuracy } = sentimentData;
+    console.log(sentiment)
     const sentiment_score = accuracy;
 
     const review = await Project_Review.create({
@@ -72,14 +73,16 @@ async function createReview(req, res) {
     let totalNetral = 0;
 
     reviews.forEach(row => {
-      if (row.sentiment === 'Positif') {
+      if (row.sentiment === 'positif') {
         totalPositif += 1;
-      } else if (row.sentiment === 'Negatif') {
+      } else if (row.sentiment === 'negatif') {
         totalNegatif += 1;
-      } else if (row.sentiment === 'Netral') {
+      } else if (row.sentiment === 'netral') {
         totalNetral += 1;
       }
     });
+
+    console.log(reviews)
 
     // Tentukan hasil sentiment
     let sentimentResult = '';
@@ -97,12 +100,14 @@ async function createReview(req, res) {
 
     const updateField = review_type === 'owner' ? 'sentiment_owner_analisis' : 'sentiment_freelance_analisis';
     const updateScoreField = review_type === 'owner' ? 'sentiment_owner_score' : 'sentiment_freelance_score';
+    console.log('Update Field:', updateField, 'Update Score Field:', updateScoreField);
 
     const userIdToUpdate = target_user_id;
-    await User.update(
+    const updateResult = await User.update(
       { [updateField]: sentimentResult, [updateScoreField]: totalSentimentResult },
       { where: { id: userIdToUpdate } }
     );
+    console.log('Total sentiment Result:', totalSentimentResult);
 
     res.status(201).json({
       success: true,

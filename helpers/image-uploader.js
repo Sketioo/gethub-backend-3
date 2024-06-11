@@ -55,12 +55,11 @@ const imageUploader = async (req, res) => {
     });
   }
 
-  // Check file size
   if (file.size > 1024 * 1024 * 1.5) {
-    return res.status(400).send({
+    return res.status(402).send({
       success: false,
       message: "Ukuran file melebihi batas maksimal (1.5 MB)",
-      error_code: 400,
+      error_code: 402,
     });
   }
 
@@ -81,7 +80,6 @@ const imageUploader = async (req, res) => {
       link: publicUrl,
       extension: fileExtension,
     });
-    console.dir(uploadedFile);
     res.status(201).json({
       success: true,
       data: publicUrl,

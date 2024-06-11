@@ -150,6 +150,7 @@ module.exports = (sequelize, DataTypes) => {
         await User.setDefaultRole(user);
       },
       beforeUpdate: (user, options) => {
+        console.log('Before Update Hook Triggered:', user);
         User.validateUpdateColumns(user);
       }
     }
