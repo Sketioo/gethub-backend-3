@@ -73,11 +73,12 @@ async function createReview(req, res) {
     let totalNetral = 0;
 
     reviews.forEach(row => {
-      if (row.sentiment === 'positif') {
+      if (row.sentiment.toUpperCase() === 'POSITIF') {
         totalPositif += 1;
-      } else if (row.sentiment === 'negatif') {
+      } else if (row.sentiment.toUpperCase() === 'NEGATIF') {
+        console.log('line ini dieksekusi')
         totalNegatif += 1;
-      } else if (row.sentiment === 'netral') {
+      } else if (row.sentiment.toUpperCase() === 'NETRAL') {
         totalNetral += 1;
       }
     });
