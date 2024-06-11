@@ -2,7 +2,9 @@ const models = require("../models");
 
 const getAllInformation = async (req, res, next) => {
   try {
-    const information = await models.Information.findAll();
+    const information = await models.Information.findAll({
+      order: [['created_at', 'DESC']],
+    });
     const countInformation = await models.Information.count();
     if (!information || information.length === 0) {
       return res.status(404).json({

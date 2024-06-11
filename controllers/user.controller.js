@@ -180,7 +180,10 @@ const getAllUsersAdmin = async (req, res) => {
     }
     const countUsers = await models.User.count();
 
-    const users = await models.User.findAll({ where: filter });
+    const users = await models.User.findAll({ 
+      where: filter,
+      order: [['created_at', 'DESC']]
+     });
     if (!users || users.length === 0) {
       return res.status(404).json({
         success: false,

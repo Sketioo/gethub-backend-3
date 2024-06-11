@@ -2,7 +2,9 @@ const models = require("../models");
 
 const getAllSponsors = async (req, res) => {
   try {
-    const sponsors = await models.Sponsor.findAll();
+    const sponsors = await models.Sponsor.findAll({
+      order: [['created_at', 'DESC']]
+    });
     const countSponsors = await models.Sponsor.count()
     if (!sponsors || sponsors.length === 0) {
       return res.status(200).json({

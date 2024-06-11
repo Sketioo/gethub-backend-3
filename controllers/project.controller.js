@@ -396,6 +396,7 @@ const getAllProjectsAdmin = async (req, res) => {
     const countProjects = await models.Project.count()
     const projects = await models.Project.findAll({
       where: filter,
+      order: [['created_date', 'DESC']],
       include: [
         {
           model: models.User,
