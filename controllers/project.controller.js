@@ -319,6 +319,7 @@ const getAllProjects = async (req, res) => {
     const userPreferredCategory = user.profession;
 
     const projects = await models.Project.findAll({
+      order: [['created_date', 'DESC']],
       where: {
         is_active: true
       },
