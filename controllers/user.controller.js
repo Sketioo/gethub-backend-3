@@ -181,8 +181,8 @@ const getAllUsersAdmin = async (req, res) => {
     const countUsers = await models.User.count();
 
     const users = await models.User.findAll({ 
+      order: [['createdAt', 'DESC']],
       where: filter,
-      order: [['createdAt', 'DESC']]
      });
      console.log(users)
     if (!users || users.length === 0) {

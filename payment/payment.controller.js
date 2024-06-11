@@ -614,6 +614,7 @@ const updateSettlement = async (req, res) => {
 const getAllSettlements = async (req, res) => {
   try {
     const settlements = await models.Settlement.findAll({
+      order: [['createdAt', 'DESC']],
       include: [
         { model: models.Project, as: 'project' },
         { model: models.User, as: 'freelancer' }
