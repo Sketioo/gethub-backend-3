@@ -182,7 +182,7 @@ async function verifyTransactionStatus(req, res) {
   try {
     const { id } = req.params;
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
-    const url = `https://api.midtrans.com/v2/${id}/status`;
+    const url = `https://api.sandbox.midtrans.com/v2/${id}/status`;
 
     const options = {
       method: 'GET',
@@ -614,6 +614,7 @@ const updateSettlement = async (req, res) => {
 const getAllSettlements = async (req, res) => {
   try {
     const settlements = await models.Settlement.findAll({
+      order: [['createdAt', 'DESC']],
       include: [
         { model: models.Project, as: 'project' },
         { model: models.User, as: 'freelancer' }
@@ -671,7 +672,7 @@ const getInvoicePayment = async (req, res) => {
 
     const updateTransactionStatus = async (transaction) => {
       console.log(transaction.id)
-      const check_url = `https://api.midtrans.com/v2/${transaction.id}/status`;
+      const check_url = `https://api.sandbox.midtrans.com/v2/${transaction.id}/status`;
       const statusResponse = await fetch(check_url, {
         method: 'GET',
         headers: {

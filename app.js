@@ -8,9 +8,6 @@ const cors = require('cors');
 const { upload, imageUploader } = require("./helpers/image-uploader");
 const { ktpScannerController } = require("./helpers/ktp-scanner");
 const { authenticateToken } = require("./middleware/check-auth");
-const {
-  processOwnerTransaction
-} = require('./payment/payment.controller')
 
 const userRoute = require("./routes/user");
 const productRoute = require("./routes/product");

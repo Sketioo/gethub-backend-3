@@ -9,7 +9,6 @@ const {
   validateProject, validateProjectReview, validateProjectReviewFreelance,
   validateProjectUserBid, validateProjectTask
 } = require("../middleware/input-validator");
-const { check } = require("express-validator");
 
 // Routes for projects
 router.post("/projects", authenticateToken, verifyUserMiddleware, checkProjectFraud, projectController.postProject);

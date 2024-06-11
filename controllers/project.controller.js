@@ -395,6 +395,7 @@ const getAllProjectsAdmin = async (req, res) => {
 
     const countProjects = await models.Project.count()
     const projects = await models.Project.findAll({
+      order: [['created_date', 'DESC']],
       where: filter,
       include: [
         {
@@ -1348,13 +1349,13 @@ const getProjectDigitalContract = async (req, res) => {
     const owner_id = await getOwnerIdByChatRoomId(chatRoomId);
     const project_owner = await models.User.findOne({
       where: { id: owner_id },
-      attributes: ['full_name']
+      attributes: ['full_name', 'username']
     })
 
     const freelancer_id = await getFreelancerIdByChatRoomId(chatRoomId);
     const freelancer = await models.User.findOne({
       where: { id: freelancer_id },
-      attributes: ['full_name']
+      attributes: ['full_name', 'username']
     })
 
     const projects_detail = await models.Project.findOne({
