@@ -1,4 +1,3 @@
-const models = require('../models');
 const { getUserId } = require('../helpers/utility');
 
 const { getSentimentAnalysis } = require('../middleware/ml-services')
@@ -18,10 +17,10 @@ async function createReview(req, res) {
       owner_id = user_id;
       freelancer_id = target_user_id;
     } else {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: 'Invalid review_type',
-        error_code: 400 
+        error_code: 400
       });
     }
 
@@ -57,7 +56,14 @@ async function createReview(req, res) {
       review_type
     });
 
-    const whereCondition = review_type === 'owner' ? { owner_id: target_user_id } : { freelancer_id: target_user_id };
+    let whereCondition = {};
+    if (review_type == "owner") {
+      whereCondition = { owner_id: target_user_id, review_type: "owner" };
+    }
+    else {
+      whereCondition = { freelancer_id: target_user_id, review_type: "freelancer" }
+    }
+
     const reviews = await Project_Review.findAll({ where: whereCondition });
     if (!reviews) {
       return res.status(404).json({
@@ -79,6 +85,7 @@ async function createReview(req, res) {
         console.log('line ini dieksekusi')
         totalNegatif += 1;
       } else if (row.sentiment.toUpperCase() === 'NETRAL') {
+        console.log("line netral")
         totalNetral += 1;
       }
     });
@@ -108,7 +115,7 @@ async function createReview(req, res) {
       { [updateField]: sentimentResult, [updateScoreField]: totalSentimentResult },
       { where: { id: userIdToUpdate } }
     );
-    console.log('Total sentiment Result:', totalSentimentResult);
+    console.log('Sentiment Result:', sentimentResult);
 
     res.status(201).json({
       success: true,
@@ -117,7 +124,7 @@ async function createReview(req, res) {
     });
   } catch (error) {
     console.error('Error creating project review:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Internal Server Error',
       error_code: 500
