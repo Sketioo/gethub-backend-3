@@ -182,8 +182,9 @@ const getAllUsersAdmin = async (req, res) => {
 
     const users = await models.User.findAll({ 
       where: filter,
-      order: [['created_at', 'DESC']]
+      order: [['createdAt', 'DESC']]
      });
+     console.log(users)
     if (!users || users.length === 0) {
       return res.status(404).json({
         success: false,
