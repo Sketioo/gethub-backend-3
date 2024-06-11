@@ -26,7 +26,7 @@ const ktpScannerController = async (req, res) => {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({
           success: false,
-          message: "Failed to upload file",
+          message: "Gagal mengupload file",
           error_code: 400,
         });
       } else if (err) {
