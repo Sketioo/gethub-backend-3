@@ -1309,11 +1309,11 @@ const getProjectBidders = async (req, res) => {
     });
 
     if (!project) {
-      return res.status(200).json({
+      return res.status(404).json({
         success: false,
         data: [],
         message: "Proyek tidak ditemukan",
-        error_code: 200,
+        error_code: 404,
       });
     }
 
@@ -1338,6 +1338,17 @@ const getProjectBidders = async (req, res) => {
         bidder.message = bid.message;
         return bidder;
       }).filter(user => user !== null);
+
+      // Sorting bidders in memory
+      bidders.sort((a, b) => {
+        if (a.is_verif_ktp === b.is_verif_ktp) {
+          if (a.sentiment_freelance_analisis === b.sentiment_freelance_analisis) {
+            return b.is_premium - a.is_premium;
+          }
+          return b.sentiment_freelance_analisis.localeCompare(a.sentiment_freelance_analisis);  // Assuming 'Positif' > 'Negatif'
+        }
+        return b.is_verif_ktp - a.is_verif_ktp;
+      });
     }
 
     const responseData = {
