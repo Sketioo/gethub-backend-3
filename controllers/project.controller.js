@@ -360,7 +360,7 @@ const getAllProjects = async (req, res) => {
       where: {
         is_active: true,
         owner_id: { [Op.ne]: user_id },
-        status_project: { [Op.ne]: 'FINISHED' }
+        status_project: { [Op.ne]: ['FINISHED', 'CLOSE'] }
       },
       include: [
         {
@@ -1120,6 +1120,9 @@ const searchProjectsByTitle = async (req, res) => {
       where: {
         title: {
           [Op.like]: `%${title}%`,
+        },
+        status_project: {
+          [Op.ne]: 'CLOSE'
         }
       },
       include: [
