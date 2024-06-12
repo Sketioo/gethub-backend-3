@@ -850,67 +850,62 @@ const ownerSelectBidder = async (req, res) => {
       });
     }
 
-    const existingSelectedBid = await models.Project_User_Bid.findOne({
-      where: {
-        project_id: id,
-        is_selected: true
-      }
-    });
+    // const existingSelectedBid = await models.Project_User_Bid.findOne({
+    //   where: {
+    //     project_id: id,
+    //     is_selected: true
+    //   }
+    // });
 
-    if (existingSelectedBid) {
-      return res.status(400).json({
-        success: false,
-        message: "Bidder telah dipilih untuk proyek ini",
-        error_code: 400,
-      });
-    }
+    // if (existingSelectedBid) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Bidder telah dipilih untuk proyek ini",
+    //     error_code: 400,
+    //   });
+    // }
 
-    const existingUnselectedBid = await models.Project_User_Bid.findOne({
-      where: {
-        project_id: id,
-        is_selected: false
-      }
-    })
+    // const existingUnselectedBid = await models.Project_User_Bid.findOne({
+    //   where: {
+    //     project_id: id,
+    //     is_selected: false
+    //   }
+    // })
 
-    if (!existingUnselectedBid) {
-      return res.status(400).json({
-        success: false,
-        message: "Tidak ada bidder yang tersedia",
-        error_code: 400,
-      })
-    }
+    // if (!existingUnselectedBid) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Tidak ada bidder yang tersedia",
+    //     error_code: 400,
+    //   })
+    // }
 
-    if (existingUnselectedBid.user_id === freelancer_id && existingUnselectedBid.is_selected === true) {
-      return res.status(400).json({
-        success: false,
-        message: "Bidder ini telah dipilih",
-        error_code: 400,
-      })
-    }
+    // if (existingUnselectedBid.user_id === freelancer_id && existingUnselectedBid.is_selected === true) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Bidder ini telah dipilih",
+    //     error_code: 400,
+    //   })
+    // }
 
     const selectedBidder = await models.Project_User_Bid.findOne({
       where: {
         project_id: id,
         user_id: freelancer_id,
-        is_selected: false
+        // is_selected: false
       }
     })
 
-    console.log(selectedBidder)
+    // console.log(selectedBidder)
 
-    // await models.Project.update(
-    //   {
-    //     status_project: 'CLOSE',
-    //     status_freelance_task: 'CLOSE',
-    //     fee_owner_transaction_value: selectedBidder.budget_bid,
-    //     fee_freelance_transaction_value: selectedBidder.budget_bid,
-    //   },
-    //   { where: { id } }
-    // );
-
-    await models.Project_Task.update(
-      { freelancer_id: freelancer_id },
-      { where: { project_id: id } }
+    await models.Project.update(
+      {
+        // status_project: 'CLOSE',
+        // status_freelance_task: 'CLOSE',
+        fee_owner_transaction_value: selectedBidder.budget_bid,
+        fee_freelance_transaction_value: selectedBidder.budget_bid,
+      },
+      { where: { id } }
     );
 
     return res.status(200).json({

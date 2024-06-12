@@ -270,7 +270,22 @@ async function processOwnerTransaction(req, res) {
       }
     );
 
-    console.log(bid, freelancer_id, id)
+    await models.Project_User_Bid.update(
+      { is_selected: false },
+      {
+        where: {
+          project_id: id,
+          user_id: {
+            [Op.ne]: freelancer_id
+          }
+        }
+      }
+    );
+
+    await models.Project_Task.update(
+      { freelancer_id: freelancer_id },
+      { where: { project_id: id } }
+    );
 
     return res.status(200).json({
       success: true,
@@ -912,8 +927,21 @@ const getInvoicePayment = async (req, res) => {
       console.log('Response from Midtrans status:', statusJson);
 
       if (statusJson.status_code === '200') {
+        if(transaction.project_id !== null) {
+          const project = await models.Project.findByPk(transaction.project_id);
+        }
         transaction.payment_method = statusJson.payment_type;
         if (statusJson.transaction_status === 'settlement') {
+          const project_id = transaction.project_id;
+          if(transaction.project_id !== null) {
+            await models.Project.update(
+              {
+                status_project: 'CLOSE',
+                status_freelance_task: 'CLOSE',
+              },
+              { where: { id: project_id } }
+            );
+          }
           transaction.status = 'COMPLETED';  
         } else if (statusJson.transaction_status === 'expire') {
           transaction.status = 'FAILED';  
