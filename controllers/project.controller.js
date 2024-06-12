@@ -118,9 +118,34 @@ const getUserJobStatsAndBids = async (req, res) => {
 const postProject = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
+    const {min_budget, max_budget, min_deadline, max_deadline} = req.body;
     const checkOwner = await models.User.findByPk(user_id, {
       where: [{ include: models.Category, as: 'category', attributes: ['name'] }]
     });
+
+    if(min_budget  >= max_budget) {
+      return res.status(400).json({
+        success: false,
+        message: "Minimal budget harus lebih kecil dari maksimal budget",
+        error_code: 400
+      })
+    }
+
+    if(max_budget <= min_budget) {
+      return res.status(400).json({
+        success: false,
+        message: "Maksimal budget harus lebih besar dari minimal budget",
+        error_code: 400
+      })
+    }
+
+    if (new Date(min_deadline) > new Date(max_deadline)) {
+      return res.status(400).json({
+        success: false,
+        message: "Min_deadline harus lebih kecil dari max_deadline",
+        error_code: 400,
+      });
+    }
 
     if (!checkOwner) {
       return res.status(404).json({
@@ -321,7 +346,9 @@ const getAllProjects = async (req, res) => {
     const projects = await models.Project.findAll({
       order: [['created_date', 'DESC']],
       where: {
-        is_active: true
+        is_active: true,
+        owner_id: {[Op.ne]: user_id},
+        status_project: {[Op.ne]: 'FINISHED'}
       },
       include: [
         {
@@ -548,7 +575,7 @@ const getProjectById = async (req, res) => {
 const getOwnerProjects = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
-    console.log('user id ', user_id);
+
     const projects = await models.Project.findAll({
       where: { owner_id: user_id },
       include: [
@@ -1144,6 +1171,7 @@ const postBid = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
     const { project_id, budget_bid } = req.body;
+    console.log(`ini adalah min${project.min_budget}`)
     const project = await models.Project.findByPk(project_id);
 
     if (!project || project.is_active === false) {
@@ -1185,7 +1213,7 @@ const postBid = async (req, res) => {
       });
     }
 
-    if (budget_bid < project.min_budget) {
+    if (budget_bid <= project.min_budget) {
       return res.status(400).json({
         success: false,
         message: "Budget bid tidak boleh lebih rendah dari minimum budget proyek",
@@ -1193,7 +1221,7 @@ const postBid = async (req, res) => {
       });
     }
 
-    if (budget_bid > project.max_budget) {
+    if (budget_bid >= project.max_budget) {
       return res.status(400).json({
         success: false,
         message: "Budget bid tidak boleh lebih tinggi dari maksimal budget proyek",

@@ -3,7 +3,9 @@ const models = require("../models");
 
 const getAllCategories = async (req, res, next) => {
   try {
-    const categories = await models.Category.findAll();
+    const categories = await models.Category.findAll({
+      order: [['name', 'ASC']]
+    });
     if (!categories || categories.length === 0) {
       return res.status(404).json({
         success: false,
