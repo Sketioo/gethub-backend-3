@@ -1126,7 +1126,7 @@ const searchProjectsByTitle = async (req, res) => {
         {
           model: models.User,
           as: 'owner_project',
-          attributes: ['full_name', 'username', 'profession', 'photo']
+          attributes: ['full_name', 'username', 'profession', 'photo', 'is_premium', 'is_verif_ktp']
         },
         {
           model: models.Category,
