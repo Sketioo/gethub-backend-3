@@ -3,6 +3,7 @@ const { formatDates } = require('../helpers/utility');
 const { getUserId } = require('../helpers/utility');
 const moment = require('moment');
 const models = require('../models');
+const { Op } = require('sequelize')
 
 const url = process.env.URL_SANDBOX;
 
@@ -927,13 +928,13 @@ const getInvoicePayment = async (req, res) => {
       console.log('Response from Midtrans status:', statusJson);
 
       if (statusJson.status_code === '200') {
-        if(transaction.project_id !== null) {
+        if (transaction.project_id !== null) {
           const project = await models.Project.findByPk(transaction.project_id);
         }
         transaction.payment_method = statusJson.payment_type;
         if (statusJson.transaction_status === 'settlement') {
           const project_id = transaction.project_id;
-          if(transaction.project_id !== null) {
+          if (transaction.project_id !== null) {
             await models.Project.update(
               {
                 status_project: 'CLOSE',
@@ -942,9 +943,9 @@ const getInvoicePayment = async (req, res) => {
               { where: { id: project_id } }
             );
           }
-          transaction.status = 'COMPLETED';  
+          transaction.status = 'COMPLETED';
         } else if (statusJson.transaction_status === 'expire') {
-          transaction.status = 'FAILED';  
+          transaction.status = 'FAILED';
         }
         await transaction.save();
       } else {
