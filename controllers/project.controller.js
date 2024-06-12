@@ -118,12 +118,24 @@ const getUserJobStatsAndBids = async (req, res) => {
 const postProject = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
-    const {min_budget, max_budget, min_deadline, max_deadline} = req.body;
+    const { min_budget, max_budget, min_deadline, max_deadline } = req.body;
+
+    const minBudget = parseFloat(min_budget);
+    const maxBudget = parseFloat(max_budget);
+
+    if (isNaN(minBudget) || isNaN(maxBudget)) {
+      return res.status(400).json({
+        success: false,
+        message: "Budget values must be numbers",
+        error_code: 400,
+      });
+    }
+
     const checkOwner = await models.User.findByPk(user_id, {
       where: [{ include: models.Category, as: 'category', attributes: ['name'] }]
     });
 
-    if(min_budget  >= max_budget) {
+    if (minBudget >= maxBudget) {
       return res.status(400).json({
         success: false,
         message: "Minimal budget harus lebih kecil dari maksimal budget",
@@ -131,7 +143,7 @@ const postProject = async (req, res) => {
       })
     }
 
-    if(max_budget <= min_budget) {
+    if (maxBudget <= minBudget) {
       return res.status(400).json({
         success: false,
         message: "Maksimal budget harus lebih besar dari minimal budget",
@@ -155,7 +167,7 @@ const postProject = async (req, res) => {
       });
     }
 
-    const project = await models.Project.create({ ...req.body, owner_id: user_id });
+    const project = await models.Project.create({ ...req.body, min_budget: minBudget, max_budget: maxBudget, owner_id: user_id });
     project.is_active = true;
 
     const job = cron.schedule('0 0 * * *', async () => {
@@ -347,8 +359,8 @@ const getAllProjects = async (req, res) => {
       order: [['created_date', 'DESC']],
       where: {
         is_active: true,
-        owner_id: {[Op.ne]: user_id},
-        status_project: {[Op.ne]: 'FINISHED'}
+        owner_id: { [Op.ne]: user_id },
+        status_project: { [Op.ne]: 'FINISHED' }
       },
       include: [
         {
