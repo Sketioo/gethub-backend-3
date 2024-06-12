@@ -1,11 +1,11 @@
 
 const models = require("../models");
-const axios = require("axios");
 
-const { getUserId } = require("../helpers/utility")
+const { getUserId } = require("../helpers/utility");
 
 exports.isPremium = (req, res, next) => {
   try {
+    //* Owner
     const { user_id } = getUserId(req)
     const user = models.User.findOne({ where: { id: user_id } })
     if (!user) {
@@ -33,37 +33,27 @@ exports.isPremium = (req, res, next) => {
   }
 }
 
-const checkProjectPayment = async (req, res, next) => {
+exports.checkPaymentStatus = async (req, res, next) => {
   try {
-    const { user_id } = getUserId(req);
-
-    const project = await models.Project.findOne({
-      where: {
-        owner_id: user_id
-      }
-    })
-
+    const { id } = req.params;
+    const { freelancer_id } = req.body;
     const transaction = await models.Transaction.findOne({
       where: {
-        project_id: project.id,
+        project_id: id,
         status: 'PENDING'
       }
     })
 
-    if(transaction) {
-      next()
-    }
-
-    if (!project) {
+    if (!transaction) {
       return res.status(404).json({
-        status_code: 404,
-        message: 'Project tidak ditemukan',
         success: false,
+        message: 'Transaksi tidak ditemukan',
+        error_code: 404
       })
     }
 
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
-    const url = `https://api.sandbox.midtrans.com/v2/${id}/status`;
+    const url = `https://api.sandbox.midtrans.com/v2/${transaction.id}/status`;
 
     const options = {
       method: 'GET',
@@ -76,22 +66,39 @@ const checkProjectPayment = async (req, res, next) => {
     const response = await fetch(url, options);
     const json = await response.json();
 
-    if(json.status_code == "404") {
-      return res.status(404).json({
-        success: false,
-        message: 'Transaksi tidak ditemukan',
-        error_code: 404
-      })
-    }
-    console.log(json)
+    if (json.transaction_status.toLowerCase() === 'settlement') {
+      const transaction = await models.Transaction.findOne({ where: { id: transaction.id } });
 
-    
+      if (transaction) {
+
+        await models.Project_User_Bid.update(
+          { is_selected: true },
+          {
+            where: { project_id: transaction.project_id, user_id: freelancer_id }
+          }
+        );
+
+        await models.Project.update(
+          {
+            status_project: 'CLOSE',
+            status_freelance_task: 'CLOSE',
+            fee_owner_transaction_value: selectedBidder.budget_bid,
+            fee_freelance_transaction_value: selectedBidder.budget_bid,
+          },
+          { where: { id } }
+        );
+
+        await transaction.update({ status: 'COMPLETED' });
+      }
+    }
+
+    next();
   } catch (error) {
-    console.error("There is an error: ", error);
+    console.error("Error in checking payment status: ", error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
       error_code: 500
-    })
+    });
   }
-}
+};
