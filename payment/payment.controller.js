@@ -892,13 +892,14 @@ const getAllSettlements = async (req, res) => {
   }
 };
 
+//! Tidak ada handler untuk payment yang belum dibayar
 const getInvoicePayment = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
 
     const transactions = await models.Transaction.findAll({
       where: { user_id: user_id },
-      attributes: ['id', 'amount', 'status', 'transaction_date', 'snap_token', 'snap_redirect']
+      attributes: ['id', 'amount', 'status', 'transaction_date', 'snap_token', 'snap_redirect', 'project_id']
     });
 
     if (!transactions || transactions.length === 0) {
@@ -913,7 +914,7 @@ const getInvoicePayment = async (req, res) => {
     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
 
     const updateTransactionStatus = async (transaction) => {
-      console.log(transaction.id)
+      console.log('ini di dalam update: ',transaction.id)
       const check_url = `https://api.sandbox.midtrans.com/v2/${transaction.id}/status`;
       const statusResponse = await fetch(check_url, {
         method: 'GET',
@@ -933,7 +934,9 @@ const getInvoicePayment = async (req, res) => {
         }
         transaction.payment_method = statusJson.payment_type;
         if (statusJson.transaction_status === 'settlement') {
+          console.log('Ini instance transaction: ',transaction)
           const project_id = transaction.project_id;
+          // console.log(project_id)
           if (transaction.project_id !== null) {
             await models.Project.update(
               {
