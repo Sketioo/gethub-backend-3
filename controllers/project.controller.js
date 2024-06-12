@@ -366,7 +366,7 @@ const getAllProjects = async (req, res) => {
         {
           model: models.User,
           as: 'owner_project',
-          attributes: ['full_name', 'username', 'profession', 'photo']
+          attributes: ['full_name', 'username', 'profession', 'photo', 'is_verif_ktp', 'is_premium']
         },
         {
           model: models.Category,
@@ -441,7 +441,7 @@ const getAllProjectsAdmin = async (req, res) => {
         {
           model: models.User,
           as: 'owner_project',
-          attributes: ['full_name', 'username', 'profession', 'photo']
+          attributes: ['full_name', 'username', 'profession', 'photo', 'is_premium', 'is_verif_ktp']
         },
         {
           model: models.Category,
@@ -543,7 +543,7 @@ const getProjectById = async (req, res) => {
     const bids = await models.Project_User_Bid.findAll({
       where: { project_id: id },
       include: [
-        { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
+        { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo', 'is_verif_ktp', 'is_premium'] }
       ]
     });
 
@@ -598,7 +598,7 @@ const getOwnerProjects = async (req, res) => {
           as: 'users_bid',
           attributes: ['user_id', 'budget_bid', 'is_selected'],
           include: [
-            { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo'] }
+            { model: models.User, as: 'users_bid', attributes: ['full_name', 'username', 'profession', 'photo', 'is_verif_ktp', 'is_premium'] }
           ]
         },
       ]
@@ -777,7 +777,7 @@ const getUserProjectBids = async (req, res) => {
         include: [
           {
             model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'email', 'photo', 'profession',
-              'sentiment_owner_analisis', 'sentiment_freelance_analisis'
+              'sentiment_owner_analisis', 'sentiment_freelance_analisis', 'is_premium', 'is_verif_ktp'
             ]
           },
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
@@ -1002,7 +1002,7 @@ const getUserSelectedProjectBids = async (req, res) => {
           { model: models.Project_Task, as: 'project_tasks', attributes: ['task_number', 'task_description', 'task_status'] },
           {
             model: models.User, as: 'owner_project', attributes: ['full_name', 'photo', 'profession', 'username',
-              'sentiment_owner_analisis', 'sentiment_freelance_analisis'
+              'sentiment_owner_analisis', 'sentiment_freelance_analisis', 'is_premium', 'is_verif_ktp'
             ]
           }
         ]
@@ -1303,7 +1303,7 @@ const getProjectBidders = async (req, res) => {
 
     const project = await models.Project.findByPk(id, {
       include: [
-        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo', 'sentiment_owner_analisis', 'sentiment_freelance_analisis'] },
+        { model: models.User, as: 'owner_project', attributes: ['full_name', 'username', 'profession', 'photo', 'sentiment_owner_analisis', 'sentiment_freelance_analisis', 'is_premium', 'is_verif_ktp'] },
         { model: models.Category, as: 'category', attributes: ['name'] }
       ]
     });
@@ -1322,7 +1322,7 @@ const getProjectBidders = async (req, res) => {
       include: [
         {
           model: models.User, as: 'users_bid', attributes: ['id', 'full_name', 'username', 'profession', 'photo',
-            'sentiment_owner_analisis', 'sentiment_freelance_analisis']
+            'sentiment_owner_analisis', 'sentiment_freelance_analisis', 'is_premium', 'is_verif_ktp']
         }
       ]
     });
