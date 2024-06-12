@@ -58,6 +58,116 @@ async function getDetailPayment(req, res) {
 }
 
 //* router.get('/projects/:id/payments')
+// async function processOwnerTransaction(req, res) {
+//   try {
+//     const { user_id } = getUserId(req);
+//     const { id } = req.params;
+//     const { freelancer_id } = req.body;
+
+//     const project = await models.Project.findOne({
+//       where: {
+//         id: id,
+//         owner_id: user_id
+//       }
+//     });
+
+//     if (!project) {
+//       return res.status(404).json({
+//         success: false,
+//         message: 'Project tidak ditemukan',
+//         error_code: 404
+//       });
+//     }
+
+//     const user = await models.User.findByPk(user_id);
+//     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
+//     const feePercentage = 0.02;
+//     const grossAmount = project.fee_owner_transaction_value;
+//     const totalAmount = grossAmount * (1 + feePercentage);
+
+//     const generateOrderId = () => {
+//       const timestamp = Date.now();
+//       const randomNumber = Math.floor(Math.random() * 1000000);
+//       return `TRX-${timestamp}-${randomNumber}`;
+//     };
+
+//     const order_id = generateOrderId();
+
+//     const payload = {
+//       transaction_details: {
+//         order_id,
+//         gross_amount: totalAmount
+//       },
+//       item_details: [
+//         {
+//           id: project.id,
+//           price: totalAmount,
+//           quantity: 1,
+//           name: project.title
+//         }
+//       ],
+//       credit_card: {
+//         secure: true
+//       },
+//       customer_details: {
+//         first_name: user.full_name,
+//         email: user.email,
+//         phone: user.phone,
+//         address: user.address,
+//       }
+//     };
+
+//     const options = {
+//       method: 'POST',
+//       headers: {
+//         accept: 'application/json',
+//         'content-type': 'application/json',
+//         authorization: `Basic ${authString}`
+//       },
+//       body: JSON.stringify(payload)
+//     };
+
+//     const response = await fetch(url, options);
+//     const json = await response.json();
+
+//     if (!json) {
+//       return res.status(500).json({
+//         success: false,
+//         message: 'Internal server error',
+//         error_code: 500
+//       });
+//     }
+
+//     await models.Transaction.create({
+//       id: order_id,
+//       project_id: project.id,
+//       user_id: user.id,
+//       amount: grossAmount,
+//       transaction_type: 'DEPOSIT',
+//       status: 'PENDING',
+//       payment_method: null,
+//       snap_token: json.token,
+//       snap_redirect: json.redirect_url,
+//       order_id: payload.transaction_details.order_id
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Transaksi berhasil',
+//       data: json,
+//       error_code: 0
+//     });
+
+//   } catch (error) {
+//     console.error("Error in payment process: ", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Internal server error',
+//       error_code: 500
+//     });
+//   }
+// }
+
 async function processOwnerTransaction(req, res) {
   try {
     const { user_id } = getUserId(req);
@@ -178,6 +288,9 @@ async function processOwnerTransaction(req, res) {
     });
   }
 }
+
+
+
 async function verifyTransactionStatus(req, res) {
   try {
     const { id } = req.params;
@@ -282,6 +395,119 @@ async function getOwnerTransactions(req, res) {
     });
   }
 }
+
+// async function processPremiumPayment(req, res) {
+//   try {
+//     const { user_id } = getUserId(req);
+//     const user = await models.User.findByPk(user_id);
+
+//     if (user.is_premium === true && user.premium_expired_date && moment(user.premium_expired_date).isAfter(moment())) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Anda sudah menjadi premium',
+//         error_code: 400
+//       });
+//     }
+
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: 'User tidak ditemukan',
+//         error_code: 404
+//       });
+//     }
+
+//     const authString = Buffer.from(`${process.env.SERVER_KEY}:`).toString('base64');
+
+//     const totalAmount = 10000;
+
+//     const generateOrderId = () => {
+//       const timestamp = Date.now();
+//       const randomNumber = Math.floor(Math.random() * 1000000);
+//       return `PREMIUM-${timestamp}-${randomNumber}`;
+//     };
+
+//     const order_id = generateOrderId();
+//     console.log(`Generated order_id: ${order_id}`);
+
+//     const payload = {
+//       transaction_details: {
+//         order_id,
+//         gross_amount: totalAmount
+//       },
+//       item_details: [
+//         {
+//           id: 'premium_membership',
+//           price: totalAmount,
+//           quantity: 1,
+//           name: 'Premium Membership'
+//         }
+//       ],
+//       credit_card: {
+//         secure: true
+//       },
+//       customer_details: {
+//         first_name: user.full_name,
+//         email: user.email,
+//         phone: user.phone,
+//         address: user.address
+//       }
+//     };
+
+//     const response = await fetch(url, {
+//       method: 'POST',
+//       headers: {
+//         'accept': 'application/json',
+//         'content-type': 'application/json',
+//         'authorization': `Basic ${authString}`
+//       },
+//       body: JSON.stringify(payload)
+//     });
+
+//     const json = await response.json();
+//     console.log('Response from Midtrans charge:', json);
+
+//     if (!json || !json.token) {
+//       return res.status(500).json({
+//         success: false,
+//         message: 'Internal server error',
+//         error_code: 500
+//       });
+//     }
+
+//     await models.Transaction.create({
+//       id: order_id,
+//       project_id: null,
+//       user_id: user_id,
+//       amount: totalAmount,
+//       transaction_type: 'PAYMENT',
+//       status: 'PENDING',
+//       payment_method: null,
+//       snap_token: json.token,
+//       snap_redirect: json.redirect_url
+//     });
+
+//     const premiumExpiredDate = moment().add(1, 'months').toDate();
+
+//     await models.User.update({ is_premium: true, premium_expired_date: premiumExpiredDate }, { where: { id: user_id } });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: 'Pembayaran premium sukses!',
+//       token: json.token,
+//       redirect_url: json.redirect_url,
+//       error_code: 0
+//     });
+
+//   } catch (error) {
+//     console.error('Ada sebuah error: ', error);
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Internal server error',
+//       error_code: 500
+//     });
+//   }
+// }
 
 async function processPremiumPayment(req, res) {
   try {

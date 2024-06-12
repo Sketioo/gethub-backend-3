@@ -4,6 +4,7 @@ const paymentController = require("../payment/payment.controller");
 const router = express.Router();
 
 const { authenticateToken } = require("../middleware/check-auth")
+const { checkPaymentStatus } = require("../middleware/is-premium")
 
 router.post('/projects/:id/payments', authenticateToken, paymentController.processOwnerTransaction);
 router.post('/user/premium', authenticateToken, paymentController.processPremiumPayment)
