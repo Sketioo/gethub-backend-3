@@ -1183,7 +1183,6 @@ const postBid = async (req, res) => {
   try {
     const { user_id } = getUserId(req);
     const { project_id, budget_bid } = req.body;
-    console.log(`ini adalah min${project.min_budget}`)
     const project = await models.Project.findByPk(project_id);
 
     if (!project || project.is_active === false) {
