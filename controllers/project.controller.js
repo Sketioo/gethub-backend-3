@@ -1224,7 +1224,7 @@ const postBid = async (req, res) => {
       });
     }
 
-    if (budget_bid <= project.min_budget) {
+    if (budget_bid < project.min_budget) {
       return res.status(400).json({
         success: false,
         message: "Budget bid tidak boleh lebih rendah dari minimum budget proyek",
@@ -1232,7 +1232,7 @@ const postBid = async (req, res) => {
       });
     }
 
-    if (budget_bid >= project.max_budget) {
+    if (budget_bid > project.max_budget) {
       return res.status(400).json({
         success: false,
         message: "Budget bid tidak boleh lebih tinggi dari maksimal budget proyek",
