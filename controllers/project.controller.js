@@ -359,9 +359,14 @@ const getAllProjects = async (req, res) => {
       where: {
         is_active: true,
         owner_id: { [Op.ne]: user_id },
-        status_project: { [Op.ne]: ['FINISHED', 'CLOSE'] }
+        status_project: { [Op.notIn]: ['FINISHED', 'CLOSE'] }
       },
+      order: [
+        [literal(`CASE WHEN "category"."name" LIKE '%${userPreferredCategory}%' THEN 0 ELSE 1 END`), 'ASC'],
+        ['created_date', 'DESC']
+      ],
       include: [
+        
         {
           model: models.User,
           as: 'owner_project',
@@ -382,10 +387,6 @@ const getAllProjects = async (req, res) => {
           as: 'users_bid',
           attributes: ['id', 'project_id', 'user_id', 'budget_bid', 'message', 'is_selected']
         }
-      ],
-      order: [
-        [literal(`CASE WHEN "category"."name" LIKE '%${userPreferredCategory}%' THEN 0 ELSE 1 END`), 'ASC'],
-        ['created_date', 'DESC']
       ]
     });
 
@@ -420,7 +421,7 @@ const getAllProjects = async (req, res) => {
       error_code: 500,
     });
   }
-}
+};
 
 
 const getAllProjectsAdmin = async (req, res) => {
