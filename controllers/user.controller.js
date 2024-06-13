@@ -1,7 +1,7 @@
 const models = require("../models");
 const bcryptjs = require("bcryptjs");
 
-const { Sequelize } = require("sequelize");
+const { Sequelize, literal, Op } = require("sequelize");
 
 const { getUserId, getThemehub, getUserProfileCard, getUserIdByUsername } = require("../helpers/utility");
 
@@ -631,19 +631,72 @@ const updateThemeHub = async (req, res) => {
   }
 }
 
+// const getTopTalent = async (req, res) => {
+//   try{
+//     const topTalent = await models.User.findAll({
+//       where: { is_premium: true },
+//       limit : 5,
+//     })
+
+//     if (!topTalent || topTalent.length === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         data: [],
+//         message: "Tidak ada top talent yang ditemukan",
+//         error_code: 404,
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       data: topTalent,
+//       message: "Top talent berhasil diambil",
+//       error_code: 0,
+//     });
+  
+//   }catch(error){
+//     console.error("Error mengambil top talent:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Kesalahan internal server",
+//       error_code: 500,
+//     })
+//   }
+// }
+
 const getTopTalent = async (req, res) => {
-  try{
+  try {
+    const { user_id } = getUserId(req);
+
+    // Query untuk mendapatkan top talent berdasarkan proyek yang diselesaikan
     const topTalent = await models.User.findAll({
-      where: { is_premium: true },
-      limit : 5,
-    })
+      attributes: {
+        include: [
+          [
+            literal(`(
+              SELECT COUNT(*)
+              FROM project_reviews
+              WHERE project_reviews.freelancer_id = User.id
+              AND project_reviews.review_type = 'owner'
+            )`),
+            'completedProjectsCount'
+          ]
+        ]
+      },
+      where: {
+        is_premium: true,
+        id: { [Op.ne]: user_id }
+      },
+      order: [[literal('completedProjectsCount'), 'DESC']],
+      limit: 5
+    });
 
     if (!topTalent || topTalent.length === 0) {
       return res.status(404).json({
         success: false,
         data: [],
         message: "Tidak ada top talent yang ditemukan",
-        error_code: 404,
+        error_code: 404
       });
     }
 
@@ -651,18 +704,20 @@ const getTopTalent = async (req, res) => {
       success: true,
       data: topTalent,
       message: "Top talent berhasil diambil",
-      error_code: 0,
+      error_code: 0
     });
-  
-  }catch(error){
+
+  } catch (error) {
     console.error("Error mengambil top talent:", error);
     return res.status(500).json({
       success: false,
       message: "Kesalahan internal server",
-      error_code: 500,
-    })
+      error_code: 500
+    });
   }
-}
+};
+
+
 
 module.exports = {
   register,
