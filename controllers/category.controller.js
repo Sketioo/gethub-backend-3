@@ -3,6 +3,7 @@ const models = require("../models");
 
 const getAllCategories = async (req, res, next) => {
   try {
+    const countData = await models.Category.count()
     const categories = await models.Category.findAll({
       order: [['name', 'ASC']]
     });
@@ -18,6 +19,7 @@ const getAllCategories = async (req, res, next) => {
       success: true,
       data: categories,
       message: "Kategori berhasil diambil",
+      total_data: countData,
       error_code: 0,
     });
   } catch (error) {
